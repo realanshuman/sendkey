@@ -1,6 +1,10 @@
 /* SendKey landing page layout. Depends on brand.css. */
 
 section[id] { scroll-margin-top: 76px; }
+/* nav links target #compose, which lives inside the hero, not a section */
+#compose { scroll-margin-top: 86px; }
+
+.section-head h2, .section-head p, .cta-card h2, .cta-card p { text-wrap: balance; }
 
 /* ---- nav ---------------------------------------------------------------- */
 
@@ -228,7 +232,7 @@ body > section { padding: 96px 0; }
 .anatomy-legend > div {
   font-size: 12.5px;
   line-height: 1.55;
-  color: var(--ink-3);
+  color: var(--ink-2);
   padding-left: 16px;
   position: relative;
 }
@@ -348,7 +352,7 @@ body > section { padding: 96px 0; }
 .t-cmd { color: var(--ink); }
 .t-str { color: var(--ink-2); }
 .t-flag { color: var(--ink-3); }
-.t-out { color: var(--ink-3); }
+.t-out { color: var(--ink-2); }
 .t-key { color: var(--iris); }
 
 /* ---- FAQ -------------------------------------------------------------------- */
@@ -388,7 +392,9 @@ body > section { padding: 96px 0; }
 
 /* ---- CTA + footer ------------------------------------------------------------ */
 
-.cta-band { padding: 0 0 104px; }
+/* class specificity beats the body > section rhythm rule, so this must
+   restate the top padding, not only the bottom */
+.cta-band { padding: 96px 0 112px; }
 .cta-card {
   position: relative;
   overflow: hidden;
@@ -466,6 +472,10 @@ body > section { padding: 96px 0; }
 
 @media (max-width: 920px) {
   .nav-links { display: none; }
+  /* the auto margin that pushes the right side of the nav lives on
+     .nav-links; when that hides, the buttons must take it over */
+  .nav-cta { margin-left: auto; }
+  .cta-band { padding: 72px 0 88px; }
   .hgrid-3 { grid-template-columns: 1fr; }
   .dev-grid { grid-template-columns: 1fr; gap: 36px; }
   body > section { padding: 72px 0; }
@@ -473,6 +483,8 @@ body > section { padding: 96px 0; }
 }
 
 @media (max-width: 560px) {
+  /* dropping the third phrase beats wrapping the pill onto two lines */
+  .pill-more { display: none; }
   .composer .row { grid-template-columns: 1fr; gap: 14px; margin: 14px 0; }
   .anatomy-legend { grid-template-columns: 1fr; }
   .linkbox { flex-direction: column; }

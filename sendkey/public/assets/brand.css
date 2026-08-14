@@ -88,11 +88,11 @@ code {
 
 .mono { font-family: var(--font-mono); }
 
-/* focus */
+/* focus: no border-radius here; setting it would reshape the focused
+   element itself, and outlines already follow the element's own radius */
 :focus-visible {
   outline: 2px solid var(--iris);
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
 /* ---- logo ------------------------------------------------------------- */
