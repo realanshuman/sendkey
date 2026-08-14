@@ -437,6 +437,53 @@ textarea:focus, input:focus, select:focus {
   .btn-sm { padding: 7px 12px; }
 }
 
+/* ---- file cards and progress (composer and view page both) -------------- */
+.file-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 2px solid var(--ink);
+  background: var(--field);
+}
+.file-card svg { width: 20px; height: 20px; fill: var(--ink); flex: none; }
+.file-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.file-meta strong {
+  font-size: 13.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-meta span { font-size: 11.5px; font-weight: 700; text-transform: uppercase; color: var(--ink-3); }
+
+.prog {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.prog-track {
+  flex: 1;
+  height: 14px;
+  border: 2px solid var(--ink);
+  background: var(--field);
+  padding: 2px;
+}
+.prog-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--ink);
+  transition: width 0.15s steps(4);
+}
+.prog-label {
+  flex: none;
+  min-width: 40px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 /* ---- motion ------------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {

@@ -34,14 +34,21 @@ func cmdSend(args []string) {
 	ttl := fs.Duration("ttl", 24*time.Hour, "time before the secret self-destructs (1m..168h)")
 	views := fs.Int("views", 1, "reads before the secret burns (1..10)")
 	withPass := fs.Bool("passphrase", false, "add a passphrase layer (prompted; or SENDKEY_PASSPHRASE)")
+	filePath := fs.String("file", "", "send a file instead of a text secret (up to 8 MiB, chunked)")
 	_ = fs.Parse(args)
 
-	secret, err := readSecret(fs.Args())
-	if err != nil {
-		fatal("read secret: %v", err)
-	}
-	if len(secret) == 0 {
-		fatal("empty secret; pass it as an argument or pipe it on stdin")
+	var secret []byte
+	var err error
+	if *filePath == "" {
+		secret, err = readSecret(fs.Args())
+		if err != nil {
+			fatal("read secret: %v", err)
+		}
+		if len(secret) == 0 {
+			fatal("empty secret; pass it as an argument, pipe it on stdin, or use -file")
+		}
+	} else if fs.NArg() > 0 {
+		fatal("-file and a text secret are mutually exclusive")
 	}
 
 	passphrase := ""
@@ -54,7 +61,13 @@ func cmdSend(args []string) {
 		}
 	}
 
-	sealed, err := sendkey.Seal(secret, passphrase)
+	base := strings.TrimRight(*server, "/")
+	var sealed *sendkey.Sealed
+	if *filePath != "" {
+		sealed, err = sealAndUploadFile(base, *filePath, passphrase, int(ttl.Seconds()), *views)
+	} else {
+		sealed, err = sendkey.Seal(secret, passphrase)
+	}
 	if err != nil {
 		fatal("encrypt: %v", err)
 	}
@@ -66,7 +79,6 @@ func cmdSend(args []string) {
 		"views": *views,
 	})
 
-	base := strings.TrimRight(*server, "/")
 	resp, err := httpClient().Post(base+"/api/secret", "application/json", bytes.NewReader(reqBody))
 	if err != nil {
 		fatal("upload: %v", err)
@@ -96,6 +108,7 @@ func cmdSend(args []string) {
 
 func cmdGet(args []string) {
 	fs := flag.NewFlagSet("get", flag.ExitOnError)
+	outPath := fs.String("o", "", "write a received file to this path (file links only)")
 	_ = fs.Parse(args)
 
 	if fs.NArg() != 1 {
@@ -141,6 +154,15 @@ func cmdGet(args []string) {
 	secret, err := decrypt(ct, iv, key)
 	if err != nil {
 		fatal("%v", err)
+	}
+
+	// File links carry a manifest, not the payload: finish the download
+	// instead of printing chunk ids to the terminal.
+	if flags, ferr := sendkey.EnvelopeFlags(ct, iv, key); ferr == nil && flags&sendkey.FlagFile != 0 {
+		if err := downloadManifestFile(u.Scheme+"://"+u.Host, secret, *outPath); err != nil {
+			fatal("%v", err)
+		}
+		return
 	}
 	os.Stdout.Write(secret)
 	if len(secret) > 0 && secret[len(secret)-1] != '\n' && isTerminal(os.Stdout) {

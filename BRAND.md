@@ -119,6 +119,9 @@ allowed to be playful; the sentences are not.
 - The ask page is a dialog titled SECRET REQUEST, one page for both roles:
   the browser holding the private key sees its ask; anyone else sees the
   answer form. Both render the same 8 x 8 pixel key fingerprint.
+- File drops keep the composer's window: a dashed drop strip, a file card
+  with a pixel document icon, and a hard-edged progress bar whose fill is
+  solid ink. Progress snaps in steps; nothing glides.
 - Errors are inverted ink blocks prefixed with `!!`. No red exists here.
 - The page ends in ink: a dithered fade strip, then the CTA and footer on
   black. The machine turns off at the bottom.

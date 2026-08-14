@@ -37,7 +37,7 @@ type Server struct {
 // NewServer builds a ready-to-serve handler over any Backend.
 func NewServer(store Backend, cfg Config) *Server {
 	if cfg.MaxBytes <= 0 {
-		cfg.MaxBytes = 128 * 1024
+		cfg.MaxBytes = 640 * 1024 // covers one 512KiB file chunk plus GCM tag
 	}
 	assets, err := fs.Sub(webFS, "public")
 	if err != nil {
@@ -110,7 +110,7 @@ func (s *Server) serveAsset(w http.ResponseWriter, name string) {
 }
 
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
-	out := map[string]any{"ok": true}
+	out := map[string]any{"ok": true, "maxBytes": s.cfg.MaxBytes}
 	if m, isMem := s.store.(*MemStore); isMem {
 		out["secrets"] = m.Len()
 	}
@@ -344,8 +344,11 @@ func newRateLimiter(perMin int) *rateLimiter {
 	return &rateLimiter{
 		buckets: make(map[string]*bucket),
 		rate:    float64(perMin) / 60.0,
-		burst:   float64(perMin),
-		now:     time.Now,
+		// Twice the sustained rate: a file upload is a burst of up to 17
+		// creations (16 chunks and a head), which must pass in one go
+		// without raising the per-minute ceiling an abuser sustains.
+		burst: float64(perMin) * 2,
+		now:   time.Now,
 	}
 }
 

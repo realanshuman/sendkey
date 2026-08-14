@@ -134,13 +134,14 @@ func TestRateLimiter(t *testing.T) {
 	now := time.Unix(1_700_000_000, 0)
 	rl.now = func() time.Time { return now }
 
-	for i := 0; i < 5; i++ {
+	// burst is 2x the sustained rate, sized for one file upload in one go
+	for i := 0; i < 10; i++ {
 		if !rl.allow("1.2.3.4") {
 			t.Fatalf("request %d should be allowed (burst)", i)
 		}
 	}
 	if rl.allow("1.2.3.4") {
-		t.Fatal("6th request should be blocked")
+		t.Fatal("11th request should be blocked")
 	}
 	if !rl.allow("5.6.7.8") {
 		t.Fatal("different client should not be affected")
@@ -199,9 +200,11 @@ func TestLimiterStillLimitsAfterSweep(t *testing.T) {
 	now := time.Unix(1_700_000_000, 0)
 	rl.now = func() time.Time { return now }
 
-	// Exhaust one client, then force a sweep with many other clients.
-	rl.allow("victim")
-	rl.allow("victim")
+	// Exhaust one client (burst is 2x rate), then force a sweep with many
+	// other clients.
+	for i := 0; i < 4; i++ {
+		rl.allow("victim")
+	}
 	if rl.allow("victim") {
 		t.Fatal("victim should be limited")
 	}
@@ -228,11 +231,14 @@ func TestRateLimitEndpoint(t *testing.T) {
 		return w.Code
 	}
 
-	if mk() != http.StatusOK || mk() != http.StatusOK {
-		t.Fatal("first two creates should pass")
+	// burst = 2x the configured rate of 2
+	for i := 0; i < 4; i++ {
+		if mk() != http.StatusOK {
+			t.Fatalf("create %d should pass within burst", i)
+		}
 	}
 	if got := mk(); got != http.StatusTooManyRequests {
-		t.Fatalf("third create: want 429, got %d", got)
+		t.Fatalf("fifth create: want 429, got %d", got)
 	}
 }
 

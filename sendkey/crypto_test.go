@@ -2,6 +2,8 @@ package sendkey
 
 import (
 	"bytes"
+	"encoding/base64"
+	"strings"
 	"testing"
 )
 
@@ -96,5 +98,36 @@ func TestBinarySecretsSurvive(t *testing.T) {
 	got, err := Open(sealed.CT, sealed.IV, sealed.Key, "p")
 	if err != nil || !bytes.Equal(got, secret) {
 		t.Fatalf("binary roundtrip failed: %v", err)
+	}
+}
+
+func TestManifestValidateBounds(t *testing.T) {
+	goodKF := base64.RawURLEncoding.EncodeToString(make([]byte, KeyLen))
+	goodID := base64.RawURLEncoding.EncodeToString(make([]byte, 16))
+	base := func() Manifest {
+		return Manifest{V: 1, Name: "a.bin", Mime: "application/octet-stream",
+			Size: 1024, KF: goodKF, Chunks: []string{goodID}}
+	}
+	if err := (func() error { m := base(); return m.Validate() })(); err != nil {
+		t.Fatalf("baseline manifest should validate: %v", err)
+	}
+
+	cases := map[string]func(*Manifest){
+		"wrong version":   func(m *Manifest) { m.V = 2 },
+		"no chunks":       func(m *Manifest) { m.Chunks = nil },
+		"too many chunks": func(m *Manifest) { m.Chunks = make([]string, MaxManifestChunks+1) },
+		"empty name":      func(m *Manifest) { m.Name = "" },
+		"huge name":       func(m *Manifest) { m.Name = strings.Repeat("x", MaxManifestName+1) },
+		"zero size":       func(m *Manifest) { m.Size = 0 },
+		"absurd size":     func(m *Manifest) { m.Size = MaxManifestSize + 1 },
+		"bad kf":          func(m *Manifest) { m.KF = "short" },
+		"bad chunk id":    func(m *Manifest) { m.Chunks = []string{"nope"} },
+	}
+	for name, mutate := range cases {
+		m := base()
+		mutate(&m)
+		if err := m.Validate(); err == nil {
+			t.Errorf("%s: want validation error", name)
+		}
 	}
 }

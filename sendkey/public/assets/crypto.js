@@ -18,8 +18,12 @@ const PBKDF2_ITERS = 310000;
 
 export const b64u = {
   encode(bytes) {
+    // chunked fromCharCode: byte-by-byte += is quadratic-ish on the ~700KB
+    // strings file chunks produce
     let s = '';
-    for (const b of bytes) s += String.fromCharCode(b);
+    for (let i = 0; i < bytes.length; i += 0x8000) {
+      s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    }
     return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   },
   decode(str) {
@@ -103,6 +107,36 @@ export function needsPassphrase(flags) {
 
 export function isFile(flags) {
   return (flags & FLAG_FILE) !== 0;
+}
+
+// --- file chunks -------------------------------------------------------------
+// Chunks are raw AES-256-GCM under the manifest's file key, NOT envelopes.
+// The chunk index is bound as additional authenticated data, so the server
+// cannot reorder chunks; a fresh file key per file prevents cross-file
+// splicing. Must stay byte-compatible with SealChunk/OpenChunk in crypto.go.
+
+function chunkAAD(index) {
+  return new TextEncoder().encode('sendkey/file/v1|' + index);
+}
+
+export async function sealChunk(fileKeyBytes, index, plainBytes) {
+  const key = await aesKey(fileKeyBytes, ['encrypt']);
+  const iv = randomBytes(IV_LEN);
+  const ct = new Uint8Array(await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv, additionalData: chunkAAD(index) }, key, plainBytes));
+  return { ct, iv };
+}
+
+// openChunk throws Error('bad-chunk') when authentication fails (wrong key,
+// wrong index, or corrupted data).
+export async function openChunk(fileKeyBytes, index, ctBytes, ivBytes) {
+  const key = await aesKey(fileKeyBytes, ['decrypt']);
+  try {
+    return new Uint8Array(await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: ivBytes, additionalData: chunkAAD(index) }, key, ctBytes));
+  } catch {
+    throw new Error('bad-chunk');
+  }
 }
 
 // openInner decrypts a passphrase-protected body. Throws

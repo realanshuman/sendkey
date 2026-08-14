@@ -33,7 +33,7 @@ func build() {
 	}
 
 	srv = sendkey.NewServer(store, sendkey.Config{
-		MaxBytes:   envInt("SENDKEY_MAX_BYTES", 128*1024),
+		MaxBytes:   envInt("SENDKEY_MAX_BYTES", 640*1024),
 		RatePerMin: envInt("SENDKEY_RATE", 30),
 		// Vercel terminates TLS and always sets X-Forwarded-For, so the
 		// client IP is only knowable through it. It is safe to trust here

@@ -102,7 +102,7 @@ a Vercel KV (Upstash) integration, or set the variables by hand:
 | `UPSTASH_REDIS_REST_URL` | Alternative spelling, if you use Upstash directly |
 | `UPSTASH_REDIS_REST_TOKEN` | Alternative spelling |
 | `SENDKEY_RATE` | Creations per minute per IP (default 30) |
-| `SENDKEY_MAX_BYTES` | Largest accepted ciphertext (default 131072) |
+| `SENDKEY_MAX_BYTES` | Largest accepted ciphertext (default 655360, one file chunk) |
 
 Without credentials the function returns a readable 503 explaining what is
 missing, rather than failing opaquely.
@@ -110,6 +110,26 @@ missing, rather than failing opaquely.
 The same auto-detection works for `sendkey serve`: set those variables and it
 uses Redis, so several instances can sit behind one load balancer. Leave them
 unset and it keeps secrets in memory.
+
+## Files
+
+Drop a file on the composer, or:
+
+```sh
+sendkey send -file backup.tar.gz          # up to 8 MiB
+sendkey get -o backup.tar.gz 'https://…'  # or omit -o to use the sent name
+```
+
+Files are chunked at 512 KiB. Every chunk is encrypted in the client under
+a fresh file key, with the chunk index bound as AAD, so the server cannot
+reorder or splice pieces. The shared link points at a sealed manifest that
+holds the file key and the chunk list; it looks, expires and burns exactly
+like a text secret. Chunks carry two spare views beyond the head so a
+flaky network cannot destroy a file mid-download; burn semantics live at
+the head, whose ids are the only way to find the chunks.
+
+On Upstash's free tier note the bandwidth math: an 8 MiB file stores as
+about 11 MB of base64 and each full download reads it back once per view.
 
 ## Ask links: receiving, reversed
 
@@ -203,7 +223,7 @@ the pages contain none.
 | --- | --- | --- |
 | `-addr` | `:8080` | Listen address (`SENDKEY_ADDR`) |
 | `-max-items` | `100000` | Stored-secret ceiling, in-memory backend only |
-| `-max-bytes` | `131072` | Largest accepted ciphertext |
+| `-max-bytes` | `655360` | Largest accepted ciphertext |
 | `-rate` | `30` | Creations per minute per IP |
 | `-trust-proxy` | `false` | Honour `X-Forwarded-For` — **only** behind a proxy you control |
 

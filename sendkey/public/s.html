@@ -68,9 +68,26 @@
 
         <!-- revealed -->
         <section id="out" class="hidden">
-          <p class="msg-ok">Decrypted on this device. This link is now dead.</p>
+          <p id="outMsg" class="msg-ok">Decrypted on this device. This link is now dead.</p>
           <pre id="secret" class="secret-out"></pre>
           <button id="copy" class="btn btn-ghost btn-sm">Copy</button>
+
+          <div id="fileOut" class="hidden">
+            <div class="file-card">
+              <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M3 0h7l3 3v13H3zM9 1v3h3zM5 6h6v1H5zM5 8h6v1H5zM5 10h6v1H5zM5 12h4v1H5z"/></svg>
+              <div class="file-meta">
+                <strong id="dlName"></strong>
+                <span id="dlSize"></span>
+              </div>
+            </div>
+            <div id="dlWrap" class="prog" role="progressbar" aria-label="Downloading and decrypting">
+              <div class="prog-track"><div id="dlBar" class="prog-bar"></div></div>
+              <span id="dlPct" class="prog-label">0%</span>
+            </div>
+            <button id="saveBtn" class="btn btn-lg hidden">Save file</button>
+            <p class="note dl-note">Decrypted in this tab. Closing it discards
+              the file; the server's copy is already gone.</p>
+          </div>
         </section>
 
         <!-- gone -->

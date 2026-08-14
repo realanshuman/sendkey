@@ -159,3 +159,72 @@ func TestMailboxProbe(t *testing.T) {
 		t.Fatalf("burned mailbox: want ready false again, got %s", got)
 	}
 }
+
+func TestFileSizedChunkAccepted(t *testing.T) {
+	srv := NewServer(NewMemStore(100), Config{RatePerMin: 1000})
+	// a full 512KiB chunk plus GCM tag must pass the default MaxBytes
+	big := bytes.Repeat([]byte{7}, 512*1024+16)
+	w := postSecret(t, srv, map[string]any{"ct": b64(big), "iv": b64(make([]byte, 12))})
+	if w.Code != http.StatusOK {
+		t.Fatalf("512KiB chunk: want 200, got %d %s", w.Code, w.Body.String()[:80])
+	}
+	over := bytes.Repeat([]byte{7}, 640*1024+1)
+	w = postSecret(t, srv, map[string]any{"ct": b64(over), "iv": b64(make([]byte, 12))})
+	if w.Code != http.StatusRequestEntityTooLarge {
+		t.Fatalf("over MaxBytes: want 413, got %d", w.Code)
+	}
+}
+
+func TestHealthzExposesMaxBytes(t *testing.T) {
+	srv := NewServer(NewMemStore(10), Config{MaxBytes: 4096})
+	w := httptest.NewRecorder()
+	srv.ServeHTTP(w, httptest.NewRequest("GET", "/healthz", nil))
+	var out struct {
+		MaxBytes int `json:"maxBytes"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &out); err != nil || out.MaxBytes != 4096 {
+		t.Fatalf("healthz maxBytes: got %d err %v body %s", out.MaxBytes, err, w.Body)
+	}
+}
+
+func TestLimiterBurstCoversFileUpload(t *testing.T) {
+	// rate 30/min sustained must still allow a 17-request burst (16 chunks
+	// and a head) plus a second file soon after, via the 2x burst bucket.
+	srv := NewServer(NewMemStore(1000), Config{MaxBytes: 4096, RatePerMin: 30})
+	ok := 0
+	for i := 0; i < 60; i++ {
+		w := postSecret(t, srv, map[string]any{"ct": b64([]byte("x")), "iv": b64(make([]byte, 12))})
+		if w.Code == http.StatusOK {
+			ok++
+		}
+	}
+	if ok < 60 {
+		t.Fatalf("burst of 60 (three files back to back) should pass with burst=2x30, got %d", ok)
+	}
+	w := postSecret(t, srv, map[string]any{"ct": b64([]byte("x")), "iv": b64(make([]byte, 12))})
+	if w.Code != http.StatusTooManyRequests {
+		t.Fatalf("61st immediate create should be limited, got %d", w.Code)
+	}
+}
+
+func TestConsumeIsNotRateLimited(t *testing.T) {
+	// downloads are 17 fetches; the limiter applies to creation only, so a
+	// file download can never 429
+	srv := NewServer(NewMemStore(1000), Config{MaxBytes: 4096, RatePerMin: 1000})
+	ids := make([]string, 40)
+	for i := range ids {
+		w := postSecret(t, srv, map[string]any{"ct": b64([]byte("x")), "iv": b64(make([]byte, 12))})
+		var out struct{ ID string }
+		_ = json.Unmarshal(w.Body.Bytes(), &out)
+		ids[i] = out.ID
+	}
+	for _, id := range ids {
+		req := httptest.NewRequest("GET", "/api/secret/"+id, nil)
+		req.RemoteAddr = "10.1.1.1:1"
+		w := httptest.NewRecorder()
+		srv.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Fatalf("consume %s: got %d, downloads must never be limited", id, w.Code)
+		}
+	}
+}

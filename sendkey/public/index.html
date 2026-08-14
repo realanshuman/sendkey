@@ -65,10 +65,33 @@
         <div class="win-body">
 
         <section id="compose-form">
-          <label class="lbl" for="secret">Secret</label>
-          <textarea id="secret" rows="4" spellcheck="false" autocomplete="off"
-            placeholder="Paste a password, API key, or private note"></textarea>
-          <div class="meter"><span id="count">0</span> bytes</div>
+          <div id="secretWrap">
+            <label class="lbl" for="secret">Secret</label>
+            <textarea id="secret" rows="4" spellcheck="false" autocomplete="off"
+              placeholder="Paste a password, API key, or private note"></textarea>
+            <div class="meter"><span id="count">0</span> bytes</div>
+          </div>
+
+          <div id="dropzone" class="dropzone">
+            <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M7 1h2v8h2V7h2v2h-2v2h-2v2H7v-2H5V9H3V7h2v2h2zM1 13h14v2H1z"/></svg>
+            <span class="dz-label">or drop a file<span class="dz-sep"> · </span><button id="pickBtn" type="button" class="linklike">browse</button></span>
+            <span class="dz-cap">up to 8 MB, encrypted before upload</span>
+            <input type="file" id="fileInput" class="hidden" aria-label="Choose a file to send">
+          </div>
+
+          <div id="fileCard" class="file-card hidden">
+            <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M3 0h7l3 3v13H3zM9 1v3h3zM5 6h6v1H5zM5 8h6v1H5zM5 10h6v1H5zM5 12h4v1H5z"/></svg>
+            <div class="file-meta">
+              <strong id="fName"></strong>
+              <span id="fSize"></span>
+            </div>
+            <button id="fRemove" class="btn btn-ghost btn-sm" aria-label="Remove the selected file">Remove</button>
+          </div>
+
+          <div id="upWrap" class="prog hidden" role="progressbar" aria-label="Encrypting and uploading">
+            <div class="prog-track"><div id="upBar" class="prog-bar"></div></div>
+            <span id="upPct" class="prog-label">0%</span>
+          </div>
 
           <div class="row">
             <div class="field">
@@ -342,6 +365,18 @@ https://sendkey.xyz/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</sp
           every tool that encrypts in the browser, it relies on the page being
           delivered honestly. If that matters for you, use the CLI or host it
           yourself.
+        </div>
+      </details>
+
+      <details>
+        <summary>Can I send files?</summary>
+        <div class="faq-body">
+          Yes, up to 8 MB. Drop a file on the composer and it is split into
+          chunks, each encrypted in your browser under a fresh file key, with
+          the chunk order cryptographically bound so the server cannot
+          reorder or swap pieces. The link looks and burns exactly like a
+          text secret. The CLI speaks the same format:
+          <code>sendkey send -file report.pdf</code>.
         </div>
       </details>
 

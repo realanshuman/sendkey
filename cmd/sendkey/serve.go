@@ -17,7 +17,7 @@ func cmdServe(args []string) {
 	fs := flag.NewFlagSet("serve", flag.ExitOnError)
 	addr := fs.String("addr", envOr("SENDKEY_ADDR", ":8080"), "listen address")
 	maxItems := fs.Int("max-items", 100_000, "maximum stored secrets, in-memory backend only")
-	maxBytes := fs.Int("max-bytes", 128*1024, "maximum ciphertext size in bytes")
+	maxBytes := fs.Int("max-bytes", 640*1024, "maximum ciphertext size in bytes (must cover one 512KiB file chunk)")
 	rate := fs.Int("rate", 30, "max secret creations per minute per client IP")
 	trustProxy := fs.Bool("trust-proxy", false, "trust X-Forwarded-For for client IP (only behind a proxy you control)")
 	_ = fs.Parse(args)

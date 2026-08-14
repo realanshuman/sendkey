@@ -22,11 +22,26 @@ package sendkey
 // The passphrase layer sits INSIDE the outer layer, so a recipient who typed
 // the wrong passphrase can retry locally, forever, without touching the
 // server — the one burn-on-read fetch already happened.
+//
+// File manifests (flags bit1, FlagFile)
+// --------------------------------------
+// A file is sent as N chunk secrets plus one head secret. The head is a
+// normal v1 envelope whose body is a JSON manifest:
+//
+//	{"v":1,"name":...,"mime":...,"size":N,"kf":b64u(32),"chunks":[ids...]}
+//
+// Each chunk is raw AES-256-GCM under the manifest's file key kf — NOT an
+// envelope — with AAD "sendkey/file/v1|" + decimal chunk index (ASCII), so
+// chunks cannot be reordered, and a fresh kf per file means chunks cannot be
+// spliced across files. The id list rides inside the GCM-authenticated
+// manifest, so the server cannot substitute or truncate it. Integrity is
+// complete without a separate whole-file hash.
 
 import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"encoding/base64"
 	"errors"
 	"fmt"
 )
@@ -190,6 +205,91 @@ func fillRandom(bufs ...[]byte) error {
 	for _, b := range bufs {
 		if _, err := rand.Read(b); err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+// --- file chunks -------------------------------------------------------------
+
+// chunkAAD pins the additional authenticated data for chunk index i. ASCII
+// prefix plus the decimal index; both implementations must agree byte for
+// byte.
+func chunkAAD(index int) []byte {
+	return []byte(fmt.Sprintf("sendkey/file/v1|%d", index))
+}
+
+// SealChunk encrypts one file chunk under the file key with its index bound
+// as AAD. The result is raw GCM ciphertext, not an envelope.
+func SealChunk(fileKey []byte, index int, plain []byte) (ct, iv []byte, err error) {
+	if len(fileKey) != KeyLen {
+		return nil, nil, fmt.Errorf("file key must be %d bytes", KeyLen)
+	}
+	iv = make([]byte, IVLen)
+	if err := fillRandom(iv); err != nil {
+		return nil, nil, err
+	}
+	g, err := newGCM(fileKey)
+	if err != nil {
+		return nil, nil, err
+	}
+	return g.Seal(nil, iv, plain, chunkAAD(index)), iv, nil
+}
+
+// OpenChunk decrypts one file chunk, authenticating its position.
+func OpenChunk(fileKey []byte, index int, ct, iv []byte) ([]byte, error) {
+	if len(fileKey) != KeyLen {
+		return nil, fmt.Errorf("file key must be %d bytes", KeyLen)
+	}
+	g, err := newGCM(fileKey)
+	if err != nil {
+		return nil, err
+	}
+	plain, err := g.Open(nil, iv, ct, chunkAAD(index))
+	if err != nil {
+		return nil, errors.New("chunk failed authentication: wrong key, index, or corrupted data")
+	}
+	return plain, nil
+}
+
+// Manifest is the sealed head body of a file send (envelope flags FlagFile).
+type Manifest struct {
+	V      int      `json:"v"`
+	Name   string   `json:"name"`
+	Mime   string   `json:"mime"`
+	Size   int64    `json:"size"`
+	KF     string   `json:"kf"`     // b64u file key
+	Chunks []string `json:"chunks"` // secret ids, in order
+}
+
+// Manifest bounds. A manifest is sender-authored: the viewer validates it
+// before fetching anything, so a hostile one cannot demand unbounded work.
+const (
+	MaxManifestChunks = 32
+	MaxManifestName   = 255
+	MaxManifestSize   = 64 << 20
+)
+
+// ValidateManifest applies the shared bounds and shape checks.
+func (m *Manifest) Validate() error {
+	switch {
+	case m.V != 1:
+		return errors.New("unsupported manifest version")
+	case len(m.Chunks) == 0 || len(m.Chunks) > MaxManifestChunks:
+		return fmt.Errorf("chunk count must be 1..%d", MaxManifestChunks)
+	case len(m.Name) == 0 || len(m.Name) > MaxManifestName:
+		return errors.New("bad file name length")
+	case m.Size <= 0 || m.Size > MaxManifestSize:
+		return errors.New("implausible file size")
+	}
+	kf, err := base64.RawURLEncoding.DecodeString(m.KF)
+	if err != nil || len(kf) != KeyLen {
+		return errors.New("bad file key")
+	}
+	for _, id := range m.Chunks {
+		raw, err := base64.RawURLEncoding.DecodeString(id)
+		if err != nil || len(raw) != 16 {
+			return errors.New("bad chunk id")
 		}
 	}
 	return nil
