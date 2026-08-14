@@ -131,6 +131,31 @@ the head, whose ids are the only way to find the chunks.
 On Upstash's free tier note the bandwidth math: an 8 MiB file stores as
 about 11 MB of base64 and each full download reads it back once per view.
 
+## Live receipts
+
+The sender's page tells them the moment their link is opened, without a
+reload:
+
+```
+Opened at 2:34:07 PM
+```
+
+Burning a secret no longer deletes its record; it blanks the ciphertext and
+keeps a tombstone carrying only the open timestamps until the original TTL
+passes. Every recipient-facing path still treats a burned secret as gone,
+so nothing about the burn changed. The receipt endpoint is plain HTTP, so
+a script can watch a link without the CLI:
+
+```sh
+curl -s https://sendkey.xyz/api/secret/<id>/receipt
+{"opens":["2026-03-04T14:34:07Z"]}
+```
+
+Exposure matches `/meta`: the bare id is enough, no decryption key needed.
+A receipt reveals only that an id was opened and when, never a byte of the
+secret, and anyone holding the id could already learn as much by watching
+`/meta` flip to 404.
+
 ## Ask links: receiving, reversed
 
 The common failure is not sending a secret badly. It is asking for one and

@@ -26,8 +26,19 @@ func TestBurnAfterReading(t *testing.T) {
 	if _, err := s.Consume(ctx, id); err != ErrNotFound {
 		t.Fatalf("second consume: want ErrNotFound, got %v", err)
 	}
-	if s.Len() != 0 {
-		t.Fatalf("store not empty after burn: %d", s.Len())
+	if _, err := s.Peek(ctx, id); err != ErrNotFound {
+		t.Fatalf("peek after burn: want ErrNotFound, got %v", err)
+	}
+	// The record lives on as a receipt tombstone until its TTL, but the
+	// payload is gone: burned means unrecoverable, not merely unreadable.
+	s.mu.Lock()
+	tomb := s.items[id]
+	s.mu.Unlock()
+	if tomb == nil {
+		t.Fatal("receipt tombstone should outlive the burn")
+	}
+	if tomb.CT != nil || tomb.IV != nil {
+		t.Fatal("burned tombstone must not retain ciphertext")
 	}
 }
 

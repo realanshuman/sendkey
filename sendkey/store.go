@@ -19,10 +19,11 @@ var (
 // Secret is an opaque, encrypted blob. No backend can decrypt it: the key
 // lives only in the recipient's URL fragment and is never transmitted.
 type Secret struct {
-	CT        []byte    // ciphertext (AES-256-GCM, sealed by the client)
-	IV        []byte    // 12-byte nonce for the outer layer
-	ExpiresAt time.Time // hard TTL; reclaimed even if never read
-	Views     int       // reads remaining after this one
+	CT        []byte      // ciphertext (AES-256-GCM, sealed by the client)
+	IV        []byte      // 12-byte nonce for the outer layer
+	ExpiresAt time.Time   // hard TTL; reclaimed even if never read
+	Views     int         // reads remaining after this one
+	Opens     []time.Time // when each read happened, for the sender's receipt
 }
 
 // Meta is the non-destructive view of a stored secret.
@@ -42,6 +43,11 @@ type Backend interface {
 	PutAt(ctx context.Context, id string, ct, iv []byte, ttl time.Duration, views int) error
 	Peek(ctx context.Context, id string) (Meta, error)
 	Consume(ctx context.Context, id string) (*Secret, error)
+	// Receipts returns when a secret was opened. Unlike Peek it still answers
+	// after the last view has burned, because the whole point is to tell the
+	// sender their secret was read; a burned record survives as a
+	// ciphertext-stripped tombstone until its original TTL passes.
+	Receipts(ctx context.Context, id string) ([]time.Time, error)
 }
 
 // MemStore is an in-memory, TTL-bounded backend with atomic burn-on-read.
@@ -143,10 +149,27 @@ func (s *MemStore) Peek(_ context.Context, id string) (Meta, error) {
 	defer s.mu.Unlock()
 
 	sec, ok := s.items[id]
-	if !ok || !sec.ExpiresAt.After(s.now()) {
+	// Views <= 0 is a burned tombstone kept only for the sender's receipt.
+	// To every recipient-facing caller it must look exactly as gone as a
+	// deleted record did before receipts existed.
+	if !ok || sec.Views <= 0 || !sec.ExpiresAt.After(s.now()) {
 		return Meta{}, ErrNotFound
 	}
 	return Meta{ExpiresAt: sec.ExpiresAt, Views: sec.Views}, nil
+}
+
+// Receipts reports when this secret was opened. It deliberately ignores the
+// burn state: the sender is asking about their own secret, and the answer is
+// most interesting precisely after it burned.
+func (s *MemStore) Receipts(_ context.Context, id string) ([]time.Time, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	sec, ok := s.items[id]
+	if !ok || !sec.ExpiresAt.After(s.now()) {
+		return nil, ErrNotFound
+	}
+	return append([]time.Time(nil), sec.Opens...), nil
 }
 
 // Consume atomically returns the secret and decrements its view counter,
@@ -157,15 +180,23 @@ func (s *MemStore) Consume(_ context.Context, id string) (*Secret, error) {
 	defer s.mu.Unlock()
 
 	sec, ok := s.items[id]
-	if !ok || !sec.ExpiresAt.After(s.now()) {
-		delete(s.items, id) // opportunistically reclaim if expired
+	if !ok || sec.Views <= 0 || !sec.ExpiresAt.After(s.now()) {
+		if ok && !sec.ExpiresAt.After(s.now()) {
+			delete(s.items, id) // opportunistically reclaim if expired
+		}
 		return nil, ErrNotFound
 	}
 
+	// The open is recorded in the same critical section as the decrement, so
+	// a receipt can never disagree with the burn that produced it.
+	sec.Opens = append(sec.Opens, s.now())
 	sec.Views--
 	out := &Secret{CT: sec.CT, IV: sec.IV, ExpiresAt: sec.ExpiresAt, Views: sec.Views}
 	if sec.Views <= 0 {
-		delete(s.items, id)
+		// Keep the record as a tombstone so the sender can still collect a
+		// receipt, but drop the payload: a burned secret must be
+		// unrecoverable, and nothing may read ciphertext from here again.
+		sec.CT, sec.IV = nil, nil
 	}
 	return out, nil
 }

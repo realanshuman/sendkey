@@ -22,10 +22,19 @@ import (
 	"time"
 )
 
-// burnScript performs the read-decrement-or-delete as one indivisible server
-// side operation. Doing it as separate GET and DEL calls would open a window
+// burnScript performs the read-and-decrement as one indivisible server side
+// operation. Doing it as separate GET and SET calls would open a window
 // where two concurrent readers both observe the last view and both receive
 // the secret — the exact failure this product exists to prevent.
+//
+// On the last view the payload is blanked rather than deleted, leaving a
+// tombstone that carries only the open timestamps so the sender can still
+// collect a receipt. An already-burned record (views <= 0) returns nil, so
+// the caller sees the same not-found it saw when the key was deleted.
+//
+// ARGV[1] is the open time in unix millis, supplied by the caller: Lua's
+// clock is off limits for replicated scripts, and the app already trusts its
+// own clock for every other TTL computation.
 //
 // KEEPTTL preserves the original expiry so a multi-view secret cannot have
 // its lifetime silently extended by being read.
@@ -33,19 +42,23 @@ const burnScript = `
 local v = redis.call('GET', KEYS[1])
 if not v then return nil end
 local d = cjson.decode(v)
+if d.views <= 0 then return nil end
+d.opens = d.opens or {}
+table.insert(d.opens, tonumber(ARGV[1]))
 d.views = d.views - 1
 if d.views <= 0 then
-  redis.call('DEL', KEYS[1])
-else
-  redis.call('SET', KEYS[1], cjson.encode(d), 'KEEPTTL')
+  d.ct = ''
+  d.iv = ''
 end
+redis.call('SET', KEYS[1], cjson.encode(d), 'KEEPTTL')
 return {v, tostring(d.views)}
 `
 
 type storedSecret struct {
-	CT    string `json:"ct"`    // base64url
-	IV    string `json:"iv"`    // base64url
-	Views int    `json:"views"` // remaining reads
+	CT    string  `json:"ct"`              // base64url
+	IV    string  `json:"iv"`              // base64url
+	Views int     `json:"views"`           // remaining reads
+	Opens []int64 `json:"opens,omitempty"` // unix millis, one per read
 }
 
 // RedisStore implements Backend against an Upstash-compatible REST endpoint.
@@ -200,6 +213,11 @@ func (r *RedisStore) Peek(ctx context.Context, id string) (Meta, error) {
 	if err := json.Unmarshal([]byte(payload), &stored); err != nil {
 		return Meta{}, ErrNotFound
 	}
+	// A burned tombstone is invisible to every recipient-facing caller.
+	// Checked before the TTL round trip, which would otherwise be wasted.
+	if stored.Views <= 0 {
+		return Meta{}, ErrNotFound
+	}
 
 	ttlRaw, err := r.do(ctx, "TTL", key)
 	if err != nil {
@@ -220,7 +238,8 @@ func (r *RedisStore) Peek(ctx context.Context, id string) (Meta, error) {
 func (r *RedisStore) Consume(ctx context.Context, id string) (*Secret, error) {
 	key := r.prefix + id
 
-	raw, err := r.do(ctx, "EVAL", burnScript, "1", key)
+	now := strconv.FormatInt(time.Now().UnixMilli(), 10)
+	raw, err := r.do(ctx, "EVAL", burnScript, "1", key, now)
 	if err != nil {
 		return nil, err
 	}
@@ -245,6 +264,30 @@ func (r *RedisStore) Consume(ctx context.Context, id string) (*Secret, error) {
 	}
 
 	return &Secret{CT: ct, IV: iv, Views: viewsLeft}, nil
+}
+
+// Receipts reports when this secret was opened, including after it burned:
+// Redis expiry removes the tombstone on its own, so a missing key is the
+// only not-found case here.
+func (r *RedisStore) Receipts(ctx context.Context, id string) ([]time.Time, error) {
+	raw, err := r.do(ctx, "GET", r.prefix+id)
+	if err != nil {
+		return nil, err
+	}
+	var payload string
+	if err := json.Unmarshal(raw, &payload); err != nil || payload == "" {
+		return nil, ErrNotFound
+	}
+	var stored storedSecret
+	if err := json.Unmarshal([]byte(payload), &stored); err != nil {
+		return nil, ErrNotFound
+	}
+
+	opens := make([]time.Time, 0, len(stored.Opens))
+	for _, ms := range stored.Opens {
+		opens = append(opens, time.UnixMilli(ms))
+	}
+	return opens, nil
 }
 
 // Ping verifies credentials and reachability at startup.

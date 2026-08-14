@@ -99,6 +99,59 @@ function setProgress(frac) {
   $('upPct').textContent = `${Math.round(frac * 100)}%`;
 }
 
+// ---- live receipt -----------------------------------------------------------
+// After a link is made, poll for the moment it gets opened. The endpoint
+// answers past the burn (the server keeps a ciphertext-stripped tombstone
+// until the original TTL), so the sender still learns when their secret was
+// read. Modeled on the ask page's owner poll in ask.js.
+
+let receiptTimer = null;
+let receiptPoll = null; // current poll fn, so a tab regaining focus can catch up
+
+function stopReceipt() {
+  if (receiptTimer) clearInterval(receiptTimer);
+  receiptTimer = null;
+  receiptPoll = null;
+}
+
+function startReceipt(id, totalViews) {
+  stopReceipt();
+  const panel = $('receiptPanel');
+  const status = $('receiptStatus');
+  const text = $('receiptText');
+  status.classList.remove('arrived');
+  text.textContent = 'Waiting to be opened…';
+  panel.classList.remove('hidden');
+
+  const clock = (iso) => new Date(iso).toLocaleTimeString();
+
+  async function poll() {
+    if (document.visibilityState === 'hidden') return;
+    try {
+      const res = await fetch(`/api/secret/${encodeURIComponent(id)}/receipt`);
+      if (!res.ok) return stopReceipt(); // record gone: nothing left to watch
+      const { opens } = await res.json();
+      if (!opens?.length) return;
+
+      status.classList.add('arrived');
+      text.textContent = totalViews === 1
+        ? `Opened at ${clock(opens[0])}`
+        : `${opens.length} of ${totalViews} views used · last at ${clock(opens[opens.length - 1])}`;
+      if (opens.length >= totalViews) stopReceipt();
+    } catch { /* network hiccup: the next tick retries */ }
+  }
+
+  receiptPoll = poll;
+  poll();
+  receiptTimer = setInterval(poll, 4000);
+}
+
+// A backgrounded tab skips its ticks; refresh the moment it comes back
+// rather than making the sender wait out the rest of the interval.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') receiptPoll?.();
+});
+
 // ---- create -----------------------------------------------------------------
 
 async function create() {
@@ -150,6 +203,7 @@ async function create() {
     passEl.value = '';
     $('count').textContent = '0';
     clearFile();
+    startReceipt(data.id, views);
     $('compose-form').classList.add('hidden');
     $('compose-result').classList.remove('hidden');
     $('link').select();
@@ -196,6 +250,8 @@ if (cmdBtn) {
 }
 
 $('again').addEventListener('click', () => {
+  stopReceipt(); // no orphaned poll against the previous secret's id
+  $('receiptPanel').classList.add('hidden');
   $('link').value = '';
   $('compose-result').classList.add('hidden');
   $('compose-form').classList.remove('hidden');

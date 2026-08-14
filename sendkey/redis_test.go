@@ -87,7 +87,8 @@ func (f *fakeRedis) handle(w http.ResponseWriter, r *http.Request) {
 	case "EVAL":
 		// Emulate burnScript. The whole handler holds f.mu, which is exactly
 		// the atomicity Redis gives a Lua script.
-		key := str(2 + 1) // EVAL script numkeys key
+		key := str(2 + 1)   // EVAL script numkeys key argv
+		nowMS := str(2 + 2) // ARGV[1]: open time in unix millis
 		raw, ok := f.vals[key]
 		if !ok {
 			writeJSON(w, http.StatusOK, map[string]any{"result": nil})
@@ -95,14 +96,19 @@ func (f *fakeRedis) handle(w http.ResponseWriter, r *http.Request) {
 		}
 		var stored storedSecret
 		_ = json.Unmarshal([]byte(raw), &stored)
+		if stored.Views <= 0 {
+			// already burned: the tombstone is receipt-only
+			writeJSON(w, http.StatusOK, map[string]any{"result": nil})
+			return
+		}
+		ms, _ := strconv.ParseInt(nowMS, 10, 64)
+		stored.Opens = append(stored.Opens, ms)
 		stored.Views--
 		if stored.Views <= 0 {
-			delete(f.vals, key)
-			delete(f.ttls, key)
-		} else {
-			b, _ := json.Marshal(stored) // KEEPTTL: f.ttls[key] untouched
-			f.vals[key] = string(b)
+			stored.CT, stored.IV = "", "" // tombstone: receipts survive, payload does not
 		}
+		b, _ := json.Marshal(stored) // KEEPTTL: f.ttls[key] untouched
+		f.vals[key] = string(b)
 		writeJSON(w, http.StatusOK, map[string]any{
 			"result": []string{raw, strconv.Itoa(stored.Views)},
 		})
@@ -149,11 +155,26 @@ func TestRedisRoundTripAndBurn(t *testing.T) {
 	if string(sec.CT) != "ciphertext" {
 		t.Fatalf("ct mismatch: %q", sec.CT)
 	}
-	if f.size() != 0 {
-		t.Fatal("secret should be deleted after its last view")
+	// The record survives as a receipt tombstone, but its payload must not:
+	// a burned secret is unrecoverable even to someone reading Redis directly.
+	if _, err := rs.Peek(ctx, id); err != ErrNotFound {
+		t.Fatalf("peek after burn: want ErrNotFound, got %v", err)
 	}
 	if _, err := rs.Consume(ctx, id); err != ErrNotFound {
 		t.Fatalf("second consume: want ErrNotFound, got %v", err)
+	}
+	var tomb storedSecret
+	f.mu.Lock()
+	raw := f.vals["sk:"+id]
+	f.mu.Unlock()
+	if err := json.Unmarshal([]byte(raw), &tomb); err != nil {
+		t.Fatalf("tombstone should still be stored: %v", err)
+	}
+	if tomb.CT != "" || tomb.IV != "" {
+		t.Fatal("burned tombstone must not retain ciphertext")
+	}
+	if len(tomb.Opens) != 1 {
+		t.Fatalf("tombstone should record one open, got %d", len(tomb.Opens))
 	}
 }
 

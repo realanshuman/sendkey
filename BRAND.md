@@ -122,6 +122,9 @@ allowed to be playful; the sentences are not.
 - File drops keep the composer's window: a dashed drop strip, a file card
   with a pixel document icon, and a hard-edged progress bar whose fill is
   solid ink. Progress snaps in steps; nothing glides.
+- After a link is made, a live receipt line sits under it, reusing the ask
+  page's status pattern: a blinking square while nobody has opened it, a
+  steady one and a clock time once someone has.
 - Errors are inverted ink blocks prefixed with `!!`. No red exists here.
 - The page ends in ink: a dithered fade strip, then the CTA and footer on
   black. The machine turns off at the bottom.

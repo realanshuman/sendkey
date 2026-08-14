@@ -62,6 +62,7 @@ func NewServer(store Backend, cfg Config) *Server {
 	mux.HandleFunc("GET /healthz", s.handleHealth)
 	mux.HandleFunc("POST /api/secret", s.handleCreate)
 	mux.HandleFunc("GET /api/secret/{id}/meta", s.handleMeta)
+	mux.HandleFunc("GET /api/secret/{id}/receipt", s.handleReceipt)
 	mux.HandleFunc("GET /api/mailbox/{id}", s.handleMailboxProbe)
 	mux.HandleFunc("GET /api/secret/{id}", s.handleConsume)
 	s.mux = mux
@@ -200,6 +201,30 @@ func (s *Server) handleMeta(w http.ResponseWriter, r *http.Request) {
 		"expiresAt": meta.ExpiresAt.UTC().Format(time.RFC3339),
 		"views":     meta.Views,
 	})
+}
+
+// handleReceipt reports when a secret was opened, so the sender can watch
+// their own link without reloading. Unlike /meta it keeps answering after
+// the secret burns, which is the entire point.
+//
+// Exposure matches /meta: the bare id is enough, no decryption key needed.
+// That is deliberate and unchanged in kind. A receipt reveals only that an
+// id was opened and when, never a byte of the secret, and anyone holding
+// the id could already learn as much by watching /meta flip to 404.
+func (s *Server) handleReceipt(w http.ResponseWriter, r *http.Request) {
+	opens, err := s.store.Receipts(r.Context(), r.PathValue("id"))
+	if err != nil {
+		// Distinct from the consume path's wording: an unopened secret is a
+		// perfectly normal 200 with an empty list, so a 404 here means the
+		// record is gone entirely, not that it was read.
+		writeJSONError(w, http.StatusNotFound, "no receipt for this id")
+		return
+	}
+	stamps := make([]string, 0, len(opens))
+	for _, t := range opens {
+		stamps = append(stamps, t.UTC().Format(time.RFC3339))
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"opens": stamps})
 }
 
 // handleMailboxProbe reports whether an ask mailbox holds an answer yet.

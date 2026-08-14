@@ -141,6 +141,13 @@
             send it to any server, so it stays between you and your recipient.
             <strong>If you lose the link, the secret cannot be recovered.</strong>
           </p>
+          <div id="receiptPanel" class="hidden">
+            <p id="receiptStatus" class="ask-status">
+              <span class="dot" aria-hidden="true"></span>
+              <span id="receiptText">Waiting to be opened…</span>
+            </p>
+          </div>
+
           <button id="again" class="btn btn-ghost btn-lg">Send another</button>
         </section>
 
@@ -342,6 +349,18 @@ https://sendkey.xyz/s/Qm93kd0Xw1Tz<span class="t-key">#R6cdQpWvZ2xNb4Ml…</span
       </details>
 
             <details>
+        <summary>Can I see when my secret was opened?</summary>
+        <div class="faq-body">
+          Yes. After you create a link, the page below it shows
+          <code>Waiting to be opened</code> and switches to the exact time
+          the moment someone reads it, with no reload. Keep the tab open to
+          watch it. The record that carries the timestamp holds no
+          ciphertext at all: opening a secret still destroys it, the
+          receipt is only the fact that it happened.
+        </div>
+      </details>
+
+      <details>
         <summary>Can I send files?</summary>
         <div class="faq-body">
           Yes, up to 8 MB. Drop a file on the composer and it is split into
