@@ -53,6 +53,15 @@ Emphasis is inversion. The key phrase of the headline, the open FAQ item,
 the fragment in a link, the terminal's key chip: ink panel, paper text.
 There is no accent color to spend, so attention is rationed by contrast.
 
+Dark mode is the same system with the two colors traded: the page turns
+ink, text and borders turn paper, and every inverted panel comes out light
+instead of black, so the tail of the page glows instead of switching off.
+The terminal is the one pinned surface: a terminal is dark in both themes,
+and only its outer edge follows the theme. The dither strips swap to
+paper-pixel variants of the same generated assets. theme.js stamps the
+stored or system theme on <html> before first paint, and the nav's square
+toggle flips it; the choice persists per browser.
+
 ## Dither
 
 The dither is the brand's shading system, generated, never hand-faked:

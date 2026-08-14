@@ -19,9 +19,13 @@ import (
 	"path/filepath"
 )
 
-// ink matches --ink in brand.css. The background stays transparent so one
-// tile works on paper, on cards, and on anything else.
-var ink = color.NRGBA{R: 0x14, G: 0x14, B: 0x12, A: 0xff}
+// ink and paper match --ink and --paper in brand.css (light theme values).
+// The background stays transparent so one tile works on any surface; the
+// paper-pixel variants exist for dark mode, where the roles invert.
+var (
+	ink   = color.NRGBA{R: 0x14, G: 0x14, B: 0x12, A: 0xff}
+	paper = color.NRGBA{R: 0xf2, G: 0xef, B: 0xe9, A: 0xff}
+)
 
 // bayer8 is the classic 8x8 ordered-dither threshold matrix. Cell values
 // 0..63; a pixel is inked when value*64 > threshold*levels, which turns a
@@ -38,8 +42,8 @@ var bayer8 = [8][8]int{
 }
 
 // tile renders a w x h image where density(x, y) in [0,1] decides how much
-// ink the Bayer matrix lays down around that point.
-func tile(w, h int, density func(x, y int) float64) *image.NRGBA {
+// of c the Bayer matrix lays down around that point.
+func tile(w, h int, c color.NRGBA, density func(x, y int) float64) *image.NRGBA {
 	img := image.NewNRGBA(image.Rect(0, 0, w, h))
 	for y := 0; y < h; y++ {
 		for x := 0; x < w; x++ {
@@ -51,7 +55,7 @@ func tile(w, h int, density func(x, y int) float64) *image.NRGBA {
 				d = 1
 			}
 			if d*64 > float64(bayer8[y%8][x%8]) {
-				img.SetNRGBA(x, y, ink)
+				img.SetNRGBA(x, y, c)
 			}
 		}
 	}
@@ -80,14 +84,15 @@ func main() {
 
 	// Uniform texture tiles: constant density through the matrix gives a
 	// stable repeating pattern, not noise.
-	write(dir, "d06.png", tile(8, 8, func(x, y int) float64 { return 0.06 }))
-	write(dir, "d12.png", tile(8, 8, func(x, y int) float64 { return 0.125 }))
-	write(dir, "d25.png", tile(8, 8, func(x, y int) float64 { return 0.25 }))
+	write(dir, "d06.png", tile(8, 8, ink, func(x, y int) float64 { return 0.06 }))
+	write(dir, "d12.png", tile(8, 8, ink, func(x, y int) float64 { return 0.125 }))
+	write(dir, "d25.png", tile(8, 8, ink, func(x, y int) float64 { return 0.25 }))
 
-	// Vertical fade, transparent at the top to solid ink at the bottom.
-	// Tiled horizontally it dissolves a paper section into an ink one.
+	// Vertical fade, transparent at the top to solid at the bottom. Tiled
+	// horizontally it dissolves one surface into another; the ink variant
+	// serves the light theme, the paper variant the dark one.
 	const fh = 64
-	write(dir, "fade.png", tile(8, fh, func(x, y int) float64 {
-		return float64(y) / float64(fh-1)
-	}))
+	ramp := func(x, y int) float64 { return float64(y) / float64(fh-1) }
+	write(dir, "fade.png", tile(8, fh, ink, ramp))
+	write(dir, "fade-inv.png", tile(8, fh, paper, ramp))
 }

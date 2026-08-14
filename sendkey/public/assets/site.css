@@ -326,9 +326,15 @@ body > section { padding: 88px 0; }
 }
 
 .terminal {
+  /* pinned: a terminal is dark in both themes. Scoping the tokens keeps
+     every descendant rule working unchanged, while the outer edge uses
+     --edge, which resolved at the root and still follows the theme. */
+  --ink: #0d0d0b;
+  --paper: #f2efe9;
+  --ink-dim: #b9b5a9;
   background: var(--ink);
-  border: 2px solid var(--ink);
-  box-shadow: 6px 6px 0 var(--ink);
+  border: 2px solid var(--edge);
+  box-shadow: 6px 6px 0 var(--edge);
   overflow: hidden;
 }
 .terminal-bar {
@@ -433,6 +439,7 @@ body > section { padding: 88px 0; }
 
 .footer { border-top: 2px solid var(--ink-dim); padding: 44px 0 40px; }
 .footer .logo-mark { width: auto; height: 26px; }
+.footer .logo { color: var(--paper); }
 .footer .wordmark { color: var(--paper); }
 .footer-in { display: flex; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
 .footer-tag { margin-top: 14px; font-size: 12.5px; color: var(--ink-dim); max-width: 320px; line-height: 1.7; }
@@ -453,7 +460,7 @@ body > section { padding: 88px 0; }
 .footer-fine {
   margin-top: 36px;
   padding-top: 18px;
-  border-top: 2px solid var(--ink-2);
+  border-top: 2px solid var(--ink-dim);
   display: flex;
   justify-content: space-between;
   gap: 16px;
@@ -462,10 +469,24 @@ body > section { padding: 88px 0; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--ink-3);
+  /* ink-dim, not ink-3: this text sits on the inverted tail, and ink-3 is
+     tuned for the page background, not the panel */
+  color: var(--ink-dim);
 }
 
 /* ---- responsive --------------------------------------------------------------- */
+
+/* dark theme swaps the ink-pixel fade for the paper-pixel one */
+:root[data-theme="dark"] .hero::before,
+:root[data-theme="dark"] .dither-fade {
+  background-image: url("/assets/px/fade-inv.png");
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero::before,
+  :root:not([data-theme="light"]) .dither-fade {
+    background-image: url("/assets/px/fade-inv.png");
+  }
+}
 
 @media (max-width: 920px) {
   .nav-links { display: none; }
@@ -516,4 +537,6 @@ body > section { padding: 88px 0; }
 @media (max-width: 360px) {
   .wordmark { font-size: 11px; }
   .logo-mark { height: 21px; }
+  .nav-cta { gap: 8px; }
+  .nav-cta .btn-sm { padding: 6px 9px; }
 }

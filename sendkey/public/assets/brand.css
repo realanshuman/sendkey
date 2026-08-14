@@ -16,7 +16,7 @@
   --ink: #141412;
   --ink-2: #45453f;
   --ink-3: #73736a;
-  --ink-dim: #b9b5a9; /* secondary text on ink panels */
+  --ink-dim: #b9b5a9; /* secondary text on inverted panels */
 
   --font-px: "Press Start 2P", ui-monospace, monospace;
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
@@ -25,7 +25,44 @@
   /* 50% checker, drawn by CSS so it needs no asset */
   --checker: repeating-conic-gradient(var(--ink) 0 25%, transparent 0 50%);
 
+  /* resolves per theme at the root, so pinned scopes (the terminal) can
+     still draw their outer edge in the theme's contrast color */
+  --edge: var(--ink);
+
   color-scheme: light;
+}
+
+/* Dark theme: ink and paper trade places. Same two colors, same rules;
+   inverted panels (the headline block, the page tail, errors) simply come
+   out light instead of black. theme.js stamps data-theme before first
+   paint; the media block covers users with JavaScript disabled. */
+:root[data-theme="dark"] {
+  --paper: #121210;
+  --paper-2: #1a1a17;
+  --field: #191916;
+  --ink: #f2efe9;
+  --ink-2: #c9c5b9;
+  --ink-3: #96938a;
+  --ink-dim: #5a574f;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121210;
+    --paper-2: #1a1a17;
+    --field: #191916;
+    --ink: #f2efe9;
+    --ink-2: #c9c5b9;
+    --ink-3: #96938a;
+    --ink-dim: #5a574f;
+    color-scheme: dark;
+  }
+}
+
+/* transitions exist only while theme.js flips the attribute */
+.theme-anim *, .theme-anim *::before, .theme-anim *::after {
+  transition: background-color 0.25s ease, color 0.25s ease,
+    border-color 0.25s ease, box-shadow 0.25s ease, fill 0.25s ease !important;
 }
 
 * { box-sizing: border-box; }
@@ -100,7 +137,13 @@ code {
 @media (hover: hover) {
   .logo:hover .wordmark { background: var(--ink); color: var(--paper); }
 }
-.logo-mark { width: auto; height: 26px; display: block; image-rendering: pixelated; }
+.logo-mark {
+  width: auto;
+  height: 26px;
+  display: block;
+  image-rendering: pixelated;
+  fill: currentColor; /* inline svg: the mark follows the theme */
+}
 .wordmark {
   font-family: var(--font-px);
   font-size: 13px;
@@ -144,6 +187,15 @@ code {
 .btn-sm:hover { box-shadow: 3px 3px 0 var(--ink); }
 .btn-sm:active { box-shadow: 1px 1px 0 var(--ink); }
 .btn-lg { width: 100%; padding: 12px 18px; font-size: 14px; }
+
+/* theme toggle: a square inverting itself, same glyph in both themes */
+.theme-btn { padding: 5px 7px; }
+.theme-btn svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+  fill: currentColor;
+}
 
 /* on ink panels the shadow and border flip to paper */
 .inv .btn { border-color: var(--paper); box-shadow: 3px 3px 0 var(--paper); }

@@ -24,7 +24,21 @@ body::before {
   padding: 26px 20px 72px;
 }
 
-.view-head { display: flex; }
+.view-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* dark theme swaps the ink-pixel fade for the paper-pixel one */
+:root[data-theme="dark"] body::before {
+  background-image: url("/assets/px/fade-inv.png");
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body::before {
+    background-image: url("/assets/px/fade-inv.png");
+  }
+}
 
 .view-main {
   margin-top: 64px;
