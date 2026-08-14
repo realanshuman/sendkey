@@ -142,6 +142,12 @@ encrypt-in-the-browser designs. The CLI is immune to that class of attack,
 since the binary is what you built. Metadata (a secret's size, creation and
 retrieval times) is visible to the operator.
 
+## Brand
+
+The visual identity is documented in [BRAND.md](BRAND.md): the ember palette,
+the key-as-arrow mark, type, voice and motion rules. Logo sources live in
+`sendkey/public/assets/` (`logo.svg`, `mark.svg`).
+
 ## Design notes
 
 **The burn is atomic.** In `MemStore`, consumption decrements the view counter

@@ -23,7 +23,7 @@ function showError(msg) {
 async function create() {
   errEl.classList.add('hidden');
   const text = secretEl.value;
-  if (!text) return showError('Nothing to send — type a secret first.');
+  if (!text) return showError('Nothing to send yet. Type or paste a secret first.');
   if (usePass.checked && !passEl.value) {
     return showError('Enter a passphrase, or uncheck the box.');
   }
@@ -62,7 +62,7 @@ async function create() {
     showError(e.message || 'Something went wrong.');
   } finally {
     goBtn.disabled = false;
-    goBtn.textContent = 'Encrypt & create link';
+    goBtn.textContent = 'Create secret link';
   }
 }
 

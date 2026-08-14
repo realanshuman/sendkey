@@ -1,4 +1,4 @@
-// SendKey envelope v1 — browser implementation.
+// SendKey envelope v1, browser implementation.
 // Must stay byte-for-byte compatible with crypto.go:
 //
 //   outer ct = AES-256-GCM(K, outerIV, envelope)
@@ -99,7 +99,7 @@ export function needsPassphrase(flags) {
 }
 
 // openInner decrypts a passphrase-protected body. Throws
-// Error('bad-passphrase') on a wrong passphrase — retryable locally, the
+// Error('bad-passphrase') on a wrong passphrase. Retryable locally, the
 // server is never contacted again.
 export async function openInner(body, passphrase) {
   if (body.length < SALT_LEN + IV_LEN + 1) throw new Error('malformed');

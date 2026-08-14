@@ -20,14 +20,14 @@ function only(section) {
 function dead(msg) {
   if (msg) $('goneMsg').innerHTML = msg;
   $('headline').textContent = 'Nothing here';
-  $('tagline').textContent = 'This link has already served its purpose.';
+  $('tagline').textContent = 'This link has already done its job.';
   only('gone');
 }
 
 function render(bytes) {
   $('secret').textContent = new TextDecoder().decode(bytes);
-  $('headline').textContent = 'Here it is';
-  $('tagline').textContent = 'Save it now — this link no longer works.';
+  $('headline').textContent = 'Here is your secret';
+  $('tagline').textContent = 'Save it now. This link no longer works.';
   only('out');
   // Strip the key from the URL and history: the secret is already open, and a
   // lingering fragment is one more place it could leak from.
@@ -37,15 +37,15 @@ function render(bytes) {
 async function init() {
   if (!keyB64) {
     return dead('<strong>This link is missing its decryption key.</strong> ' +
-      'It was probably truncated — copy the whole thing, including the part after the #.');
+      'It was probably cut short. Copy the whole link, including the part after the #.');
   }
   try {
     const res = await fetch(`/api/secret/${encodeURIComponent(id)}/meta`);
     if (!res.ok) return dead();
     const meta = await res.json();
     const left = meta.views === 1
-      ? 'This is the last read.'
-      : `${meta.views} reads remain.`;
+      ? 'This is the last view.'
+      : `${meta.views} views remain.`;
     $('meta').textContent = `${left} Expires ${new Date(meta.expiresAt).toLocaleString()}.`;
     only('gate');
   } catch {
@@ -92,8 +92,8 @@ async function unlock() {
     render(await openInner(pendingBody, $('pass').value));
   } catch (e) {
     errEl.textContent = e.message === 'bad-passphrase'
-      ? 'Wrong passphrase — try again. Nothing is lost; the check runs in this tab.'
-      : 'This secret appears to be corrupted.';
+      ? 'Wrong passphrase. Try again. Nothing is lost, the check runs on this device.'
+      : 'This secret appears to be damaged.';
     errEl.classList.remove('hidden');
     $('pass').select();
   }

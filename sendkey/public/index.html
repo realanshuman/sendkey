@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SendKey — send a password that deletes itself</title>
-<meta name="description" content="Share passwords and API keys through a link that self-destructs after one read. Encrypted in your browser; the server never receives the key and cannot read your secret.">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
-<meta property="og:title" content="SendKey — send a password that deletes itself">
-<meta property="og:description" content="One-time, end-to-end encrypted secret links. The key lives in the URL fragment, which browsers never transmit — so the server can't read what it stores.">
+<title>SendKey · Send a password that deletes itself</title>
+<meta name="description" content="Turn a password or API key into a one time link. It is encrypted in your browser, opens once, then destroys itself. The server can never read it.">
+<meta name="theme-color" content="#0a0908">
+<meta property="og:title" content="SendKey · Send a password that deletes itself">
+<meta property="og:description" content="Turn a password or API key into a one time link. It is encrypted in your browser, opens once, then destroys itself. The server can never read it.">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="SendKey">
 <link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/brand.css">
 <link rel="stylesheet" href="/assets/site.css">
@@ -20,8 +20,8 @@
 <nav class="nav">
   <div class="wrap nav-in">
     <a class="logo" href="/" aria-label="SendKey home">
-      <span class="monogram" aria-hidden="true">SK</span>
-      <span class="wordmark">SendKey</span>
+      <img class="logo-mark" src="/assets/logo.svg" alt="">
+      <span class="wordmark">sendkey</span>
     </a>
     <div class="nav-links">
       <a href="#how">How it works</a>
@@ -30,54 +30,66 @@
       <a href="#faq">FAQ</a>
     </div>
     <a class="btn btn-ghost btn-sm" href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
+    <a class="btn btn-sm" href="#compose">Send a secret</a>
   </div>
 </nav>
 
-<!-- ── hero ─────────────────────────────────────────────────────────────── -->
+<!-- hero -->
 <header class="hero">
   <div class="wrap hero-grid">
     <div>
-      <span class="pill"><b>Zero-knowledge</b> No account. No tracking.</span>
-      <h1>Send a password that <span class="hl">deletes itself.</span></h1>
+      <span class="pill"><span class="pill-dot" aria-hidden="true"></span>Free and open source. No account needed.</span>
+      <h1>Send a password.<span class="hl">It deletes itself.</span></h1>
       <p class="hero-sub">
-        Paste a secret, get a link. The first person to open it sees the secret —
-        everyone after that sees a tombstone. <strong>We can't read it either:</strong>
-        the decryption key never reaches our servers.
+        SendKey turns a password or API key into a one time link.
+        Your browser locks it with strong encryption before it leaves your device.
+        The first person to open the link sees the secret.
+        <strong>Then it is gone for good.</strong>
       </p>
 
       <div class="hero-points">
         <div class="hero-point">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-          <span>Encrypted in your browser with AES-256-GCM before anything is uploaded</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Encrypted on your device, before anything is uploaded</span>
         </div>
         <div class="hero-point">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-          <span>Destroyed on first read — a breach of our database reveals nothing</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>The link works once. After that it is dead.</span>
         </div>
         <div class="hero-point">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-          <span>Open source, single Go binary — audit it or self-host it in a minute</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>We never see your key, so we can never read your secret</span>
         </div>
       </div>
 
       <div class="hero-cta">
-        <a class="btn" href="#compose">Send a secret — it's free</a>
+        <a class="btn" href="#compose">Send a secret</a>
         <a class="btn btn-ghost" href="#how">See how it works</a>
       </div>
+      <p class="hero-fine">Free · No account · Nothing to install</p>
     </div>
 
     <!-- the product itself, in the hero -->
     <div class="composer" id="compose">
-      <div class="card">
+      <div class="float-chip chip-a" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.5-4 1-6-.4 3 .7 4.4 2 5.6 1.6 1.5 2.5 3 2.5 5.4a6 6 0 1 1-12 0c0-1.3.5-2.6 1.2-3.6"/></svg>
+        Burns after reading
+      </div>
+      <div class="float-chip chip-b" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        AES-256 encrypted
+      </div>
+
+      <div class="card card-accent">
         <div class="composer-head">
           <h3>New secret</h3>
-          <span class="tag-live"><span class="dot"></span>Encrypts locally</span>
+          <span class="tag-live"><span class="dot" aria-hidden="true"></span>Encrypts on this device</span>
         </div>
 
         <section id="compose-form">
           <label class="lbl" for="secret">Secret</label>
           <textarea id="secret" rows="4" spellcheck="false" autocomplete="off"
-            placeholder="API key, password, connection string…"></textarea>
+            placeholder="Paste a password, API key, or private note"></textarea>
           <div class="meter"><span id="count">0</span> bytes</div>
 
           <div class="row">
@@ -90,36 +102,36 @@
               </select>
             </div>
             <div class="field">
-              <label class="lbl" for="views">Reads before burn</label>
+              <label class="lbl" for="views">Burns after</label>
               <select id="views">
-                <option value="1" selected>1 — burn on open</option>
-                <option value="2">2 reads</option>
-                <option value="5">5 reads</option>
+                <option value="1" selected>1 view</option>
+                <option value="2">2 views</option>
+                <option value="5">5 views</option>
               </select>
             </div>
           </div>
 
           <label class="check">
             <input type="checkbox" id="usePass">
-            <span>Protect with a passphrase</span>
+            <span>Add a passphrase</span>
           </label>
           <input type="password" id="pass" class="hidden" autocomplete="new-password"
-            placeholder="Share this separately — never sent to the server">
+            placeholder="Share it with the recipient separately">
 
-          <button id="go" class="btn btn-lg">Encrypt &amp; create link</button>
+          <button id="go" class="btn btn-lg">Create secret link</button>
           <p id="err" class="msg-err hidden" role="alert"></p>
         </section>
 
         <section id="compose-result" class="hidden">
-          <p class="msg-ok">Link ready — it works exactly <span id="rViews">once</span>.</p>
+          <p class="msg-ok">Your link is ready. It works exactly <span id="rViews">once</span>.</p>
           <div class="linkbox">
-            <input id="link" readonly spellcheck="false" aria-label="One-time secret link">
+            <input id="link" readonly spellcheck="false" aria-label="One time secret link">
             <button id="copy" class="btn btn-sm">Copy</button>
           </div>
           <p class="note">
-            Everything after <code>#</code> is the decryption key. Browsers never send
-            that part to a server, so it stays between you and your recipient.
-            <strong>Lose the link and the secret is unrecoverable.</strong>
+            The part after <code>#</code> is the decryption key. Browsers never send
+            it to any server, so it stays between you and your recipient.
+            <strong>If you lose the link, the secret cannot be recovered.</strong>
           </p>
           <button id="again" class="btn btn-ghost btn-lg">Send another</button>
         </section>
@@ -128,198 +140,294 @@
   </div>
 </header>
 
-<!-- ── trust strip ──────────────────────────────────────────────────────── -->
-<div class="trust">
-  <div class="wrap trust-in">
-    <span class="trust-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      AES-256-GCM
-    </span>
-    <span class="trust-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 3 7v6c0 5 3.8 8.9 9 10 5.2-1.1 9-5 9-10V7z"/></svg>
-      Zero-knowledge server
-    </span>
-    <span class="trust-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.5-4 1-6-.4 3 .7 4.4 2 5.6 1.6 1.5 2.5 3 2.5 5.4a6 6 0 1 1-12 0c0-1.3.5-2.6 1.2-3.6"/></svg>
-      Burn after reading
-    </span>
-    <span class="trust-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>
-      Open source (MIT)
-    </span>
-    <span class="trust-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.36 6.64A9 9 0 1 1 5.64 6.64M12 2v10"/></svg>
-      No account required
-    </span>
+<!-- use-case marquee -->
+<div class="marquee-band">
+  <p class="marquee-label">Built for the secrets people paste into chat every day</p>
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span class="mq-item">API keys</span><span class="mq-dot"></span>
+      <span class="mq-item">Database passwords</span><span class="mq-dot"></span>
+      <span class="mq-item">.env files</span><span class="mq-dot"></span>
+      <span class="mq-item">SSH keys</span><span class="mq-dot"></span>
+      <span class="mq-item">Wi-Fi passwords</span><span class="mq-dot"></span>
+      <span class="mq-item">Access tokens</span><span class="mq-dot"></span>
+      <span class="mq-item">Recovery codes</span><span class="mq-dot"></span>
+      <span class="mq-item">License keys</span><span class="mq-dot"></span>
+      <span class="mq-item">Webhook secrets</span><span class="mq-dot"></span>
+      <span class="mq-item">Connection strings</span><span class="mq-dot"></span>
+      <span class="mq-item">API keys</span><span class="mq-dot"></span>
+      <span class="mq-item">Database passwords</span><span class="mq-dot"></span>
+      <span class="mq-item">.env files</span><span class="mq-dot"></span>
+      <span class="mq-item">SSH keys</span><span class="mq-dot"></span>
+      <span class="mq-item">Wi-Fi passwords</span><span class="mq-dot"></span>
+      <span class="mq-item">Access tokens</span><span class="mq-dot"></span>
+      <span class="mq-item">Recovery codes</span><span class="mq-dot"></span>
+      <span class="mq-item">License keys</span><span class="mq-dot"></span>
+      <span class="mq-item">Webhook secrets</span><span class="mq-dot"></span>
+      <span class="mq-item">Connection strings</span><span class="mq-dot"></span>
+    </div>
   </div>
 </div>
 
-<!-- ── how it works ─────────────────────────────────────────────────────── -->
+<!-- stats strip -->
+<div class="stats" aria-label="Key facts">
+  <div class="wrap stats-in">
+    <div class="stat">
+      <span class="stat-n">256-bit</span>
+      <span class="stat-l">AES-GCM encryption, done in your browser</span>
+    </div>
+    <div class="stat">
+      <span class="stat-n">1 view</span>
+      <span class="stat-l">and the secret burns, by default</span>
+    </div>
+    <div class="stat">
+      <span class="stat-n">0 keys</span>
+      <span class="stat-l">ever sent to or stored on the server</span>
+    </div>
+  </div>
+</div>
+
+<!-- how it works -->
 <section id="how">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">How it works</span>
-      <h2>The key never touches the server</h2>
-      <p>Not as a policy we promise to follow — as a property of how URLs work.</p>
+      <h2>The key never reaches the server</h2>
+      <p>This is not a promise we ask you to trust. It is how links work.</p>
     </div>
 
     <div class="steps">
       <div class="step">
-        <div class="step-n">1</div>
-        <h3>Sealed in your browser</h3>
-        <p>Your browser generates a random 256-bit key and encrypts the secret
-           locally. Only the ciphertext is uploaded — the key stays with you.</p>
+        <div class="step-n">01</div>
+        <h3>Encrypted on your device</h3>
+        <p>Your browser creates a random 256-bit key and locks the secret with it.
+           Only the locked version is uploaded. The key stays with you.</p>
       </div>
       <div class="step">
-        <div class="step-n">2</div>
-        <h3>Key rides in the <code class="mono">#</code> fragment</h3>
-        <p>The link's fragment is the one part of a URL browsers never put on the
-           wire. It's absent from the request, the <code class="mono">Referer</code>
-           header, and every access log.</p>
+        <div class="step-n">02</div>
+        <h3>The key hides in the link</h3>
+        <p>The key sits after the <code>#</code> in the link. Browsers never send
+           that part of a URL to any server. It travels straight to your recipient.</p>
       </div>
       <div class="step">
-        <div class="step-n">3</div>
-        <h3>Destroyed on first read</h3>
-        <p>Opening the link atomically deletes the stored ciphertext. Fifty people
-           can click at once — exactly one of them gets the secret.</p>
+        <div class="step-n">03</div>
+        <h3>One view, then it burns</h3>
+        <p>Opening the link deletes the secret from the server in the same moment.
+           If fifty people click at once, exactly one of them sees it.</p>
+      </div>
+    </div>
+
+    <!-- anatomy of a link -->
+    <div class="anatomy">
+      <div class="anatomy-scroll">
+        <svg viewBox="0 0 760 168" role="img" aria-label="Anatomy of a SendKey link. The id in the path is public. The key after the hash mark is never sent to any server.">
+          <rect x="160" y="28" width="440" height="44" rx="10" fill="var(--bg)" stroke="var(--line-2)" stroke-width="1.2"/>
+          <text x="188" y="56" font-family="ui-monospace,monospace" font-size="15" fill="var(--ink-3)" textLength="112" lengthAdjust="spacingAndGlyphs">sendkey.app/s/</text>
+          <text x="300" y="56" font-family="ui-monospace,monospace" font-size="15" fill="var(--ink)" textLength="90" lengthAdjust="spacingAndGlyphs">Xk3vTzqLmA</text>
+          <text x="390" y="56" font-family="ui-monospace,monospace" font-size="15" font-weight="700" fill="var(--ember)" textLength="14" lengthAdjust="spacingAndGlyphs">#</text>
+          <text x="404" y="56" font-family="ui-monospace,monospace" font-size="15" fill="var(--ember)" textLength="168" lengthAdjust="spacingAndGlyphs">mVq4tRk9sX2wQ8sM</text>
+
+          <path d="M300 84v7h90v-7" fill="none" stroke="var(--ink-3)" stroke-width="1.4"/>
+          <text x="345" y="114" text-anchor="middle" font-family="ui-sans-serif,system-ui" font-size="12.5" font-weight="600" fill="var(--ink-2)">public id</text>
+          <text x="345" y="132" text-anchor="middle" font-family="ui-sans-serif,system-ui" font-size="11" fill="var(--ink-3)">the server sees this</text>
+
+          <path d="M390 84v7h182v-7" fill="none" stroke="var(--ember)" stroke-width="1.4"/>
+          <text x="481" y="114" text-anchor="middle" font-family="ui-sans-serif,system-ui" font-size="12.5" font-weight="600" fill="var(--ember)">decryption key</text>
+          <text x="481" y="132" text-anchor="middle" font-family="ui-sans-serif,system-ui" font-size="11" fill="var(--ink-3)">never sent to any server</text>
+        </svg>
       </div>
     </div>
 
     <div class="diagram">
-      <svg viewBox="0 0 760 250" role="img" aria-label="Diagram: the sender encrypts locally and uploads only ciphertext; the key travels to the recipient inside the link fragment, bypassing the server entirely.">
+      <div class="diagram-scroll">
+      <svg viewBox="0 0 760 250" role="img" aria-label="Diagram: the sender encrypts locally and uploads only the locked secret. The key travels to the recipient inside the link, around the server.">
         <defs>
           <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M0 0 10 5 0 10z" fill="var(--ink-2)"/>
+            <path d="M0 0 10 5 0 10z" fill="var(--ink-3)"/>
           </marker>
           <marker id="ahE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M0 0 10 5 0 10z" fill="var(--ink)"/>
+            <path d="M0 0 10 5 0 10z" fill="var(--ember)"/>
           </marker>
         </defs>
 
         <!-- sender -->
-        <rect x="14" y="52" width="180" height="104" rx="12" fill="none" stroke="var(--line-2)" stroke-width="1.5"/>
-        <text x="104" y="42" text-anchor="middle" fill="var(--ink-2)" font-family="ui-sans-serif,system-ui" font-size="13" font-weight="600">Sender</text>
-        <text x="104" y="86" text-anchor="middle" fill="var(--ink)" font-family="ui-monospace,monospace" font-size="12.5">secret</text>
-        <text x="104" y="108" text-anchor="middle" fill="var(--ink-3)" font-family="ui-sans-serif,system-ui" font-size="11">AES-256-GCM ↓</text>
-        <text x="104" y="132" text-anchor="middle" fill="var(--ink)" font-family="ui-monospace,monospace" font-size="12.5">ciphertext + key</text>
+        <rect x="14" y="52" width="180" height="104" rx="12" fill="var(--surface)" stroke="var(--line-2)" stroke-width="1.5"/>
+        <text x="104" y="40" text-anchor="middle" fill="var(--ink-2)" font-family="ui-sans-serif,system-ui" font-size="13" font-weight="600">You</text>
+        <text x="104" y="84" text-anchor="middle" fill="var(--ink)" font-family="ui-monospace,monospace" font-size="12.5">secret</text>
+        <text x="104" y="106" text-anchor="middle" fill="var(--ink-3)" font-family="ui-sans-serif,system-ui" font-size="11">locked with AES-256 ↓</text>
+        <text x="104" y="130" text-anchor="middle" fill="var(--ink)" font-family="ui-monospace,monospace" font-size="12.5">locked secret + key</text>
 
         <!-- server -->
-        <rect x="290" y="52" width="180" height="104" rx="12" fill="none" stroke="var(--line-2)" stroke-width="1.5"/>
-        <text x="380" y="42" text-anchor="middle" fill="var(--ink-2)" font-family="ui-sans-serif,system-ui" font-size="13" font-weight="600">Server</text>
-        <text x="380" y="88" text-anchor="middle" fill="var(--ink)" font-family="ui-monospace,monospace" font-size="12.5">ciphertext only</text>
-        <text x="380" y="112" text-anchor="middle" fill="var(--ink)" font-family="ui-sans-serif,system-ui" font-size="11.5">✗ no key, ever</text>
-        <text x="380" y="132" text-anchor="middle" fill="var(--ink)" font-family="ui-sans-serif,system-ui" font-size="11.5">✗ deleted on first read</text>
+        <rect x="290" y="52" width="180" height="104" rx="12" fill="var(--surface)" stroke="var(--line-2)" stroke-width="1.5"/>
+        <text x="380" y="40" text-anchor="middle" fill="var(--ink-2)" font-family="ui-sans-serif,system-ui" font-size="13" font-weight="600">Server</text>
+        <text x="380" y="86" text-anchor="middle" fill="var(--ink)" font-family="ui-monospace,monospace" font-size="12.5">locked secret only</text>
+        <text x="380" y="110" text-anchor="middle" fill="var(--ink-2)" font-family="ui-sans-serif,system-ui" font-size="11.5">✗ never sees the key</text>
+        <text x="380" y="130" text-anchor="middle" fill="var(--ink-2)" font-family="ui-sans-serif,system-ui" font-size="11.5">✗ deletes it on first view</text>
 
         <!-- recipient -->
-        <rect x="566" y="52" width="180" height="104" rx="12" fill="none" stroke="var(--line-2)" stroke-width="1.5"/>
-        <text x="656" y="42" text-anchor="middle" fill="var(--ink-2)" font-family="ui-sans-serif,system-ui" font-size="13" font-weight="600">Recipient</text>
-        <text x="656" y="92" text-anchor="middle" fill="var(--ink)" font-family="ui-monospace,monospace" font-size="12.5">secret</text>
-        <text x="656" y="116" text-anchor="middle" fill="var(--ink-3)" font-family="ui-sans-serif,system-ui" font-size="11">decrypted locally ↑</text>
+        <rect x="566" y="52" width="180" height="104" rx="12" fill="var(--surface)" stroke="var(--line-2)" stroke-width="1.5"/>
+        <text x="656" y="40" text-anchor="middle" fill="var(--ink-2)" font-family="ui-sans-serif,system-ui" font-size="13" font-weight="600">Recipient</text>
+        <text x="656" y="90" text-anchor="middle" fill="var(--ink)" font-family="ui-monospace,monospace" font-size="12.5">secret</text>
+        <text x="656" y="114" text-anchor="middle" fill="var(--ink-3)" font-family="ui-sans-serif,system-ui" font-size="11">unlocked on their device ↑</text>
 
         <!-- upload / download -->
-        <path d="M198 104h84" stroke="var(--ink-2)" stroke-width="2" marker-end="url(#ah)"/>
-        <text x="240" y="96" text-anchor="middle" fill="var(--ink-2)" font-family="ui-sans-serif,system-ui" font-size="10.5">POST</text>
-        <path d="M474 104h84" stroke="var(--ink-2)" stroke-width="2" marker-end="url(#ah)"/>
-        <text x="516" y="96" text-anchor="middle" fill="var(--ink-2)" font-family="ui-sans-serif,system-ui" font-size="10.5">GET</text>
+        <path d="M198 104h84" stroke="var(--ink-3)" stroke-width="2" marker-end="url(#ah)"/>
+        <text x="240" y="94" text-anchor="middle" fill="var(--ink-3)" font-family="ui-sans-serif,system-ui" font-size="10.5">upload</text>
+        <path d="M474 104h84" stroke="var(--ink-3)" stroke-width="2" marker-end="url(#ah)"/>
+        <text x="516" y="94" text-anchor="middle" fill="var(--ink-3)" font-family="ui-sans-serif,system-ui" font-size="10.5">one read</text>
 
-        <!-- the fragment path, routing around the server -->
-        <path d="M104 160v40h552v-40" stroke="var(--ink)" stroke-width="2" stroke-dasharray="6 5"
+        <!-- the key's path, around the server -->
+        <path class="flow" d="M104 160v40h552v-40" stroke="var(--ember)" stroke-width="2" stroke-dasharray="6 5"
               fill="none" marker-end="url(#ahE)"/>
-        <rect x="258" y="186" width="244" height="28" rx="8" fill="var(--bg)" stroke="var(--ink)" stroke-width="1.2"/>
-        <text x="380" y="205" text-anchor="middle" fill="var(--ink)" font-family="ui-monospace,monospace" font-size="11.5">link #fragment — never sent</text>
+        <rect x="250" y="186" width="260" height="28" rx="8" fill="var(--bg)" stroke="var(--ember)" stroke-width="1.2"/>
+        <text x="380" y="205" text-anchor="middle" fill="var(--ember)" font-family="ui-monospace,monospace" font-size="11.5">key rides in the link #fragment</text>
 
-        <text x="380" y="240" text-anchor="middle" fill="var(--ink-3)" font-family="ui-sans-serif,system-ui" font-size="11">the key travels around the server, not through it</text>
+        <text x="380" y="240" text-anchor="middle" fill="var(--ink-3)" font-family="ui-sans-serif,system-ui" font-size="11">the key travels around the server, never through it</text>
       </svg>
+      </div>
       <p class="diagram-cap">
-        Because the key bypasses the server entirely, a database breach yields a pile
-        of AES-256-GCM blobs and nothing that can open them.
+        If the database ever leaked, an attacker would find scrambled data and no
+        keys. There is nothing useful to steal.
       </p>
     </div>
   </div>
 </section>
 
-<!-- ── security / features ──────────────────────────────────────────────── -->
-<section id="security" class="band band-both">
+<!-- security bento -->
+<section id="security" class="band">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Security</span>
-      <h2>Built so trust isn't required</h2>
-      <p>Every guarantee below is a structural property, backed by tests in the repo.</p>
+      <h2>Built so you do not have to trust us</h2>
+      <p>Every claim on this page is enforced by the design, and covered by tests in the open source repo.</p>
     </div>
 
-    <div class="features">
-      <div class="feature">
-        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-        <h3>End-to-end encrypted</h3>
-        <p>AES-256-GCM via the Web Crypto API. Authenticated encryption, so a
-           tampered ciphertext fails to open rather than decrypting to garbage.</p>
+    <div class="bento">
+      <div class="tile tile-wide">
+        <div class="tile-body">
+          <h3>The server only ever sees noise</h3>
+          <p>Your secret arrives already encrypted with AES-256-GCM. We store
+             scrambled bytes and a random id. The key that opens them never comes
+             here, so a breach of our database yields nothing worth stealing.</p>
+        </div>
+        <div class="tile-art" aria-hidden="true">
+          <svg viewBox="0 0 240 150">
+            <text x="16" y="28" font-family="ui-monospace,monospace" font-size="12" fill="var(--ink-3)" opacity=".85">9f3a c1d8 77e2 0b4f 5c91</text>
+            <text x="16" y="50" font-family="ui-monospace,monospace" font-size="12" fill="var(--ink-3)" opacity=".65">e6d2 41ab 9c07 f83e 22d1</text>
+            <text x="16" y="72" font-family="ui-monospace,monospace" font-size="12" fill="var(--ink-3)" opacity=".45">7b19 d4c6 03fe a92b 6e05</text>
+            <text x="16" y="94" font-family="ui-monospace,monospace" font-size="12" fill="var(--ink-3)" opacity=".28">b8e4 1f72 c5d9 30a6 84fb</text>
+            <text x="16" y="116" font-family="ui-monospace,monospace" font-size="12" fill="var(--ink-3)" opacity=".14">2c67 90de 4b18 f5a3 c7e2</text>
+            <rect x="118" y="102" width="106" height="32" rx="9" fill="var(--bg)" stroke="var(--ember)" stroke-width="1.3"/>
+            <g fill="none" stroke="var(--ember)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="136" cy="118" r="4.5"/>
+              <path d="M140.5 118h10M147 118v4"/>
+              <path d="M130 124.5 143 111"/>
+            </g>
+            <text x="158" y="122" font-family="ui-sans-serif,system-ui" font-size="11" font-weight="600" fill="var(--ember)">no key here</text>
+          </svg>
+        </div>
       </div>
-      <div class="feature">
-        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.5-4 1-6-.4 3 .7 4.4 2 5.6 1.6 1.5 2.5 3 2.5 5.4a6 6 0 1 1-12 0c0-1.3.5-2.6 1.2-3.6"/></svg></div>
-        <h3>Atomic burn</h3>
-        <p>Read-and-delete happens as one indivisible operation. Under fifty
-           simultaneous readers, exactly one wins — never two.</p>
+
+      <div class="tile">
+        <div class="tile-art-sm" aria-hidden="true">
+          <svg viewBox="0 0 150 64">
+            <rect x="8" y="20" width="74" height="26" rx="13" fill="var(--bg)" stroke="var(--line-2)" stroke-width="1.3"/>
+            <text x="22" y="37" font-family="ui-monospace,monospace" font-size="11.5" fill="var(--ink-2)">/s/Xk3…</text>
+            <circle cx="96" cy="33" r="4.4" fill="var(--ember)" opacity=".9"/>
+            <circle cx="110" cy="28" r="3.4" fill="var(--ember)" opacity=".6"/>
+            <circle cx="122" cy="37" r="2.6" fill="var(--ember)" opacity=".38"/>
+            <circle cx="133" cy="30" r="1.8" fill="var(--ember)" opacity=".2"/>
+          </svg>
+        </div>
+        <h3>Burns exactly once</h3>
+        <p>Reading and deleting happen as one atomic step. Two people can never
+           both get the last view.</p>
       </div>
-      <div class="feature">
-        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
-        <h3>Expires no matter what</h3>
-        <p>Every secret carries a hard TTL. Unread secrets are swept from storage
-           automatically — nothing lingers because someone forgot to open it.</p>
+
+      <div class="tile">
+        <div class="tile-art-sm" aria-hidden="true">
+          <svg viewBox="0 0 150 64">
+            <circle cx="75" cy="32" r="24" fill="none" stroke="var(--line-2)" stroke-width="5"/>
+            <circle cx="75" cy="32" r="24" fill="none" stroke="var(--ember)" stroke-width="5"
+                    stroke-linecap="round" stroke-dasharray="106 151" transform="rotate(-90 75 32)"/>
+            <text x="75" y="37" text-anchor="middle" font-family="ui-monospace,monospace" font-size="13" font-weight="600" fill="var(--ink)">24h</text>
+          </svg>
+        </div>
+        <h3>Expires on its own</h3>
+        <p>One hour, one day, or seven days. Unopened secrets are wiped when the
+           time runs out.</p>
       </div>
-      <div class="feature">
-        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v6c0 5 3.8 8.9 9 10 5.2-1.1 9-5 9-10V7z"/><path d="m9 12 2 2 4-4"/></svg></div>
-        <h3>Optional passphrase</h3>
-        <p>A second layer derived with PBKDF2-SHA256 at 310,000 iterations, nested
-           <em>inside</em> the burn — so a typo can be retried offline, forever.</p>
+
+      <div class="tile">
+        <div class="tile-art-sm" aria-hidden="true">
+          <svg viewBox="0 0 150 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="47" y="24" width="34" height="26" rx="7" stroke="var(--ink-3)" stroke-width="2.2"/>
+            <path d="M53 24v-5a11 11 0 0 1 22 0v5" stroke="var(--ink-3)" stroke-width="2.2"/>
+            <rect x="72" y="30" width="34" height="26" rx="7" fill="var(--bg)" stroke="var(--ember)" stroke-width="2.2"/>
+            <circle cx="89" cy="41" r="3.2" stroke="var(--ember)" stroke-width="2.2"/>
+            <path d="M89 44.5v5" stroke="var(--ember)" stroke-width="2.2"/>
+          </svg>
+        </div>
+        <h3>A second lock, if you want it</h3>
+        <p>Add a passphrase and share it separately. It is checked on the
+           recipient's device, so a typo cannot destroy anything.</p>
       </div>
-      <div class="feature">
-        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg></div>
-        <h3>No accounts, no analytics</h3>
-        <p>No sign-up, no cookies, no third-party scripts. A strict CSP blocks
-           every external origin, so nothing can phone home.</p>
+
+      <div class="tile">
+        <div class="tile-art-sm" aria-hidden="true">
+          <svg viewBox="0 0 150 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M47 32s10-14 28-14 28 14 28 14-10 14-28 14-28-14-28-14Z" stroke="var(--ink-3)" stroke-width="2.2"/>
+            <circle cx="75" cy="32" r="5.5" stroke="var(--ink-3)" stroke-width="2.2"/>
+            <path d="M52 55 98 9" stroke="var(--ember)" stroke-width="2.6"/>
+          </svg>
+        </div>
+        <h3>Nothing watching you</h3>
+        <p>No accounts, no cookies, no analytics, no third party scripts. The page
+           cannot talk to anyone but us.</p>
       </div>
-      <div class="feature">
-        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg></div>
-        <h3>Auditable and self-hostable</h3>
-        <p>One Go binary, zero third-party dependencies, MIT licensed. Read the
-           whole thing in an afternoon, then run it yourself.</p>
+
+      <div class="tile tile-full">
+        <div class="tile-body">
+          <h3>Open source, front to back</h3>
+          <p>One small Go program, zero dependencies, MIT licensed. Audit every
+             line in an afternoon, then run your own copy.</p>
+        </div>
+        <code class="install"><span class="t-prompt">$</span> go install github.com/realanshuman/sendkey/cmd/sendkey@latest</code>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── CLI ──────────────────────────────────────────────────────────────── -->
+<!-- CLI -->
 <section id="cli">
   <div class="wrap dev-grid">
     <div class="dev-copy">
       <span class="eyebrow">For developers</span>
-      <h2>It's a CLI too</h2>
-      <p>The same binary that serves the site sends and receives secrets from your
-         terminal, using the identical envelope format.</p>
+      <h2>The same tool lives in your terminal</h2>
+      <p>One binary serves the site, sends secrets, and receives them. A link made
+         in the terminal opens in the browser, and the other way round.</p>
       <div class="dev-list">
         <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-          <span>Pipe-friendly — reads stdin, writes the secret to stdout</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Reads from stdin and writes to stdout, so it fits into pipes</span>
         </div>
         <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-          <span>Encrypts locally, so it's immune to a tampered web front-end</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Encrypts locally, before anything touches the network</span>
         </div>
         <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-          <span>Links made in the terminal open in a browser, and vice versa</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Installs with a single command</span>
         </div>
       </div>
     </div>
 
     <div class="terminal">
       <div class="terminal-bar">
-        <span class="tdot tdot-r"></span><span class="tdot tdot-y"></span><span class="tdot tdot-g"></span>
+        <span class="tdot"></span><span class="tdot"></span><span class="tdot"></span>
         <span class="terminal-title">~/ sendkey</span>
       </div>
-<pre><span class="t-prompt">$</span> <span class="t-cmd">go install github.com/realanshuman/sendkey/cmd/sendkey@latest</span>
-
-<span class="t-prompt">$</span> <span class="t-cmd">sendkey send</span> <span class="t-str">"AKIA-EXAMPLE-SECRET-KEY"</span>
+<pre><span class="t-prompt">$</span> <span class="t-cmd">sendkey send</span> <span class="t-str">"AKIA-EXAMPLE-SECRET-KEY"</span>
 <span class="t-out">one-time link (burns after 1 view, expires in 24h):</span>
 https://sendkey.app/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</span>
 
@@ -336,7 +444,7 @@ https://sendkey.app/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</sp
   </div>
 </section>
 
-<!-- ── FAQ ──────────────────────────────────────────────────────────────── -->
+<!-- FAQ -->
 <section id="faq" class="band">
   <div class="wrap">
     <div class="section-head">
@@ -346,86 +454,81 @@ https://sendkey.app/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</sp
 
     <div class="faq">
       <details open>
-        <summary>Can you really not read my secret?</summary>
+        <summary>Can you read my secret?</summary>
         <div class="faq-body">
-          Correct, and it isn't a matter of policy. Encryption happens in your
-          browser and the key is placed after the <code>#</code> in the link.
-          Browsers never transmit the fragment — it's not in the request line, not
-          in the <code>Referer</code> header, not in any server log. We receive
-          ciphertext and a nonce; without the key, that's noise.
+          No. The secret is encrypted in your browser before it is uploaded, and the
+          key never reaches us. It lives after the <code>#</code> in the link, which
+          is the one part of a URL browsers never send to any server. What we store
+          is scrambled data that we cannot open.
         </div>
       </details>
 
       <details>
-        <summary>What if someone intercepts the link?</summary>
+        <summary>What if someone else opens the link first?</summary>
         <div class="faq-body">
-          Then they have the secret — the link <em>is</em> the secret. Send it
-          through a channel you trust, keep the expiry short, and add a passphrase
-          for anything sensitive. The upside of burn-after-reading is that you find
-          out: if your recipient reports the link already dead, someone else opened it.
-        </div>
-      </details>
-
-      <details>
-        <summary>Why is the passphrase checked in my browser instead of on the server?</summary>
-        <div class="faq-body">
-          Because a server-side check would have to either destroy the secret on a
-          typo, or hand attackers an oracle to guess against. Nesting the passphrase
-          layer inside the encrypted envelope means the single fetch already
-          happened, the ciphertext is on your machine, and you can retry as many
-          times as you like without anyone knowing or anything burning.
+          Then they see the secret, and your recipient sees a dead link. That sounds
+          scary, but it means you always find out. Send the link over a channel you
+          trust, keep the expiry short, and add a passphrase for anything serious.
         </div>
       </details>
 
       <details>
         <summary>What happens if nobody opens the link?</summary>
         <div class="faq-body">
-          It expires on its own — one hour, one day, or seven days, your choice.
-          Expired secrets are swept from storage whether or not they were ever read.
+          It expires on its own after the time you chose: one hour, one day, or
+          seven days. Expired secrets are wiped from storage whether or not anyone
+          ever opened them.
         </div>
       </details>
 
       <details>
-        <summary>Can I use this for files?</summary>
+        <summary>Why is the passphrase checked in my browser?</summary>
         <div class="faq-body">
-          Not yet. SendKey is tuned for credentials and short text — up to 128&nbsp;KB
-          per secret. Encrypted file transfer is a different set of trade-offs
-          (chunking, resumability, storage cost) and isn't built in.
+          A server side check would have to either destroy the secret on a typo, or
+          give attackers something to guess against. Checking on your device means
+          you can retry as many times as you need, and nobody gets to guess.
         </div>
       </details>
 
       <details>
-        <summary>What are the limits of this design?</summary>
+        <summary>Can I send files?</summary>
         <div class="faq-body">
-          Two worth naming. First, anyone holding the link before your recipient can
-          read the secret — the link is the credential. Second, browser-based
-          encryption relies on the page you're served being honest; a malicious
-          operator could ship tampered JavaScript. That's true of every
-          encrypt-in-the-browser tool. If it matters, use the CLI, whose binary you
-          built yourself, or self-host.
+          Not yet. SendKey is built for passwords, API keys, and short notes, up to
+          128 KB per secret.
         </div>
       </details>
 
       <details>
-        <summary>Can I self-host it?</summary>
+        <summary>What does SendKey not protect against?</summary>
         <div class="faq-body">
-          Yes — that's the intended deployment for anything serious. It's one Go
-          binary with no third-party dependencies: <code>sendkey serve</code> and
-          you're running. It stores secrets in memory by default, or in Redis when
-          <code>KV_REST_API_URL</code> is set. Deploys to Vercel unchanged.
+          Two things are worth knowing. Whoever holds the link before it is opened
+          can read the secret, so treat the link with the same care as the secret
+          itself. And like every tool that encrypts in the browser, it relies on the
+          page being delivered honestly. If that matters for you, use the CLI or
+          host it yourself.
+        </div>
+      </details>
+
+      <details>
+        <summary>Can I host it myself?</summary>
+        <div class="faq-body">
+          Yes, and for anything serious you should. It is one Go binary with no
+          dependencies: run <code>sendkey serve</code> and you are live. Secrets
+          stay in memory, or in Redis when you point it at one. It also deploys to
+          Vercel unchanged.
         </div>
       </details>
     </div>
   </div>
 </section>
 
-<!-- ── CTA ──────────────────────────────────────────────────────────────── -->
+<!-- CTA -->
 <section class="cta-band">
   <div class="wrap">
     <div class="card">
       <h2>Stop pasting passwords into chat</h2>
-      <p>They sit in message history, backups and search indexes forever.
-         A SendKey link doesn't.</p>
+      <p>Messages get saved, synced, indexed, and backed up forever.
+         A SendKey link opens once and dies.</p>
       <div class="cta-actions">
         <a class="btn" href="#compose">Send a secret</a>
         <a class="btn btn-ghost" href="https://github.com/realanshuman/sendkey" rel="noopener">Read the source</a>
@@ -436,14 +539,24 @@ https://sendkey.app/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</sp
 
 <footer class="footer">
   <div class="wrap footer-in">
-    <span>SendKey — zero-knowledge, burn-after-reading secret sharing.</span>
+    <div class="footer-brand">
+      <a class="logo" href="/" aria-label="SendKey home">
+        <img class="logo-mark" src="/assets/logo.svg" alt="">
+        <span class="wordmark">sendkey</span>
+      </a>
+      <p class="footer-tag">Zero knowledge secret sharing. Open source, no trackers,
+         no accounts. Your secret is encrypted before we ever see it, and destroyed
+         the moment it is read.</p>
+    </div>
     <div class="footer-links">
       <a href="#how">How it works</a>
       <a href="#security">Security</a>
+      <a href="#cli">CLI</a>
       <a href="#faq">FAQ</a>
       <a href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
     </div>
   </div>
+  <div class="footer-mega" aria-hidden="true">sendkey</div>
 </footer>
 
 </div>

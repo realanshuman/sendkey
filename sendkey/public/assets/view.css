@@ -1,9 +1,32 @@
 /* View page: the recipient-facing surface. Design system lives in brand.css. */
 
-.view-wrap { max-width: 620px; margin: 0 auto; padding: 72px 24px 40px; }
+.view-wrap {
+  position: relative;
+  max-width: 580px;
+  margin: 0 auto;
+  padding: 68px 24px 48px;
+}
+
+.view-wrap::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -120px -30% auto;
+  height: 420px;
+  background: radial-gradient(460px 320px at 50% 20%, rgba(255, 106, 43, .13), transparent 65%);
+  pointer-events: none;
+}
+
 .view-head { text-align: center; margin-bottom: 30px; }
-.view-head .logo { justify-content: center; margin: 0 0 18px; font-size: 1.2rem; }
-.view-head p { color: var(--ink-2); margin-top: 10px; }
+
+.view-head .logo { justify-content: center; margin-bottom: 22px; }
+.view-head .logo-mark { width: 34px; height: 34px; }
+
+.view-head h1 { font-size: clamp(1.7rem, 5vw, 2.2rem); }
+.view-head p { color: var(--ink-2); margin-top: 12px; }
+
+#reveal, #unlock { margin-top: 16px; }
+
 .secret-out {
   margin: 16px 0;
   padding: 16px;
@@ -17,8 +40,11 @@
   user-select: all;
   line-height: 1.6;
 }
+
 .meta-line { margin-top: 14px; }
-.view-foot { text-align: center; margin-top: 26px; font-size: .85rem; color: var(--ink-3); }
-.view-foot a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 
 .pass-field { margin-top: 16px; }
+
+.view-foot { text-align: center; margin-top: 28px; font-size: .86rem; color: var(--ink-3); }
+.view-foot a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.view-foot a:hover { color: var(--ember); }

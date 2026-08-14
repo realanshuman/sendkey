@@ -3,13 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A secret is waiting — SendKey</title>
+<title>A secret is waiting · SendKey</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0a0908">
 <link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/brand.css">
-<link rel="stylesheet" href="/assets/site.css">
 <link rel="stylesheet" href="/assets/view.css">
 </head>
 <body>
@@ -17,11 +15,11 @@
 
   <header class="view-head">
     <a class="logo" href="/" aria-label="SendKey home">
-      <span class="monogram" aria-hidden="true">SK</span>
-      <span class="wordmark">SendKey</span>
+      <img class="logo-mark" src="/assets/logo.svg" alt="">
+      <span class="wordmark">sendkey</span>
     </a>
-    <h2 id="headline">A secret is waiting for you</h2>
-    <p id="tagline">It can be opened once, then it's destroyed.</p>
+    <h1 id="headline">A secret is waiting for you</h1>
+    <p id="tagline">It can be opened once. Then it is destroyed.</p>
   </header>
 
   <!-- loading -->
@@ -30,21 +28,21 @@
   </section>
 
   <!-- confirm before burning -->
-  <section id="gate" class="card hidden">
-    <p class="banner banner-warn">
-      <strong>Opening this destroys it.</strong> No copy is kept anywhere — make
-      sure you're ready to save it now.
+  <section id="gate" class="card card-accent hidden">
+    <p class="banner">
+      <strong>Opening this link destroys the secret.</strong> No copy is kept
+      anywhere. Be ready to save it.
     </p>
     <p id="meta" class="note meta-line"></p>
     <button id="reveal" class="btn btn-lg">Reveal secret</button>
   </section>
 
   <!-- passphrase -->
-  <section id="passgate" class="card hidden">
+  <section id="passgate" class="card card-accent hidden">
     <p class="note">
-      This secret is passphrase-protected. It has already been fetched and erased
-      from the server, so you can retry as often as you need — the check happens
-      right here in your browser.
+      This secret is protected by a passphrase. It has already been fetched and
+      erased from the server. The check runs on this device, so you can try as
+      many times as you need.
     </p>
     <div class="pass-field">
       <label class="lbl" for="pass">Passphrase</label>
@@ -55,21 +53,21 @@
   </section>
 
   <!-- revealed -->
-  <section id="out" class="card hidden">
-    <p class="msg-ok">Decrypted in your browser. This link is now dead.</p>
+  <section id="out" class="card card-accent hidden">
+    <p class="msg-ok">Decrypted on this device. This link is now dead.</p>
     <pre id="secret" class="secret-out"></pre>
     <button id="copy" class="btn btn-sm">Copy</button>
   </section>
 
   <!-- gone -->
   <section id="gone" class="card hidden">
-    <p class="banner banner-warn" id="goneMsg">
+    <p class="banner" id="goneMsg">
       This secret has expired or was already viewed.
     </p>
     <p class="note meta-line">
-      Burn-after-reading means exactly that — there is no copy to recover. Ask the
-      sender for a new link. If you never opened it yourself, treat the secret as
-      compromised and have it rotated.
+      Burn after reading means exactly that. There is no copy left to recover.
+      Ask the sender for a new link. If you never opened this one yourself, tell
+      the sender so they can change the secret.
     </p>
   </section>
 
