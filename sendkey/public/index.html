@@ -5,12 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SendKey · Secrets that vanish after one view</title>
 <meta name="description" content="Turn a password or API key into an encrypted one time link. It opens once, then it is gone. The key never reaches the server, so nobody can read your secret in between.">
-<meta name="theme-color" content="#08090b">
+<meta name="theme-color" content="#f2efe9">
 <meta property="og:title" content="SendKey · Secrets that vanish after one view">
 <meta property="og:description" content="Turn a password or API key into an encrypted one time link. It opens once, then it is gone. The key never reaches the server, so nobody can read your secret in between.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="SendKey">
 <link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/press-start-2p-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/brand.css">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
@@ -39,7 +40,41 @@
 <header class="hero">
   <div class="wrap hero-in">
     <span class="pill"><span class="pill-dot" aria-hidden="true"></span>Open source · Zero knowledge<span class="pill-more"> · No accounts</span></span>
-    <h1>Send a secret.<span class="hl">It opens once.</span></h1>
+
+    <!-- the vanishing key, with a dithered shadow -->
+    <svg class="emblem" viewBox="0 0 17 9" shape-rendering="crispEdges" role="img" aria-label="A pixel key dissolving into pixels as it travels">
+      <defs>
+        <pattern id="dith" width="2" height="2" patternUnits="userSpaceOnUse">
+          <rect width="1" height="1" fill="#141412"/>
+          <rect x="1" y="1" width="1" height="1" fill="#141412"/>
+        </pattern>
+        <!-- the key's solid silhouette (nonzero fill: no bow hole) knocked
+             out of the shadow, so the dither never shows through the key -->
+        <mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="17" height="9">
+          <rect width="17" height="9" fill="#fff"/>
+          <path fill="#000" d="
+            M0 2h5v5H0z
+            M5 4h7v1H5z
+            M8 5h1v2H8z
+            M13 4h1v1h-1z
+            M15 4h1v1h-1z"/>
+        </mask>
+      </defs>
+      <path fill="url(#dith)" mask="url(#cut)" fill-rule="evenodd" transform="translate(1 1)" d="
+        M0 2h5v5H0zM1 3h3v3H1z
+        M5 4h7v1H5z
+        M8 5h1v2H8z
+        M13 4h1v1h-1z
+        M15 4h1v1h-1z"/>
+      <path fill="#141412" fill-rule="evenodd" d="
+        M0 2h5v5H0zM1 3h3v3H1z
+        M5 4h7v1H5z
+        M8 5h1v2H8z
+        M13 4h1v1h-1z
+        M15 4h1v1h-1z"/>
+    </svg>
+
+    <h1>Send a secret.<br><span class="hl">It opens once.</span></h1>
     <p class="hero-sub">
       SendKey turns a password or API key into an encrypted one time link.
       The first open reveals the secret and destroys it. The key never touches
@@ -47,11 +82,13 @@
     </p>
 
     <div class="composer" id="compose">
-      <div class="card">
-        <div class="composer-head">
-          <h3>New secret</h3>
-          <span class="tag-live"><span class="dot" aria-hidden="true"></span>encrypts on this device</span>
+      <div class="win">
+        <div class="win-bar">
+          <span class="win-close" aria-hidden="true"></span>
+          <h3 class="win-title">New secret</h3>
+          <span class="win-tag tag-live"><span class="dot" aria-hidden="true"></span>encrypts locally</span>
         </div>
+        <div class="win-body">
 
         <section id="compose-form">
           <label class="lbl" for="secret">Secret</label>
@@ -68,7 +105,7 @@
                   <option value="86400" selected>1 day</option>
                   <option value="604800">7 days</option>
                 </select>
-                <svg viewBox="0 0 16 16" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+                <svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 4h10v2H9v2H7v2H5V8H3V6H1z"/></svg>
               </div>
             </div>
             <div class="field">
@@ -79,7 +116,7 @@
                   <option value="2">2 views</option>
                   <option value="5">5 views</option>
                 </select>
-                <svg viewBox="0 0 16 16" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+                <svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 4h10v2H9v2H7v2H5V8H3V6H1z"/></svg>
               </div>
             </div>
           </div>
@@ -108,6 +145,8 @@
           </p>
           <button id="again" class="btn btn-ghost btn-lg">Send another</button>
         </section>
+
+        </div>
       </div>
 
       <p class="compose-note">AES-256-GCM<span>·</span>key stays in the # fragment<span>·</span>burns on first read</p>
@@ -159,7 +198,7 @@
           </div>
           <div>
             <span class="swatch swatch-key" aria-hidden="true"></span>
-            <strong class="key-label">Decryption key</strong>
+            <strong>Decryption key</strong>
             Never sent to any server, by how browsers work.
           </div>
         </div>
@@ -183,37 +222,37 @@
 
     <div class="hgrid hgrid-3">
       <div class="sec-cell">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M4 1h8v2h2v4h-2V3H4v4H2V3h2zM2 7h12v8H2zM7 9h2v4H7z"/></svg>
         <h3>Encrypted before upload</h3>
         <p>AES-256-GCM runs on your device. Only sealed bytes ever leave it,
            and only sealed bytes are stored.</p>
       </div>
       <div class="sec-cell">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.5-4 1-6-.4 3 .7 4.4 2 5.6 1.6 1.5 2.5 3 2.5 5.4a6 6 0 1 1-12 0c0-1.3.5-2.6 1.2-3.6"/></svg>
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M7 0h2v2h1v2h1v2h1v2h1v4h-1v2h-1v1H5v-1H4v-2H3V8h1V6h1V4h1V2h1zM7 9h2v3H7z"/></svg>
         <h3>Burns exactly once</h3>
         <p>Read and delete are one atomic step. If fifty people click at the
            same moment, exactly one sees the secret.</p>
       </div>
       <div class="sec-cell">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M2 2h12v12H2zM4 4h8v8H4z M7 5h2v4h3v2H7z"/></svg>
         <h3>Expires on its own</h3>
         <p>Unopened secrets wipe themselves after one hour, one day, or seven
            days. Nothing waits around.</p>
       </div>
       <div class="sec-cell">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M11 12 21 2M16 7l3 3"/></svg>
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M7 2h2v12H7z M2 7h12v2H2z M3 3h2v2H3z M11 3h2v2h-2z M3 11h2v2H3z M11 11h2v2h-2z"/></svg>
         <h3>Optional passphrase</h3>
         <p>A second lock, checked on the recipient's device. A typo burns
            nothing, and there is nothing for attackers to guess against.</p>
       </div>
       <div class="sec-cell">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><path d="m4 4 16 16"/></svg>
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M2 6h12v5H2zM6 8h4v1H6z M12 1h2v2h-2z M10 3h2v2h-2z M8 5h2v2H8z M6 7h2v2H6z M4 9h2v2H4z M2 11h2v2H2z"/></svg>
         <h3>No accounts, no tracking</h3>
         <p>No signup, no cookies, no analytics, no third party scripts. The
            page cannot talk to anyone but this server.</p>
       </div>
       <div class="sec-cell">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 6-6 6 6 6M16 6l6 6-6 6"/></svg>
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M5 3h2v2H5z M3 5h2v2H3z M1 7h2v2H1z M3 9h2v2H3z M5 11h2v2H5z M9 3h2v2H9z M11 5h2v2h-2z M13 7h2v2h-2z M11 9h2v2h-2z M9 11h2v2H9z"/></svg>
         <h3>Open source</h3>
         <p>A small Go codebase with zero dependencies, MIT licensed. Audit it
            in an afternoon, host it anywhere.</p>
@@ -232,15 +271,15 @@
          in the terminal opens in the browser, and the other way round.</p>
       <div class="dev-list">
         <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 8h2v2H3z M5 10h2v2H5z M7 8h2v2H7z M9 6h2v2H9z M11 4h2v2h-2z"/></svg>
           <span>Reads stdin, writes stdout, fits into pipes</span>
         </div>
         <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 8h2v2H3z M5 10h2v2H5z M7 8h2v2H7z M9 6h2v2H9z M11 4h2v2h-2z"/></svg>
           <span>Encrypts locally, before anything touches the network</span>
         </div>
         <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 8h2v2H3z M5 10h2v2H5z M7 8h2v2H7z M9 6h2v2H9z M11 4h2v2h-2z"/></svg>
           <span>Self hosts with a single command</span>
         </div>
       </div>
@@ -341,10 +380,11 @@ https://sendkey.app/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</sp
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-band">
-  <div class="wrap">
-    <div class="cta-card">
+<!-- dissolve into the inverted tail -->
+<div class="dither-fade" aria-hidden="true"></div>
+<div class="tail">
+  <section class="cta-band">
+    <div class="wrap">
       <h2>Stop pasting secrets into chat</h2>
       <p>Chat history is saved, synced, and backed up forever. A SendKey link
          opens once and dies.</p>
@@ -353,34 +393,34 @@ https://sendkey.app/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</sp
         <a class="btn btn-ghost" href="https://github.com/realanshuman/sendkey" rel="noopener">Read the source</a>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<footer class="footer">
-  <div class="wrap">
-    <div class="footer-in">
-      <div class="footer-brand">
-        <a class="logo" href="/" aria-label="SendKey home">
-          <img class="logo-mark" src="/assets/logo.svg" alt="">
-          <span class="wordmark">sendkey</span>
-        </a>
-        <p class="footer-tag">Zero knowledge secret sharing. Encrypted in your
-           browser, destroyed on first read.</p>
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-in">
+        <div class="footer-brand">
+          <a class="logo" href="/" aria-label="SendKey home">
+            <img class="logo-mark" src="/assets/logo-inv.svg" alt="">
+            <span class="wordmark">sendkey</span>
+          </a>
+          <p class="footer-tag">Zero knowledge secret sharing. Encrypted in your
+             browser, destroyed on first read.</p>
+        </div>
+        <div class="footer-links">
+          <a href="#how">How it works</a>
+          <a href="#security">Security</a>
+          <a href="#cli">CLI</a>
+          <a href="#faq">FAQ</a>
+          <a href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
+        </div>
       </div>
-      <div class="footer-links">
-        <a href="#how">How it works</a>
-        <a href="#security">Security</a>
-        <a href="#cli">CLI</a>
-        <a href="#faq">FAQ</a>
-        <a href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
+      <div class="footer-fine">
+        <span>MIT licensed · No cookies · No analytics</span>
+        <span>Built with Go · Zero dependencies</span>
       </div>
     </div>
-    <div class="footer-fine">
-      <span>MIT licensed · No cookies · No analytics</span>
-      <span>Built with Go · Zero dependencies</span>
-    </div>
-  </div>
-</footer>
+  </footer>
+</div>
 
 <script type="module" src="/assets/app.js"></script>
 </body>

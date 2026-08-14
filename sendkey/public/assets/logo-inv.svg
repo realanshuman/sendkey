@@ -1,7 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 10" shape-rendering="crispEdges" role="img" aria-label="SendKey mark: a pixel key dissolving as it travels">
-  <!-- one path, one ink: bow ring (evenodd hole), shaft, tooth, and two
-       trailing pixels that carry the dissolve motif in 1-bit form -->
-  <path fill="#141412" fill-rule="evenodd" d="
+  <!-- paper-ink variant for use on ink panels (footer, terminal) -->
+  <path fill="#f2efe9" fill-rule="evenodd" d="
     M0 2h5v5H0zM1 3h3v3H1z
     M5 4h7v1H5z
     M8 5h1v2H8z

@@ -1,124 +1,115 @@
 # SendKey brand
 
-The identity in one line: **a key that travels once.** It is sent, it opens
-one door, and it is gone. Everything below exists to say that quietly.
+Fourth edition: **1-bit**. Paper and ink, nothing else. Every gray on the
+page is a dither pattern telling a small lie with black pixels, and every
+illustration is pixel art on a hard grid.
 
-The visual register is calm and precise, in the tradition of modern developer
-tools: dark graphite surfaces, hairline borders, one accent, generous space.
-The product handles dangerous material; the interface should feel like a
-steady hand.
+The register is a machine from 1984 that happens to do modern cryptography:
+system windows, striped title bars, hard shadows, a blinking status square.
+The product stores only noise it cannot read; the visual world agrees, by
+having no shades at all.
 
 ## Name
 
 - Product name in prose: **SendKey**. One word, capital S, capital K.
-- Wordmark and code: **sendkey**. Always lowercase.
+- Wordmark and code: **sendkey**, rendered uppercase by the pixel face.
 - Never "Send Key", "SendKeys", or "send-key".
 
 ## The mark
 
-A key dissolving into dots as it travels. Send, key, and burn after reading
-in a single glyph.
+A pixel key on a 16 x 10 grid, dissolving as it travels: square bow with a
+punched hole, one-pixel shaft, one tooth, then two loose pixels where the
+shaft used to be. Send, key, and burn after reading in one glyph.
 
 ```
-   ⌾――――  ● ·
-      |
+  █████
+  █░░░█  ███████ ▪ ▪
+  █░░░█     █
+  █████
 ```
 
-- Bow (the ring) on the left, shaft pointing right, one tooth below.
-- The shaft breaks into two dots that fade in the direction of travel: the
-  key is mid flight, already starting to vanish.
-- Always monoline: round caps, round joins, consistent stroke.
-- Always filled with the iris gradient (periwinkle into violet, left to right).
-- Source files: `sendkey/public/assets/logo.svg` (transparent, for use next
-  to the wordmark) and `sendkey/public/assets/mark.svg` (on a dark rounded
-  tile, used as the favicon and as a standalone avatar).
-- Clear space: keep at least half the mark's height empty on every side.
-- Do not rotate it, outline it, recolor it, or place it on a busy background.
-
-## The wordmark
-
-Set "sendkey" in the UI stack at weight 600 with letter spacing -0.01em,
-in `--ink`, at the same optical height as the mark. The mark carries the
-color; the wordmark never does.
+- Files: `logo.svg` (ink on transparent), `logo-inv.svg` (paper on
+  transparent, for ink panels), `mark.svg` (favicon: paper tile, ink frame,
+  compact key), all under `sendkey/public/assets/`.
+- The hero emblem is the same key at display size with a dithered drop
+  shadow; the shadow is masked by the key's solid silhouette so the checker
+  never shows through the bow hole.
+- Always drawn with `shape-rendering: crispEdges`, on integer coordinates.
+- Do not smooth it, round it, outline it, or tint it.
 
 ## Color
 
-Dark only. Cool graphite, not warm black: secrets pass through at night.
-One hue in the whole system: the iris. If something is iris, it matters.
+Two colors, plus grays for legibility of secondary text only. Imagery gets
+no grays at all: a surface is paper, ink, or a dither of the two.
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--bg` | `#08090b` | page canvas |
-| `--bg-2` | `#0c0d10` | recessed bands, inputs |
-| `--surface` | `#101114` | cards |
-| `--surface-2` | `#16171b` | chips, nested surfaces |
-| `--line` | `#1f2126` | hairline borders |
-| `--line-2` | `#2e3138` | emphasized borders, controls |
-| `--ink` | `#f7f8f9` | headings, primary text |
-| `--ink-2` | `#9a9fa9` | body text |
-| `--ink-3` | `#666b76` | captions, fine print |
-| `--iris` | `#8b93ff` | the accent: the key, links, focus |
-| `--ok` | `#4cc38a` | success glyphs only |
-| `--bad` | `#ff5d5f` | error text only |
+| `--paper` | `#f2efe9` | page, cards, window chrome |
+| `--paper-2` | `#e7e3d8` | recessed bands |
+| `--field` | `#faf8f3` | inputs |
+| `--ink` | `#141412` | text, borders, shadows, inverted panels |
+| `--ink-2` | `#45453f` | body copy |
+| `--ink-3` | `#73736a` | captions |
+| `--ink-dim` | `#b9b5a9` | secondary text on ink panels |
 
-Gradients:
+Emphasis is inversion. The key phrase of the headline, the open FAQ item,
+the fragment in a link, the terminal's key chip: ink panel, paper text.
+There is no accent color to spend, so attention is rationed by contrast.
 
-- Mark fill: `#a5adff → #7d6cf0`, left to right, in userSpaceOnUse units
-  (bounding box units vanish on straight strokes).
-- Headline highlight, one phrase per page at most:
-  `linear-gradient(96deg, #aab1ff, #cdb9ff, #8b93ff)`.
+## Dither
 
-Rules of use:
+The dither is the brand's shading system, generated, never hand-faked:
 
-- The iris means "this is the key" or "this is the action": the fragment in
-  a link, a focus ring, a step number. It never decorates.
-- Primary buttons are light (`--ink` background, near black text), in the
-  manner of modern developer tools. The accent is too precious to spend on
-  every button.
-- Success and error stay in text plus a `✓` glyph, so meaning never depends
-  on color perception alone.
+- `tools/dither/main.go` renders all patterns through a Bayer 8x8 ordered
+  matrix into tiny PNGs under `assets/px/` (87 to 206 bytes each).
+- `fade.png` dissolves paper into ink; it is the transition into the black
+  tail of the page and the texture strip along the top of each page.
+- `d06.png`, `d12.png`, `d25.png` are uniform density tiles for texture.
+- Tiles render at 2x with `image-rendering: pixelated`, chunky and square.
+- Dither is decoration, never background for text. Body copy sits on flat
+  paper, full stop.
+- The 50% checker (checkboxes, the public-id swatch) is pure CSS
+  `repeating-conic-gradient`, no asset needed.
 
 ## Type
 
-System stack, tuned rather than imported. No webfonts: the strict CSP allows
-no external requests, and native rendering is faster than any download.
+- Display: **Press Start 2P**, self-hosted woff2 (latin subset, 4.7 KB),
+  OFL licensed, license file alongside the font. Used for h1 to h3, the
+  wordmark, window titles, step numbers. Always uppercase, generous line
+  height (1.45 or looser), sizes kept modest because the face is loud.
+- Everything else: the system mono stack. Body 14px / 1.7. Labels, buttons
+  and nav links are bold, uppercase, letter spaced.
+- The strict CSP allows no external requests; the pixel face ships from our
+  own origin or not at all.
 
-- UI and headings: `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`
-- Secrets, links, keys, labels, code: `ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace`
-- Display headings: weight 600, letter spacing -0.045em, line height 1.05.
-- Body: 15px, line height 1.65. Small text never drops below 11.5px.
-- Anything a machine will consume (a link, a key, a secret, a byte count)
-  is always mono.
-- Eyebrow labels are mono, 12px, uppercase, letter spaced 0.14em, iris.
+## Chrome
+
+- Borders are 2px ink, radius 0, everywhere.
+- Shadows are hard offsets of solid ink (or paper on ink panels): 3px for
+  controls, 6px for windows and grids. Nothing blurs.
+- Cards that hold the product are System-style windows: striped title bar,
+  square close box, plated title, `.win-bar` + `.win-body`.
+- Grids are ruled like printed tables: 2px ink gaps between paper cells.
+- Buttons press: hover lifts 1px, active sinks 2px, in steps() so the
+  motion snaps rather than glides.
+- Focus is a 2px dotted ink outline.
+- The status square blinks like a cursor (steps(1), 1.1s). It is the only
+  thing on the page that moves on its own. Everything respects
+  `prefers-reduced-motion`.
 
 ## Voice
 
-Plain, calm, and specific. The reader may be a developer or someone's
-parent; both deserve sentences they can parse once.
-
-- Short sentences. One idea per sentence.
-- No em dashes. Use a period or a comma instead.
-- Say what happens, not what we promise: "browsers never send the fragment"
-  beats "we take your privacy seriously".
-- Name the limits honestly. The FAQ says what SendKey does not protect
-  against.
-- Never fear-monger. The product removes worry; the copy should too.
-
-## Motion
-
-Motion exists to show that something is alive or in transit, never to
-impress.
-
-- The composer's status dot pulses (the encryptor is live).
-- Cards and buttons respond in under 200ms with opacity or 1px translation.
-- Nothing else moves. Everything respects `prefers-reduced-motion`.
+Unchanged from the previous edition, because the writing was never the
+costume: plain, calm, specific. Short sentences. No em dashes. Say what
+happens, not what we promise. Name the limits honestly. The pixels are
+allowed to be playful; the sentences are not.
 
 ## Surfaces
 
-- The landing page leads with the product itself: the composer is in the
-  hero, working, not a screenshot of it.
-- Sections sit on `--bg`; alternating chapters recess to `--bg-2` between
-  hairlines. Cards sit on `--surface`.
-- Grids are drawn with 1px hairlines (grid gap over `--line`), not with
-  floating boxes and shadows.
-- One soft iris glow may sit behind a page's focal point. Never two.
+- The landing page leads with the working composer inside a window titled
+  NEW SECRET, tagged "encrypts locally" with the blinking square.
+- The receive page is a dialog titled ENCRYPTED MESSAGE. Revealing burns;
+  the page says so before the click, in bold, on paper.
+- Errors are inverted ink blocks prefixed with `!!`. No red exists here.
+- The page ends in ink: a dithered fade strip, then the CTA and footer on
+  black. The machine turns off at the bottom.

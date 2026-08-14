@@ -247,6 +247,12 @@ func contentType(name string) string {
 		return "text/css; charset=utf-8"
 	case strings.HasSuffix(name, ".svg"):
 		return "image/svg+xml"
+	case strings.HasSuffix(name, ".png"):
+		return "image/png"
+	case strings.HasSuffix(name, ".woff2"):
+		return "font/woff2"
+	case strings.HasSuffix(name, ".txt"):
+		return "text/plain; charset=utf-8"
 	case strings.HasSuffix(name, ".webmanifest"):
 		return "application/manifest+json"
 	default:

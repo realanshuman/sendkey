@@ -1,51 +1,63 @@
-/* SendKey view page (the receiving end). Depends on brand.css. */
+/* SendKey view page (the receiving end), 1-bit edition. */
 
 body {
-  background:
-    radial-gradient(560px 280px at 50% -6%, rgba(139, 147, 255, 0.1), transparent 70%),
-    var(--bg);
+  background: var(--paper);
   min-height: 100svh;
+}
+/* a restrained dither strip along the top edge only */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 72px;
+  background: url("/assets/px/fade.png") repeat-x top / 8px 64px;
+  image-rendering: pixelated;
+  transform: scaleY(-1);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .view-wrap {
-  max-width: 560px;
+  max-width: 580px;
   margin: 0 auto;
-  padding: 28px 20px 64px;
+  padding: 26px 20px 72px;
 }
 
 .view-head { display: flex; }
 
 .view-main {
-  margin-top: 72px;
+  margin-top: 64px;
   text-align: center;
 }
 .view-main h1 {
-  font-size: clamp(1.7rem, 1.2rem + 2.4vw, 2.2rem);
-  letter-spacing: -0.035em;
+  font-size: clamp(16px, 10px + 2.6vw, 24px);
+  line-height: 1.55;
 }
 .view-tag {
-  margin-top: 10px;
+  margin-top: 14px;
   color: var(--ink-2);
-  font-size: 15px;
+  font-size: 14px;
 }
 
-.view-main .card {
-  margin-top: 32px;
-  padding: 26px;
+.view-main .win {
+  margin-top: 36px;
   text-align: left;
-  box-shadow: 0 24px 64px -36px rgba(0, 0, 0, 0.8);
 }
+.view-main .win-body { padding: 24px; background: var(--paper); }
 
 .banner {
-  font-size: 14.5px;
-  line-height: 1.65;
+  font-size: 14px;
+  line-height: 1.7;
   color: var(--ink-2);
 }
 .banner strong { color: var(--ink); }
 
 .meta-line {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   color: var(--ink-3);
   margin: 14px 0 20px;
 }
@@ -55,11 +67,11 @@ body {
 .secret-out {
   margin: 16px 0;
   padding: 16px 18px;
-  background: var(--bg-2);
-  border: 1px solid var(--line-2);
-  border-radius: 10px;
+  background: var(--field);
+  border: 2px solid var(--ink);
   font-family: var(--font-mono);
   font-size: 13.5px;
+  font-weight: 700;
   line-height: 1.65;
   color: var(--ink);
   white-space: pre-wrap;
@@ -72,6 +84,9 @@ body {
 #gone .note { margin-top: 12px; }
 
 .view-foot {
-  margin-top: 30px;
-  font-size: 13.5px;
+  margin-top: 32px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
