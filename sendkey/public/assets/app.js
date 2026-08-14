@@ -83,6 +83,21 @@ $('copy').addEventListener('click', async () => {
   setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
 });
 
+// The CLI section's install one-liner. The prompt span stays out of the
+// copied text, so what lands in the clipboard is directly runnable.
+const cmdBtn = $('copyCmd');
+if (cmdBtn) {
+  cmdBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText($('installCmd').textContent);
+      cmdBtn.textContent = 'Copied ✓';
+    } catch {
+      cmdBtn.textContent = 'Press ⌘C';
+    }
+    setTimeout(() => { cmdBtn.textContent = 'Copy'; }, 1800);
+  });
+}
+
 $('again').addEventListener('click', () => {
   $('link').value = '';
   $('compose-result').classList.add('hidden');

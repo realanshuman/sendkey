@@ -303,6 +303,15 @@ body > section { padding: 88px 0; }
   flex: none;
   margin-top: 4px;
 }
+.install-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+.install-row .install { flex: 1; min-width: 0; }
+.install-row .btn { flex: none; }
+.install-prompt { color: var(--ink-3); }
+
 .install {
   display: block;
   font-family: var(--font-mono);
