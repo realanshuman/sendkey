@@ -17,25 +17,22 @@ having no shades at all.
 
 ## The mark
 
-A pixel key on a 16 x 10 grid, dissolving as it travels: square bow with a
-punched hole, one-pixel shaft, one tooth, then two loose pixels where the
-shaft used to be. Send, key, and burn after reading in one glyph.
+A keyhole shaped like our key. The original pixel key, rotated upright, is
+punched straight through an ink plate: the round head becomes the hole,
+the shaft and tooth become the slot. One loose pixel floats inside the
+slot, the key dissolving after its one turn. The plate's bottom edge steps
+down and overhangs to the right, an angular Z-cut foot.
 
-```
-  █████
-  █░░░█  ███████ ▪ ▪
-  █░░░█     █
-  █████
-```
-
-- Files: `logo.svg` (ink on transparent), `logo-inv.svg` (paper on
-  transparent, for ink panels), `mark.svg` (favicon: paper tile, ink frame,
-  compact key), all under `sendkey/public/assets/`.
-- The hero emblem is the same key at display size with a dithered drop
-  shadow; the shadow is masked by the key's solid silhouette so the checker
-  never shows through the bow hole.
-- Always drawn with `shape-rendering: crispEdges`, on integer coordinates.
-- Do not smooth it, round it, outline it, or tint it.
+- Drawn on a 16 x 18 grid, integer coordinates, `crispEdges`, one path.
+- Files under `sendkey/public/assets/`: `logo.svg` (ink plate, for paper),
+  `logo-inv.svg` (paper plate, for ink panels), `mark.svg` (favicon: the
+  keyhole punched through the full 16 x 16 tile, no frame).
+- The hero emblem layers a Bayer-checker drop shadow behind the plate,
+  masked by the plate's solid silhouette so the pattern never shows
+  through the punched keyhole.
+- The lockup pairs the plate at 26px tall with the SENDKEY wordmark in the
+  pixel face, 10px apart, baselines optically centered.
+- Do not smooth it, outline it, tint it, or rotate it.
 
 ## Color
 

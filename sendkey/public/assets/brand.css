@@ -100,7 +100,7 @@ code {
 @media (hover: hover) {
   .logo:hover .wordmark { background: var(--ink); color: var(--paper); }
 }
-.logo-mark { width: 32px; height: 20px; display: block; image-rendering: pixelated; }
+.logo-mark { width: auto; height: 26px; display: block; image-rendering: pixelated; }
 .wordmark {
   font-family: var(--font-px);
   font-size: 13px;
