@@ -5,75 +5,78 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>A secret is waiting · SendKey</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#0a0908">
+<meta name="theme-color" content="#08090b">
 <link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/brand.css">
 <link rel="stylesheet" href="/assets/view.css">
 </head>
 <body>
-<div class="shell view-wrap">
+<div class="view-wrap">
 
   <header class="view-head">
     <a class="logo" href="/" aria-label="SendKey home">
       <img class="logo-mark" src="/assets/logo.svg" alt="">
       <span class="wordmark">sendkey</span>
     </a>
-    <h1 id="headline">A secret is waiting for you</h1>
-    <p id="tagline">It can be opened once. Then it is destroyed.</p>
   </header>
 
-  <!-- loading -->
-  <section id="loading" class="card">
-    <p class="note">Checking this link…</p>
-  </section>
+  <main class="view-main">
+    <h1 id="headline">A secret is waiting for you</h1>
+    <p id="tagline" class="view-tag">It can be opened once. Then it is destroyed.</p>
 
-  <!-- confirm before burning -->
-  <section id="gate" class="card card-accent hidden">
-    <p class="banner">
-      <strong>Opening this link destroys the secret.</strong> No copy is kept
-      anywhere. Be ready to save it.
+    <!-- loading -->
+    <section id="loading" class="card">
+      <p class="note">Checking this link…</p>
+    </section>
+
+    <!-- confirm before burning -->
+    <section id="gate" class="card hidden">
+      <p class="banner">
+        <strong>Opening this link destroys the secret.</strong> No copy is kept
+        anywhere. Be ready to save it.
+      </p>
+      <p id="meta" class="meta-line"></p>
+      <button id="reveal" class="btn btn-lg">Reveal secret</button>
+    </section>
+
+    <!-- passphrase -->
+    <section id="passgate" class="card hidden">
+      <p class="banner">
+        This secret is protected by a passphrase. It has already been fetched
+        and erased from the server. The check runs on this device, so you can
+        try as many times as you need.
+      </p>
+      <div class="pass-field">
+        <label class="lbl" for="pass">Passphrase</label>
+        <input type="password" id="pass" autocomplete="off" placeholder="Shared with you separately">
+      </div>
+      <button id="unlock" class="btn btn-lg">Unlock</button>
+      <p id="passerr" class="msg-err hidden" role="alert"></p>
+    </section>
+
+    <!-- revealed -->
+    <section id="out" class="card hidden">
+      <p class="msg-ok">Decrypted on this device. This link is now dead.</p>
+      <pre id="secret" class="secret-out"></pre>
+      <button id="copy" class="btn btn-ghost btn-sm">Copy</button>
+    </section>
+
+    <!-- gone -->
+    <section id="gone" class="card hidden">
+      <p class="banner" id="goneMsg">
+        This secret has expired or was already viewed.
+      </p>
+      <p class="note">
+        Burn after reading means exactly that. There is no copy left to
+        recover. Ask the sender for a new link. If you never opened this one
+        yourself, tell the sender so they can change the secret.
+      </p>
+    </section>
+
+    <p class="view-foot">
+      <a href="/">Send your own secret →</a>
     </p>
-    <p id="meta" class="note meta-line"></p>
-    <button id="reveal" class="btn btn-lg">Reveal secret</button>
-  </section>
-
-  <!-- passphrase -->
-  <section id="passgate" class="card card-accent hidden">
-    <p class="note">
-      This secret is protected by a passphrase. It has already been fetched and
-      erased from the server. The check runs on this device, so you can try as
-      many times as you need.
-    </p>
-    <div class="pass-field">
-      <label class="lbl" for="pass">Passphrase</label>
-      <input type="password" id="pass" autocomplete="off" placeholder="Shared with you separately">
-    </div>
-    <button id="unlock" class="btn btn-lg">Unlock</button>
-    <p id="passerr" class="msg-err hidden" role="alert"></p>
-  </section>
-
-  <!-- revealed -->
-  <section id="out" class="card card-accent hidden">
-    <p class="msg-ok">Decrypted on this device. This link is now dead.</p>
-    <pre id="secret" class="secret-out"></pre>
-    <button id="copy" class="btn btn-sm">Copy</button>
-  </section>
-
-  <!-- gone -->
-  <section id="gone" class="card hidden">
-    <p class="banner" id="goneMsg">
-      This secret has expired or was already viewed.
-    </p>
-    <p class="note meta-line">
-      Burn after reading means exactly that. There is no copy left to recover.
-      Ask the sender for a new link. If you never opened this one yourself, tell
-      the sender so they can change the secret.
-    </p>
-  </section>
-
-  <p class="view-foot">
-    <a href="/">Send your own secret →</a>
-  </p>
+  </main>
 
 </div>
 <script type="module" src="/assets/view.js"></script>

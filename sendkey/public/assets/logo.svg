@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="SendKey mark: a key dissolving into dots as it travels">
+  <defs>
+    <!-- userSpaceOnUse: a gradient in the default objectBoundingBox units is
+         not rendered on perfectly straight strokes (their bounding box has
+         zero area), and the shaft and tooth of this key are exactly that. -->
+    <linearGradient id="iris" gradientUnits="userSpaceOnUse" x1="7" y1="16" x2="43" y2="32">
+      <stop offset="0" stop-color="#a5adff"/>
+      <stop offset="1" stop-color="#7d6cf0"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#iris)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="13" cy="24" r="6.6"/>
+    <path d="M19.6 24h11.6"/>
+    <path d="M25.4 24v6.2"/>
+  </g>
+  <g fill="url(#iris)">
+    <circle cx="36.6" cy="24" r="2.75"/>
+    <circle cx="42" cy="24" r="1.9" opacity=".5"/>
+  </g>
+</svg>

@@ -1,50 +1,77 @@
-/* View page: the recipient-facing surface. Design system lives in brand.css. */
+/* SendKey view page (the receiving end). Depends on brand.css. */
+
+body {
+  background:
+    radial-gradient(560px 280px at 50% -6%, rgba(139, 147, 255, 0.1), transparent 70%),
+    var(--bg);
+  min-height: 100svh;
+}
 
 .view-wrap {
-  position: relative;
-  max-width: 580px;
+  max-width: 560px;
   margin: 0 auto;
-  padding: 68px 24px 48px;
+  padding: 28px 20px 64px;
 }
 
-.view-wrap::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: -120px -30% auto;
-  height: 420px;
-  background: radial-gradient(460px 320px at 50% 20%, rgba(255, 106, 43, .13), transparent 65%);
-  pointer-events: none;
+.view-head { display: flex; }
+
+.view-main {
+  margin-top: 72px;
+  text-align: center;
+}
+.view-main h1 {
+  font-size: clamp(1.7rem, 1.2rem + 2.4vw, 2.2rem);
+  letter-spacing: -0.035em;
+}
+.view-tag {
+  margin-top: 10px;
+  color: var(--ink-2);
+  font-size: 15px;
 }
 
-.view-head { text-align: center; margin-bottom: 30px; }
+.view-main .card {
+  margin-top: 32px;
+  padding: 26px;
+  text-align: left;
+  box-shadow: 0 24px 64px -36px rgba(0, 0, 0, 0.8);
+}
 
-.view-head .logo { justify-content: center; margin-bottom: 22px; }
-.view-head .logo-mark { width: 34px; height: 34px; }
+.banner {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+.banner strong { color: var(--ink); }
 
-.view-head h1 { font-size: clamp(1.7rem, 5vw, 2.2rem); }
-.view-head p { color: var(--ink-2); margin-top: 12px; }
+.meta-line {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  margin: 14px 0 20px;
+}
 
-#reveal, #unlock { margin-top: 16px; }
+.pass-field { margin: 18px 0 16px; }
 
 .secret-out {
   margin: 16px 0;
-  padding: 16px;
+  padding: 16px 18px;
   background: var(--bg-2);
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--ink);
   white-space: pre-wrap;
   word-break: break-all;
-  max-height: 340px;
-  overflow: auto;
+  overflow-wrap: anywhere;
+  text-align: left;
   user-select: all;
-  line-height: 1.6;
 }
 
-.meta-line { margin-top: 14px; }
+#gone .note { margin-top: 12px; }
 
-.pass-field { margin-top: 16px; }
-
-.view-foot { text-align: center; margin-top: 28px; font-size: .86rem; color: var(--ink-3); }
-.view-foot a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
-.view-foot a:hover { color: var(--ember); }
+.view-foot {
+  margin-top: 30px;
+  font-size: 13.5px;
+}

@@ -1,4 +1,6 @@
-/sendkey
+# Built binaries. Note: never ignore bare "sendkey" here; that pattern also
+# matches the sendkey/ package directory and silently swallows new files in it.
+/bin/
 *.exe
 *.test
 *.out
