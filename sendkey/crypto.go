@@ -34,6 +34,7 @@ import (
 const (
 	envVersion      = 0x01
 	flagPassphrase  = 0x01
+	flagFile        = 0x02 // body is a file manifest, not the secret itself
 	saltLen         = 16
 	IVLen           = 12      // outer/inner GCM nonce length
 	KeyLen          = 32      // AES-256 key length
@@ -54,8 +55,14 @@ type Sealed struct {
 // Seal encrypts secret into a v1 envelope. If passphrase is non-empty an
 // inner PBKDF2-derived layer is added.
 func Seal(secret []byte, passphrase string) (*Sealed, error) {
+	return SealWithFlags(secret, passphrase, 0)
+}
+
+// SealWithFlags is Seal with extra envelope flags, used for file manifests
+// (FlagFile). The passphrase bit is managed here and must not be passed in.
+func SealWithFlags(secret []byte, passphrase string, extra byte) (*Sealed, error) {
 	body := secret
-	flags := byte(0)
+	flags := extra &^ flagPassphrase
 
 	if passphrase != "" {
 		salt := make([]byte, saltLen)
@@ -91,6 +98,9 @@ func Seal(secret []byte, passphrase string) (*Sealed, error) {
 	return &Sealed{CT: ct, IV: outerIV, Key: key}, nil
 }
 
+// FlagFile is the envelope flag marking the body as a file manifest.
+const FlagFile = flagFile
+
 // NeedsPassphrase opens only the outer layer and reports whether the envelope
 // carries an inner passphrase layer.
 func NeedsPassphrase(ct, iv, key []byte) (bool, error) {
@@ -99,6 +109,15 @@ func NeedsPassphrase(ct, iv, key []byte) (bool, error) {
 		return false, err
 	}
 	return env[1]&flagPassphrase != 0, nil
+}
+
+// EnvelopeFlags opens only the outer layer and returns the raw flags byte.
+func EnvelopeFlags(ct, iv, key []byte) (byte, error) {
+	env, err := openOuter(ct, iv, key)
+	if err != nil {
+		return 0, err
+	}
+	return env[1], nil
 }
 
 // Open decrypts a v1 envelope. passphrase may be empty when the envelope has

@@ -11,6 +11,7 @@
 
 const VERSION = 0x01;
 const FLAG_PASSPHRASE = 0x01;
+const FLAG_FILE = 0x02; // body is a file manifest, not the secret itself
 const SALT_LEN = 16;
 const IV_LEN = 12;
 const PBKDF2_ITERS = 310000;
@@ -55,8 +56,10 @@ async function deriveInnerKey(passphrase, salt, usages) {
 }
 
 // seal encrypts secretBytes; returns { ct, iv, key } as Uint8Arrays.
-export async function seal(secretBytes, passphrase) {
-  let flags = 0;
+// extraFlags adds envelope flags (FLAG_FILE for manifests); the passphrase
+// bit is managed here and stripped from extraFlags.
+export async function seal(secretBytes, passphrase, extraFlags = 0) {
+  let flags = extraFlags & ~FLAG_PASSPHRASE;
   let body = secretBytes;
 
   if (passphrase) {
@@ -96,6 +99,10 @@ export async function openOuter(ctBytes, ivBytes, keyBytes) {
 
 export function needsPassphrase(flags) {
   return (flags & FLAG_PASSPHRASE) !== 0;
+}
+
+export function isFile(flags) {
+  return (flags & FLAG_FILE) !== 0;
 }
 
 // openInner decrypts a passphrase-protected body. Throws
