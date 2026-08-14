@@ -482,6 +482,7 @@ body > section { padding: 88px 0; }
      tuned for the page background, not the panel */
   color: var(--ink-dim);
 }
+.footer-fine a { color: inherit; }
 
 /* ---- responsive --------------------------------------------------------------- */
 
