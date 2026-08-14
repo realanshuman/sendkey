@@ -624,3 +624,7 @@ body > section { padding: 88px 0; }
   margin: 0 0 14px;
 }
 .dz-primary .dz-cap { margin-left: 0; }
+
+/* compact footer variant for the dialog pages */
+.page-footer { padding: 32px 0 30px; }
+.page-footer .footer-fine { margin-top: 24px; }

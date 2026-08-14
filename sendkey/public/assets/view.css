@@ -3,7 +3,10 @@
 body {
   background: var(--paper);
   min-height: 100svh;
+  display: flex;
+  flex-direction: column;
 }
+.view-wrap { flex: 1; }
 /* a restrained dither strip along the top edge only */
 body::before {
   content: "";
