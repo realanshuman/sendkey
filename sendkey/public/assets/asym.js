@@ -15,7 +15,10 @@
 
 import { b64u } from './crypto.js';
 
-const VERSION = 0x02;
+// The ask envelope has its own version line, independent of the v1 secret
+// envelope in crypto.js. Named distinctly so the two can never be read as
+// the same number.
+const ASK_VERSION = 0x02;
 const EPH_PUB_LEN = 65; // uncompressed P-256 point
 const IV_LEN = 12;
 
@@ -75,7 +78,7 @@ export async function answer(pubB64, reqId, secretBytes) {
 
   const key = await deriveAesKey(eph.privateKey, requesterPub, reqId, ['encrypt']);
   const iv = randomBytes(IV_LEN);
-  const env = concat(new Uint8Array([VERSION, 0]), secretBytes);
+  const env = concat(new Uint8Array([ASK_VERSION, 0]), secretBytes);
   const sealed = new Uint8Array(
     await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, env));
 
@@ -99,7 +102,7 @@ export async function openAnswer(privJwk, reqId, ctBytes, ivBytes) {
   } catch {
     throw new Error('bad-key');
   }
-  if (env.length < 2 || env[0] !== VERSION) throw new Error('bad-version');
+  if (env.length < 2 || env[0] !== ASK_VERSION) throw new Error('bad-version');
   return env.subarray(2);
 }
 

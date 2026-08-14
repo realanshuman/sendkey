@@ -40,3 +40,45 @@ jobs:
         run: |
           go build ./...
           go build -o /dev/null ./cmd/sendkey
+
+  # The Go suite cannot prove the parts of this product that only exist in a
+  # browser: that the key fragment never reaches the network, that a link
+  # burns for the second visitor, that a file survives a chunked round trip.
+  # Those live here.
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Build the server
+        run: go build -o /tmp/sendkey ./cmd/sendkey
+
+      - name: Install Playwright
+        working-directory: e2e
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Start the server
+        run: |
+          /tmp/sendkey serve -addr 127.0.0.1:8404 &
+          for i in $(seq 60); do
+            curl -sf http://127.0.0.1:8404/healthz >/dev/null && exit 0
+            sleep 0.5
+          done
+          echo "server did not come up"
+          exit 1
+
+      - name: End to end suites
+        working-directory: e2e
+        env:
+          BASE: http://127.0.0.1:8404
+        run: npm test

@@ -10,9 +10,11 @@ package sendkey
 import (
 	"encoding/base64"
 	"encoding/json"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -43,6 +45,12 @@ if (mode === 'open') {
   } catch (e) {
     process.stdout.write('ERR:' + e.message);
   }
+} else if (mode === 'consts') {
+  const m = await import('%CRYPTO_JS%');
+  process.stdout.write(JSON.stringify({
+    version: m.VERSION, passphrase: m.FLAG_PASSPHRASE, file: m.FLAG_FILE,
+    salt: m.SALT_LEN, iv: m.IV_LEN, iters: m.PBKDF2_ITERS,
+  }));
 } else if (mode === 'flags') {
   const [,,, ct, iv, key] = process.argv;
   const { flags } = await openOuter(b64u.decode(ct), b64u.decode(iv), b64u.decode(key));
@@ -285,6 +293,75 @@ func TestManifestParseCompat(t *testing.T) {
 	for _, k := range []string{`"v":`, `"name":`, `"mime":`, `"size":`, `"kf":`, `"chunks":`} {
 		if !strings.Contains(string(raw), k) {
 			t.Errorf("manifest JSON missing pinned key %s: %s", k, raw)
+		}
+	}
+}
+
+// TestInteropConstantsAgree pins the envelope constants across the two
+// implementations. Every other interop test would still pass if a flag bit
+// drifted apart in a way the tested paths happen not to exercise; this
+// compares the declarations themselves, and fails the moment a value is
+// changed on one side only.
+func TestInteropConstantsAgree(t *testing.T) {
+	run := setupNode(t)
+
+	var js struct {
+		Version    int `json:"version"`
+		Passphrase int `json:"passphrase"`
+		File       int `json:"file"`
+		Salt       int `json:"salt"`
+		IV         int `json:"iv"`
+		Iters      int `json:"iters"`
+	}
+	if err := json.Unmarshal([]byte(run("consts")), &js); err != nil {
+		t.Fatalf("bad harness output: %v", err)
+	}
+
+	for _, c := range []struct {
+		name     string
+		js, gons int
+	}{
+		{"version", js.Version, envVersion},
+		{"passphrase flag", js.Passphrase, flagPassphrase},
+		{"file flag", js.File, flagFile},
+		{"salt length", js.Salt, saltLen},
+		{"iv length", js.IV, IVLen},
+		{"pbkdf2 iterations", js.Iters, pbkdf2Iters},
+	} {
+		if c.js != c.gons {
+			t.Errorf("%s: browser has %d, Go has %d", c.name, c.js, c.gons)
+		}
+	}
+}
+
+// TestNoDuplicateFlagDeclarations keeps the flag bits declared in exactly one
+// place per implementation. files.js used to carry its own copy of FLAG_FILE,
+// which is the kind of duplication that silently forks a wire format the day
+// somebody edits one of them.
+func TestNoDuplicateFlagDeclarations(t *testing.T) {
+	assets, err := fs.Sub(webFS, "public/assets")
+	if err != nil {
+		t.Fatal(err)
+	}
+	entries, err := fs.ReadDir(assets, ".")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	decl := regexp.MustCompile(`(?m)^\s*(?:export\s+)?const\s+(FLAG_[A-Z_]+|VERSION)\s*=`)
+	for _, e := range entries {
+		if !strings.HasSuffix(e.Name(), ".js") || e.Name() == "crypto.js" {
+			continue
+		}
+		body, err := fs.ReadFile(assets, e.Name())
+		if err != nil {
+			t.Fatal(err)
+		}
+		if m := decl.FindAllStringSubmatch(string(body), -1); len(m) > 0 {
+			for _, hit := range m {
+				t.Errorf("%s redeclares %s: import it from crypto.js instead",
+					e.Name(), hit[1])
+			}
 		}
 	}
 }

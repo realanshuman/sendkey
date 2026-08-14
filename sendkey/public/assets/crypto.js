@@ -9,12 +9,15 @@
 // K is generated here, carried only in the URL fragment, and never sent
 // anywhere: the server stores ciphertext it cannot read.
 
-const VERSION = 0x01;
-const FLAG_PASSPHRASE = 0x01;
-const FLAG_FILE = 0x02; // body is a file manifest, not the secret itself
-const SALT_LEN = 16;
-const IV_LEN = 12;
-const PBKDF2_ITERS = 310000;
+// Envelope constants. Exported so no other module ever redeclares one: a
+// second copy of a flag bit is a silent format fork waiting to happen, and
+// crypto.go's twins are pinned against these by TestInteropConstantsAgree.
+export const VERSION = 0x01;
+export const FLAG_PASSPHRASE = 0x01;
+export const FLAG_FILE = 0x02; // body is a file manifest, not the secret itself
+export const SALT_LEN = 16;
+export const IV_LEN = 12;
+export const PBKDF2_ITERS = 310000;
 
 export const b64u = {
   encode(bytes) {

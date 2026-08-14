@@ -9,7 +9,7 @@
 // a views=1 chunk would destroy the file. Burn semantics genuinely live at
 // the head: chunk ids exist only inside the sealed manifest, so slack views
 // on chunks give an attacker nothing.
-import { b64u, seal, sealChunk, openChunk } from './crypto.js';
+import { b64u, seal, sealChunk, openChunk, FLAG_FILE } from './crypto.js';
 
 export const CHUNK_SIZE = 512 * 1024;
 export const SITE_MAX_FILE = 8 * 1024 * 1024;
@@ -17,8 +17,6 @@ const MAX_MANIFEST_CHUNKS = 32;
 const MAX_NAME = 255;
 const CHUNK_VIEW_SLACK = 2;
 const CHUNK_TTL_SLACK = 300; // chunks outlive the head by five minutes
-
-const FLAG_FILE = 0x02;
 
 function randomBytes(n) {
   const b = new Uint8Array(n);
