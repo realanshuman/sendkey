@@ -59,7 +59,11 @@ h1, h2, h3 {
 p { margin: 0; }
 
 a { color: var(--ink); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
-a:hover { background: var(--ink); color: var(--paper); text-decoration: none; }
+/* inversion on hover only where hover is real; on touch screens the style
+   would stick to the link after a tap */
+@media (hover: hover) {
+  a:hover { background: var(--ink); color: var(--paper); text-decoration: none; }
+}
 
 code {
   font-family: var(--font-mono);
@@ -93,7 +97,9 @@ code {
   text-decoration: none;
 }
 .logo:hover { background: none; color: var(--ink); }
-.logo:hover .wordmark { background: var(--ink); color: var(--paper); }
+@media (hover: hover) {
+  .logo:hover .wordmark { background: var(--ink); color: var(--paper); }
+}
 .logo-mark { width: 32px; height: 20px; display: block; image-rendering: pixelated; }
 .wordmark {
   font-family: var(--font-px);
@@ -365,6 +371,19 @@ textarea:focus, input:focus, select:focus {
   image-rendering: pixelated;
 }
 .dither-fade-flip { transform: scaleY(-1); }
+
+/* ---- small screens -------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  /* 16px is the threshold below which iOS Safari zooms the page on focus;
+     matching it keeps the viewport still while typing */
+  textarea, input[type="password"], input[type="text"], input:not([type]), select {
+    font-size: 16px;
+  }
+  textarea::placeholder, input::placeholder { font-size: 15px; }
+  /* slightly taller small buttons for touch */
+  .btn-sm { padding: 7px 12px; }
+}
 
 /* ---- motion ------------------------------------------------------------- */
 

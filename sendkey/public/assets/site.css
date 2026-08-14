@@ -29,7 +29,9 @@ body > section { padding: 88px 0; }
   text-decoration: none;
   padding: 2px 4px;
 }
-.nav-links a:hover { background: var(--ink); color: var(--paper); }
+@media (hover: hover) {
+  .nav-links a:hover { background: var(--ink); color: var(--paper); }
+}
 .nav-cta { display: flex; align-items: center; gap: 12px; }
 
 /* ---- hero ---------------------------------------------------------------- */
@@ -68,7 +70,7 @@ body > section { padding: 88px 0; }
 
 .hero h1 {
   margin: 30px 0 0;
-  font-size: clamp(21px, 8px + 3.4vw, 36px);
+  font-size: clamp(18px, 8px + 3.2vw, 36px);
   line-height: 1.5;
 }
 .hero h1 .hl {
@@ -161,7 +163,7 @@ body > section { padding: 88px 0; }
   text-align: center;
 }
 .section-head h2 {
-  font-size: clamp(15px, 8px + 1.6vw, 21px);
+  font-size: clamp(13px, 7px + 1.7vw, 21px);
   line-height: 1.6;
   margin-bottom: 16px;
   text-wrap: balance;
@@ -283,6 +285,10 @@ body > section { padding: 88px 0; }
   gap: 52px;
   align-items: center;
 }
+/* grid items default to min-width auto, so the nowrap install command would
+   size the track to its full unwrapped width and push the page sideways on
+   phones; zeroing it lets the code block's own overflow-x take over */
+.dev-grid > * { min-width: 0; }
 .dev-copy h2 {
   font-size: clamp(14px, 8px + 1.4vw, 19px);
   line-height: 1.65;
@@ -375,7 +381,9 @@ body > section { padding: 88px 0; }
   letter-spacing: 0.03em;
   color: var(--ink);
 }
-.faq summary:hover { background: var(--paper-2); }
+@media (hover: hover) {
+  .faq summary:hover { background: var(--paper-2); }
+}
 .faq summary::-webkit-details-marker { display: none; }
 .faq summary::after {
   content: "+";
@@ -399,7 +407,7 @@ body > section { padding: 88px 0; }
 .cta-band { padding: 88px 0 96px; text-align: center; }
 .cta-band h2 {
   color: var(--paper);
-  font-size: clamp(15px, 8px + 1.8vw, 22px);
+  font-size: clamp(14px, 8px + 1.7vw, 22px);
   line-height: 1.6;
   margin-bottom: 18px;
   text-wrap: balance;
@@ -424,7 +432,6 @@ body > section { padding: 88px 0; }
 .footer { border-top: 2px solid var(--ink-dim); padding: 44px 0 40px; }
 .footer .logo-mark { width: 32px; height: 20px; }
 .footer .wordmark { color: var(--paper); }
-.footer .logo:hover .wordmark { background: var(--paper); color: var(--ink); }
 .footer-in { display: flex; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
 .footer-tag { margin-top: 14px; font-size: 12.5px; color: var(--ink-dim); max-width: 320px; line-height: 1.7; }
 .footer-links { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
@@ -435,8 +442,12 @@ body > section { padding: 88px 0; }
   text-transform: uppercase;
   letter-spacing: 0.05em;
   text-decoration: none;
+  padding: 2px 3px;
 }
-.footer-links a:hover { background: var(--paper); color: var(--ink); }
+@media (hover: hover) {
+  .footer-links a:hover { background: var(--paper); color: var(--ink); }
+  .footer .logo:hover .wordmark { background: var(--paper); color: var(--ink); }
+}
 .footer-fine {
   margin-top: 36px;
   padding-top: 18px;
@@ -464,11 +475,44 @@ body > section { padding: 88px 0; }
   .cta-band { padding: 72px 0 80px; }
 }
 
+/* tablets: the six security cells pair up instead of stacking into a tower;
+   the three steps stay stacked, they read as a sequence anyway */
+@media (min-width: 561px) and (max-width: 920px) {
+  #security .hgrid-3 { grid-template-columns: 1fr 1fr; }
+}
+
 @media (max-width: 560px) {
   .pill-more { display: none; }
   .win-tag { display: none; }
-  .emblem { width: 156px; }
+  .emblem { width: 148px; margin-bottom: 26px; }
   .composer .row { grid-template-columns: 1fr; gap: 14px; margin: 14px 0; }
   .anatomy-legend { grid-template-columns: 1fr; }
   .linkbox { flex-direction: column; }
+  .nav-in { gap: 14px; }
+  body > section { padding: 56px 0; }
+  .hero { padding: 44px 0 60px; }
+  .hero h1 { margin-top: 24px; }
+  .hero-sub { margin-top: 20px; font-size: 14px; }
+  .composer { margin-top: 36px; }
+  .win-body { padding: 18px 16px; }
+  .hgrid > div { padding: 20px 18px; }
+  .anatomy-card { padding: 16px; }
+  .faq summary { padding: 14px 14px; font-size: 12.5px; }
+  .faq-body { padding: 14px 14px 18px; }
+  .cta-band { padding: 60px 0 68px; }
+  .cta-actions .btn { width: 100%; max-width: 320px; }
+  .terminal pre { font-size: 12px; padding: 14px 14px; }
+  .section-head { margin-bottom: 40px; }
+}
+
+/* the narrowest phones: drop the secondary nav button (GitHub stays in the
+   footer and the CTA) and trim the gutters so the primary action fits */
+@media (max-width: 480px) {
+  .wrap { padding: 0 18px; }
+  .nav-cta .btn-ghost { display: none; }
+}
+
+@media (max-width: 360px) {
+  .wordmark { font-size: 11px; }
+  .logo-mark { width: 26px; height: 16px; }
 }

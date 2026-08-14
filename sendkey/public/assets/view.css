@@ -90,3 +90,9 @@ body::before {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
+@media (max-width: 480px) {
+  .view-wrap { padding: 20px 16px 56px; }
+  .view-main { margin-top: 40px; }
+  .view-main .win-body { padding: 18px 16px; }
+}
