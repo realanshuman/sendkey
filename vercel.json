@@ -13,6 +13,14 @@
       "destination": "/api/index"
     },
     {
+      "source": "/send",
+      "destination": "/send.html"
+    },
+    {
+      "source": "/drop",
+      "destination": "/send.html"
+    },
+    {
       "source": "/s/(.*)",
       "destination": "/s.html"
     },

@@ -608,3 +608,19 @@ body > section { padding: 88px 0; }
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+/* ---- dedicated send and drop pages ------------------------------------------- */
+
+.send-wrap { max-width: 648px; }
+.send-wrap .composer { margin-top: 32px; }
+
+/* /drop promotes the drop strip above the textarea */
+.dz-primary {
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  text-align: center;
+  padding: 26px 16px;
+  margin: 0 0 14px;
+}
+.dz-primary .dz-cap { margin-left: 0; }

@@ -54,6 +54,8 @@ func NewServer(store Backend, cfg Config) *Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", s.handleIndex)
 	mux.HandleFunc("GET /s/{id}", s.handleViewPage)
+	mux.HandleFunc("GET /send", s.handleSendPage)
+	mux.HandleFunc("GET /drop", s.handleSendPage)
 	mux.HandleFunc("GET /ask", s.handleAskPage)
 	mux.HandleFunc("GET /a/{id}", s.handleAskPage)
 	mux.HandleFunc("GET /assets/{path...}", s.handleAssets)
@@ -75,6 +77,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
 	s.serveAsset(w, "index.html")
+}
+
+// handleSendPage serves the focused composer for /send and /drop; the path
+// picks the mode client side, so one page covers both.
+func (s *Server) handleSendPage(w http.ResponseWriter, r *http.Request) {
+	s.serveAsset(w, "send.html")
 }
 
 // handleAskPage serves the ask page for both roles: creating an ask link

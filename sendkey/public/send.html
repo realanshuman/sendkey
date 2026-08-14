@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Send a secret · SendKey</title>
+<meta name="description" content="Seal a password, an API key, or a whole file in your browser and share it as a one time link that burns on first read.">
+<meta name="theme-color" content="#f2efe9">
+<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/press-start-2p-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script src="/assets/theme.js"></script>
+<link rel="stylesheet" href="/assets/brand.css">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/view.css">
+</head>
+<body>
+<div class="view-wrap send-wrap">
+
+  <header class="view-head">
+    <a class="logo" href="/" aria-label="SendKey home">
+      <svg class="logo-mark" viewBox="0 0 16 18" shape-rendering="crispEdges" aria-hidden="true"><path d="M2 0h10v1h-10zM1 1h12v1h-12zM0 2h4v1h-4zM10 2h4v1h-4zM0 3h3v1h-3zM11 3h3v1h-3zM0 4h3v1h-3zM11 4h3v1h-3zM0 5h3v1h-3zM11 5h3v1h-3zM0 6h3v1h-3zM11 6h3v1h-3zM0 7h4v1h-4zM10 7h4v1h-4zM0 8h6v1h-6zM8 8h6v1h-6zM0 9h6v1h-6zM10 9h4v1h-4zM0 10h6v1h-6zM10 10h4v1h-4zM0 11h6v1h-6zM8 11h6v1h-6zM0 12h6v1h-6zM8 12h6v1h-6zM0 13h14v1h-14zM0 14h6v1h-6zM8 14h6v1h-6zM0 15h14v1h-14zM0 16h10v1h-10zM4 17h12v1h-12z"/></svg>
+      <span class="wordmark">sendkey</span>
+    </a>
+    <button id="themeBtn" class="btn btn-ghost btn-sm theme-btn" aria-label="Switch between light and dark mode" aria-pressed="false">
+      <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M1 1h14v14H1zM3 3h10v10H3z"/><path d="M3 3h5v10H3z"/></svg>
+    </button>
+  </header>
+
+  <main class="view-main">
+    <h1 id="pageTitle">Send a secret</h1>
+    <p id="pageTag" class="view-tag">Sealed in this browser. It opens once, then burns.</p>
+
+    <div class="composer" id="compose">
+      <div class="win">
+        <div class="win-bar">
+          <span class="win-close" aria-hidden="true"></span>
+          <h3 class="win-title">New secret</h3>
+          <span class="win-tag tag-live"><span class="dot" aria-hidden="true"></span>encrypts locally</span>
+        </div>
+        <div class="win-body">
+
+        <section id="compose-form">
+          <div id="secretWrap">
+            <label class="lbl" for="secret">Secret</label>
+            <textarea id="secret" rows="4" spellcheck="false" autocomplete="off"
+              placeholder="Paste a password, API key, or private note"></textarea>
+            <div class="meter"><span id="count">0</span> bytes</div>
+          </div>
+
+          <div id="dropzone" class="dropzone">
+            <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M7 1h2v8h2V7h2v2h-2v2h-2v2H7v-2H5V9H3V7h2v2h2zM1 13h14v2H1z"/></svg>
+            <span class="dz-label">or drop a file<span class="dz-sep"> · </span><button id="pickBtn" type="button" class="linklike">browse</button></span>
+            <span class="dz-cap">up to 8 MB, encrypted before upload</span>
+            <input type="file" id="fileInput" class="hidden" aria-label="Choose a file to send">
+          </div>
+
+          <div id="fileCard" class="file-card hidden">
+            <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M3 0h7l3 3v13H3zM9 1v3h3zM5 6h6v1H5zM5 8h6v1H5zM5 10h6v1H5zM5 12h4v1H5z"/></svg>
+            <div class="file-meta">
+              <strong id="fName"></strong>
+              <span id="fSize"></span>
+            </div>
+            <button id="fRemove" class="btn btn-ghost btn-sm" aria-label="Remove the selected file">Remove</button>
+          </div>
+
+          <div id="upWrap" class="prog hidden" role="progressbar" aria-label="Encrypting and uploading">
+            <div class="prog-track"><div id="upBar" class="prog-bar"></div></div>
+            <span id="upPct" class="prog-label">0%</span>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label class="lbl" for="ttl">Expires after</label>
+              <div class="select">
+                <select id="ttl">
+                  <option value="3600">1 hour</option>
+                  <option value="86400" selected>1 day</option>
+                  <option value="604800">7 days</option>
+                </select>
+                <svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 4h10v2H9v2H7v2H5V8H3V6H1z"/></svg>
+              </div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="views">Burns after</label>
+              <div class="select">
+                <select id="views">
+                  <option value="1" selected>1 view</option>
+                  <option value="2">2 views</option>
+                  <option value="5">5 views</option>
+                </select>
+                <svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 4h10v2H9v2H7v2H5V8H3V6H1z"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <label class="check">
+            <input type="checkbox" id="usePass">
+            <span>Add a passphrase</span>
+          </label>
+          <input type="password" id="pass" class="hidden" autocomplete="new-password"
+            placeholder="Share it with the recipient separately">
+
+          <button id="go" class="btn btn-lg">Create secret link</button>
+          <p id="err" class="msg-err hidden" role="alert"></p>
+        </section>
+
+        <section id="compose-result" class="hidden">
+          <p class="msg-ok">Your link is ready. It works exactly <span id="rViews">once</span>.</p>
+          <div class="linkbox">
+            <input id="link" readonly spellcheck="false" aria-label="One time secret link">
+            <button id="copy" class="btn btn-sm">Copy</button>
+          </div>
+          <p class="note">
+            The part after <code>#</code> is the decryption key. Browsers never
+            send it to any server, so it stays between you and your recipient.
+            <strong>If you lose the link, the secret cannot be recovered.</strong>
+          </p>
+          <button id="again" class="btn btn-ghost btn-lg">Send another</button>
+        </section>
+
+        </div>
+      </div>
+
+      <p class="compose-note">AES-256-GCM<span>·</span>key stays in the # fragment<span>·</span>burns on first read</p>
+    </div>
+
+    <p class="view-foot">
+      <a href="/ask">Ask for a secret instead →</a>
+    </p>
+  </main>
+
+</div>
+<script type="module" src="/assets/app.js"></script>
+</body>
+</html>

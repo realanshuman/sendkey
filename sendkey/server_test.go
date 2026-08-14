@@ -264,7 +264,7 @@ func TestSecurityHeaders(t *testing.T) {
 
 func TestPagesServe(t *testing.T) {
 	srv, _ := newTestServer(t)
-	for _, path := range []string{"/", "/s/someid", "/assets/app.js", "/assets/brand.css", "/healthz"} {
+	for _, path := range []string{"/", "/s/someid", "/send", "/drop", "/assets/app.js", "/assets/brand.css", "/healthz"} {
 		w := httptest.NewRecorder()
 		srv.ServeHTTP(w, httptest.NewRequest("GET", path, nil))
 		if w.Code != http.StatusOK {
@@ -325,7 +325,7 @@ func BenchmarkCreateConsume(b *testing.B) {
 // blocked style fails silently — the page renders unstyled rather than
 // erroring — so this is caught here instead of in production.
 func TestNoInlineStylesOrScripts(t *testing.T) {
-	for _, page := range []string{"index.html", "s.html", "a.html"} {
+	for _, page := range []string{"index.html", "s.html", "a.html", "send.html"} {
 		data, err := fs.ReadFile(webFS, "public/"+page)
 		if err != nil {
 			t.Fatalf("read %s: %v", page, err)
@@ -350,7 +350,7 @@ func TestNoInlineStylesOrScripts(t *testing.T) {
 // visual failure.
 func TestAssetsReferencedByPagesExist(t *testing.T) {
 	ref := regexp.MustCompile(`(?:href|src)="(/assets/[^"]+)"`)
-	for _, page := range []string{"index.html", "s.html", "a.html"} {
+	for _, page := range []string{"index.html", "s.html", "a.html", "send.html"} {
 		data, err := fs.ReadFile(webFS, "public/"+page)
 		if err != nil {
 			t.Fatalf("read %s: %v", page, err)

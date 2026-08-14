@@ -11,6 +11,21 @@ const errEl = $('err'), goBtn = $('go');
 let selectedFile = null;
 let uploading = false;
 
+// Dedicated pages: /send is the markup default; /drop promotes the file
+// path. Same composer, same ids, one script.
+if (location.pathname === '/drop') {
+  const t = $('pageTitle'), g = $('pageTag'), dz = $('dropzone'), tw = $('secretWrap');
+  if (t) t.textContent = 'Send a file';
+  if (g) g.textContent = 'Up to 8 MB, sealed in this browser before upload.';
+  if (dz && tw) {
+    tw.parentNode.insertBefore(dz, tw);
+    dz.classList.add('dz-primary');
+    // primary position: nothing precedes it, so no leading "or"
+    dz.querySelector('.dz-label').firstChild.textContent = 'drop a file here';
+  }
+  document.title = 'Send a file · SendKey';
+}
+
 secretEl.addEventListener('input', () => {
   $('count').textContent = new TextEncoder().encode(secretEl.value).length;
 });
