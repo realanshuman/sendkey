@@ -1,0 +1,337 @@
+/* ==========================================================================
+   SendKey design system — monochrome
+   No hue anywhere. Hierarchy comes from weight, scale, rule-work and
+   inversion, which is the right register for a security tool: nothing
+   decorative competes with the one thing on screen that matters.
+   ========================================================================== */
+
+:root {
+  /* dark canvas (default) */
+  --bg: #0a0a0a;
+  --bg-2: #101010;
+  --surface: #141414;
+  --surface-2: #1b1b1b;
+  --line: #292929;
+  --line-2: #3d3d3d;
+  --ink: #fafafa;
+  --ink-2: #a3a3a3;
+  --ink-3: #6b6b6b;
+
+  /* Inverted pair: solid ink ground with canvas-coloured type. This is the
+     only "accent" in the system — used for primary buttons, the monogram and
+     the highlight bar. */
+  --inv-bg: var(--ink);
+  --inv-ink: var(--bg);
+
+  --r-sm: 6px;
+  --r: 10px;
+  --r-lg: 14px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .6), 0 10px 30px -14px rgba(0, 0, 0, .9);
+
+  --maxw: 1080px;
+  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #ffffff;
+    --bg-2: #f7f7f7;
+    --surface: #ffffff;
+    --surface-2: #f2f2f2;
+    --line: #e4e4e4;
+    --line-2: #cfcfcf;
+    --ink: #0a0a0a;
+    --ink-2: #525252;
+    --ink-3: #7d7d7d;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .05), 0 10px 30px -16px rgba(0, 0, 0, .25);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.shell { position: relative; }
+
+/* --- typography ----------------------------------------------------------- */
+
+h1, h2, h3 {
+  margin: 0;
+  line-height: 1.08;
+  letter-spacing: -.035em;
+  font-weight: 700;
+}
+
+h1 { font-size: clamp(2.4rem, 6vw, 4.1rem); }
+h2 { font-size: clamp(1.8rem, 3.6vw, 2.6rem); letter-spacing: -.03em; }
+h3 { font-size: 1.05rem; letter-spacing: -.015em; }
+
+p { margin: 0; }
+
+a { color: inherit; text-decoration: none; }
+
+.mono { font-family: var(--mono); }
+
+/* Inverted highlight — a redaction bar. It carries the emphasis that colour
+   would otherwise do, and reads as "struck out" on a product about secrets
+   that erase themselves. */
+.hl {
+  background: var(--inv-bg);
+  color: var(--inv-ink);
+  padding: 0 .12em .04em;
+  border-radius: 3px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* --- logo: monogram + wordmark -------------------------------------------- */
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: auto;
+}
+
+.monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  background: var(--inv-bg);
+  color: var(--inv-ink);
+  border-radius: var(--r-sm);
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  line-height: 1;
+  /* the glyphs are the mark, so keep them out of the accessibility tree
+     separately from the wordmark that follows */
+  user-select: none;
+}
+
+.wordmark {
+  font-size: 1.06rem;
+  font-weight: 700;
+  letter-spacing: -.035em;
+}
+
+/* --- layout --------------------------------------------------------------- */
+
+.wrap {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+section { padding: 88px 0; }
+
+@media (max-width: 720px) { section { padding: 60px 0; } }
+
+/* Sections nested inside a card are layout groups, not page bands — they must
+   not inherit the band padding above. */
+.card section { padding: 0; }
+
+.section-head { text-align: center; max-width: 640px; margin: 0 auto 44px; }
+.section-head p { color: var(--ink-2); margin-top: 14px; font-size: 1.05rem; }
+
+.eyebrow {
+  display: inline-block;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 14px;
+}
+
+/* --- nav ------------------------------------------------------------------ */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-in { display: flex; align-items: center; gap: 20px; height: 62px; }
+
+.nav-links { display: flex; gap: 26px; align-items: center; }
+
+.nav-links a {
+  font-size: .92rem;
+  color: var(--ink-2);
+  transition: color .15s ease;
+}
+
+.nav-links a:hover { color: var(--ink); }
+
+@media (max-width: 780px) { .nav-links { display: none; } }
+
+/* --- buttons -------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font: inherit;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--inv-ink);
+  background: var(--inv-bg);
+  border: 1px solid var(--inv-bg);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: opacity .14s ease, transform .12s ease;
+  white-space: nowrap;
+}
+
+.btn:hover:not(:disabled) { opacity: .86; transform: translateY(-1px); }
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:disabled { opacity: .45; cursor: default; }
+
+.btn-lg { width: 100%; padding: 14px 22px; font-size: 1rem; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line-2);
+}
+
+.btn-ghost:hover:not(:disabled) { border-color: var(--ink); opacity: 1; }
+
+.btn-sm { padding: 10px 15px; font-size: .88rem; }
+
+/* --- cards + form --------------------------------------------------------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 26px;
+  box-shadow: var(--shadow);
+}
+
+.lbl {
+  display: block;
+  font-size: .71rem;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 8px;
+}
+
+textarea, input[type=text], input[type=password], input[readonly], select {
+  width: 100%;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: .95rem;
+  color: var(--ink);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-3) 50%),
+                    linear-gradient(135deg, var(--ink-3) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 55%, calc(100% - 13px) 55%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+textarea, input#link, .secret-out { font-family: var(--mono); font-size: .88rem; }
+
+textarea { resize: vertical; min-height: 108px; line-height: 1.5; }
+
+textarea:focus, input:focus, select:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 12%, transparent);
+}
+
+.row { display: flex; gap: 12px; margin-top: 16px; }
+.field { flex: 1; min-width: 0; }
+
+@media (max-width: 520px) { .row { flex-direction: column; } }
+
+.meter { text-align: right; font-size: .78rem; color: var(--ink-3); margin-top: 6px; }
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 18px 0 10px;
+  font-size: .92rem;
+  cursor: pointer;
+  color: var(--ink-2);
+}
+
+.check input { accent-color: var(--ink); width: 15px; height: 15px; cursor: pointer; }
+
+.note { font-size: .86rem; color: var(--ink-3); line-height: 1.55; }
+.note code {
+  font-family: var(--mono);
+  font-size: .82em;
+  background: var(--surface-2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+}
+
+.msg-ok { color: var(--ink); font-weight: 600; }
+.msg-err { color: var(--ink); font-size: .9rem; margin-top: 12px; font-weight: 500; }
+
+/* Errors and warnings carry their weight through a rule and a glyph rather
+   than a hue, so nothing depends on colour perception. */
+.msg-err::before { content: "✗ "; color: var(--ink-2); }
+
+.banner {
+  padding: 13px 15px;
+  border-radius: var(--r-sm);
+  font-size: .89rem;
+  line-height: 1.5;
+  border: 1px solid var(--line-2);
+  border-left: 3px solid var(--ink);
+  background: var(--surface-2);
+  color: var(--ink-2);
+}
+
+.banner strong { color: var(--ink); }
+
+.hidden { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}

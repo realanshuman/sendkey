@@ -1,0 +1,415 @@
+/* Landing page sections. The design system lives in brand.css. */
+
+/* --- hero ----------------------------------------------------------------- */
+
+.hero { padding: 76px 0 64px; }
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap: 56px;
+  align-items: start;
+}
+
+@media (max-width: 940px) {
+  .hero { padding: 52px 0 40px; }
+  .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 13px 6px 8px;
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  margin-bottom: 24px;
+}
+
+.pill b {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--inv-ink);
+  background: var(--inv-bg);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.hero h1 { margin-bottom: 20px; }
+
+.hero-sub {
+  font-size: 1.14rem;
+  color: var(--ink-2);
+  max-width: 30em;
+  margin-bottom: 28px;
+}
+
+.hero-sub strong { color: var(--ink); font-weight: 600; }
+
+.hero-points { display: grid; gap: 12px; margin-bottom: 30px; }
+
+.hero-point {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  font-size: .95rem;
+  color: var(--ink-2);
+}
+
+.hero-point svg { width: 19px; height: 19px; flex: none; margin-top: 2px; }
+
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* --- composer ------------------------------------------------------------- */
+
+.composer { position: relative; }
+
+.composer .card { padding: 24px; }
+
+.composer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  gap: 12px;
+}
+
+.composer-head h3 { font-size: 1rem; }
+
+.tag-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--ink) 55%, transparent);
+  animation: pulse 2.4s ease-out infinite;
+}
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ink) 45%, transparent); }
+  70%  { box-shadow: 0 0 0 7px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.linkbox { display: flex; gap: 9px; margin: 16px 0 14px; }
+.linkbox input { flex: 1; min-width: 0; }
+
+@media (max-width: 480px) {
+  .linkbox { flex-direction: column; }
+  .linkbox .btn { width: 100%; }
+}
+
+/* --- trust strip ---------------------------------------------------------- */
+
+.trust {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 22px 0;
+  background: color-mix(in srgb, var(--surface) 45%, transparent);
+}
+
+.trust-in {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 40px;
+  justify-content: center;
+  align-items: center;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: .87rem;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.trust-item svg { width: 17px; height: 17px; color: var(--ink-2); flex: none; }
+
+/* --- steps ---------------------------------------------------------------- */
+
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+@media (max-width: 860px) { .steps { grid-template-columns: 1fr; } }
+
+.step {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 26px 22px;
+}
+
+.step-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  font-size: .85rem;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--inv-ink);
+  background: var(--inv-bg);
+  margin-bottom: 15px;
+}
+
+/* The burn step is the one that destroys something; an outlined numeral marks
+   it as different in kind without reaching for a colour. */
+.step:last-child .step-n {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+}
+
+.step h3 { margin-bottom: 9px; }
+.step p { font-size: .92rem; color: var(--ink-2); }
+
+/* --- fragment diagram ----------------------------------------------------- */
+
+.diagram {
+  margin-top: 34px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 28px 22px 22px;
+  overflow-x: auto;
+}
+
+.diagram svg { display: block; width: 100%; min-width: 560px; height: auto; }
+
+.diagram-cap {
+  text-align: center;
+  font-size: .85rem;
+  color: var(--ink-3);
+  margin-top: 16px;
+}
+
+/* --- features ------------------------------------------------------------- */
+
+.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+
+@media (max-width: 900px) { .features { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .features { grid-template-columns: 1fr; } }
+
+.feature {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 24px 22px;
+  transition: border-color .18s ease, transform .18s ease;
+}
+
+.feature:hover { border-color: var(--line-2); transform: translateY(-2px); }
+
+.feature-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  margin-bottom: 15px;
+}
+
+.feature-ico svg { width: 19px; height: 19px; }
+
+.feature h3 { margin-bottom: 8px; }
+.feature p { font-size: .9rem; color: var(--ink-2); }
+
+/* --- developer ------------------------------------------------------------ */
+
+.dev-grid {
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  gap: 46px;
+  align-items: center;
+}
+
+@media (max-width: 900px) { .dev-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+.dev-copy h2 { margin-bottom: 16px; }
+.dev-copy > p { color: var(--ink-2); margin-bottom: 22px; }
+
+.dev-list { display: grid; gap: 13px; }
+
+.dev-list div {
+  display: flex;
+  gap: 10px;
+  font-size: .93rem;
+  color: var(--ink-2);
+  align-items: flex-start;
+}
+
+.dev-list svg { width: 18px; height: 18px; flex: none; margin-top: 2px; color: var(--ink-2); }
+
+.terminal {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+
+.tdot { width: 11px; height: 11px; border-radius: 50%; }
+.tdot-r, .tdot-y, .tdot-g { background: var(--line-2); }
+
+.terminal-title {
+  margin-left: 8px;
+  font-family: var(--mono);
+  font-size: .76rem;
+  color: var(--ink-3);
+}
+
+.terminal pre {
+  margin: 0;
+  padding: 20px 18px;
+  font-family: var(--mono);
+  font-size: .82rem;
+  line-height: 1.85;
+  color: var(--ink-2);
+  overflow-x: auto;
+}
+
+.t-prompt { color: var(--ink-3); }
+.t-cmd    { color: var(--ink); font-weight: 600; }
+.t-flag   { color: var(--ink-2); }
+.t-str    { color: var(--ink-2); }
+.t-out    { color: var(--ink-3); }
+/* the key fragment is the one thing to notice in the transcript */
+.t-key    { color: var(--ink); font-weight: 600; text-decoration: underline;
+            text-underline-offset: 3px; text-decoration-style: dotted; }
+
+/* --- faq ------------------------------------------------------------------ */
+
+.faq { max-width: 780px; margin: 0 auto; display: grid; gap: 12px; }
+
+.faq details {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 0;
+  overflow: hidden;
+}
+
+.faq summary {
+  padding: 18px 22px;
+  font-weight: 600;
+  font-size: .98rem;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  transition: color .15s ease;
+}
+
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { color: var(--ink-2); }
+
+.faq summary::after {
+  content: "+";
+  font-family: var(--mono);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--ink-3);
+  flex: none;
+  transition: transform .2s ease;
+}
+
+.faq details[open] summary::after { transform: rotate(45deg); }
+
+.faq .faq-body {
+  padding: 0 22px 20px;
+  font-size: .93rem;
+  color: var(--ink-2);
+  line-height: 1.65;
+}
+
+.faq .faq-body code {
+  font-family: var(--mono);
+  font-size: .85em;
+  background: var(--surface-2);
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+}
+
+/* --- cta + footer --------------------------------------------------------- */
+
+.cta-band { text-align: center; }
+
+.cta-band .card {
+  padding: 52px 32px;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+}
+
+.cta-band h2 { margin-bottom: 14px; }
+.cta-band p { color: var(--ink-2); max-width: 44ch; margin: 0 auto 26px; }
+
+.cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+.footer {
+  border-top: 1px solid var(--line);
+  padding: 34px 0;
+  margin-top: 20px;
+}
+
+.footer-in {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: .87rem;
+  color: var(--ink-3);
+}
+
+.footer-links { display: flex; gap: 22px; flex-wrap: wrap; }
+.footer-links a { transition: color .15s ease; }
+.footer-links a:hover { color: var(--ink); }
+
+/* Tinted section band. Defined here rather than as an inline style attribute:
+   the strict CSP (default-src 'self') blocks inline styles outright, so an
+   inline background silently does not render. */
+.band {
+  background: color-mix(in srgb, var(--surface) 35%, transparent);
+  border-top: 1px solid var(--line);
+}
+
+.band-both { border-bottom: 1px solid var(--line); }

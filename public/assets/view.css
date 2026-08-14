@@ -1,0 +1,24 @@
+/* View page: the recipient-facing surface. Design system lives in brand.css. */
+
+.view-wrap { max-width: 620px; margin: 0 auto; padding: 72px 24px 40px; }
+.view-head { text-align: center; margin-bottom: 30px; }
+.view-head .logo { justify-content: center; margin: 0 0 18px; font-size: 1.2rem; }
+.view-head p { color: var(--ink-2); margin-top: 10px; }
+.secret-out {
+  margin: 16px 0;
+  padding: 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 340px;
+  overflow: auto;
+  user-select: all;
+  line-height: 1.6;
+}
+.meta-line { margin-top: 14px; }
+.view-foot { text-align: center; margin-top: 26px; font-size: .85rem; color: var(--ink-3); }
+.view-foot a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+.pass-field { margin-top: 16px; }
