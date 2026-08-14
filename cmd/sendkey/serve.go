@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	sendkey "github.com/realanshuman/sendkey"
+	sendkey "github.com/realanshuman/sendkey/sendkey"
 )
 
 func cmdServe(args []string) {

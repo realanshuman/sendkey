@@ -19,7 +19,7 @@ import (
 	"strings"
 	"time"
 
-	sendkey "github.com/realanshuman/sendkey"
+	sendkey "github.com/realanshuman/sendkey/sendkey"
 )
 
 // maxPassphraseTries bounds interactive retries. Unbounded retrying is fine

@@ -206,11 +206,19 @@ silently drifting apart. It skips cleanly when Node isn't installed.
 ## Layout
 
 ```
-.                 package sendkey — server, storage backends, crypto envelope
-public/           the site: landing page, view page, assets (embedded + CDN)
+sendkey/          package sendkey — server, storage backends, crypto envelope
+sendkey/public/   the site: landing page, view page, assets
 cmd/sendkey/      the CLI: serve, send, get
 api/index.go      Vercel function entry point
 ```
+
+The repo root deliberately holds **no `.go` files**. Vercel's Go builder
+generates its own `package main` shim there; a library package in the root
+collides with it ("found packages sendkey and main") and, because the builder
+also aliases the module as `handler`, appears to import its own subpackage.
+The assets sit under `sendkey/` because `//go:embed` cannot reach a parent
+directory, and `vercel.json` points `outputDirectory` at them so the CDN serves
+the same files the binary embeds.
 
 ## HTTP API
 

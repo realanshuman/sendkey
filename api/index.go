@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"sync"
 
-	sendkey "github.com/realanshuman/sendkey"
+	sendkey "github.com/realanshuman/sendkey/sendkey"
 )
 
 var (

@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "sendkey/public",
   "functions": {
     "api/index.go": {
       "memory": 256,
