@@ -10,12 +10,12 @@ promises not to, but because it never receives the key.
 ```
 $ sendkey send "AKIA-EXAMPLE-SECRET-KEY-42"
 one-time link (burns after 1 view(s), expires in 24h0m0s):
-https://sendkey.app/s/H6847TzgXETBsG0KKgXZlA#HLsZDskZ-NQFE5xoluVVJ47aqYzyLRITMo953b4GNyk
+https://sendkey.xyz/s/H6847TzgXETBsG0KKgXZlA#HLsZDskZ-NQFE5xoluVVJ47aqYzyLRITMo953b4GNyk
 
-$ sendkey get 'https://sendkey.app/s/H6847TzgXETBsG0KKgXZlA#HLsZ…'
+$ sendkey get 'https://sendkey.xyz/s/H6847TzgXETBsG0KKgXZlA#HLsZ…'
 AKIA-EXAMPLE-SECRET-KEY-42
 
-$ sendkey get 'https://sendkey.app/s/H6847TzgXETBsG0KKgXZlA#HLsZ…'
+$ sendkey get 'https://sendkey.xyz/s/H6847TzgXETBsG0KKgXZlA#HLsZ…'
 sendkey: server: this secret has expired or already been viewed
 ```
 

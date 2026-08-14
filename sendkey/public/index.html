@@ -10,6 +10,8 @@
 <meta property="og:description" content="Turn a password or API key into an encrypted one time link. It opens once, then it is gone. The key never reaches the server, so nobody can read your secret in between.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="SendKey">
+<meta property="og:url" content="https://sendkey.xyz/">
+<link rel="canonical" href="https://sendkey.xyz/">
 <link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
 <link rel="preload" href="/assets/fonts/press-start-2p-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/brand.css">
@@ -174,7 +176,7 @@
     <div class="anatomy">
       <div class="anatomy-card">
         <div class="anatomy-link" aria-label="Anatomy of a SendKey link">
-          <span class="al-dim">sendkey.app/s/</span><span class="al-id">Xk3vTzqLmA</span><span class="al-key">#mVq4tRk9sX2wQ8sM</span>
+          <span class="al-dim">sendkey.xyz/s/</span><span class="al-id">Xk3vTzqLmA</span><span class="al-key">#mVq4tRk9sX2wQ8sM</span>
         </div>
         <div class="anatomy-legend">
           <div>
@@ -279,14 +281,14 @@
       </div>
 <pre><span class="t-prompt">$</span> <span class="t-cmd">sendkey send</span> <span class="t-str">"AKIA-EXAMPLE-SECRET-KEY"</span>
 <span class="t-out">one-time link (burns after 1 view, expires in 24h):</span>
-https://sendkey.app/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</span>
+https://sendkey.xyz/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</span>
 
 <span class="t-prompt">$</span> <span class="t-cmd">pass show prod/db</span> | <span class="t-cmd">sendkey send</span> <span class="t-flag">-ttl</span> 1h <span class="t-flag">-views</span> 2
 
-<span class="t-prompt">$</span> <span class="t-cmd">sendkey get</span> <span class="t-str">'https://sendkey.app/s/H6847…#HLsZ…'</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sendkey get</span> <span class="t-str">'https://sendkey.xyz/s/H6847…#HLsZ…'</span>
 <span class="t-out">AKIA-EXAMPLE-SECRET-KEY</span>
 
-<span class="t-prompt">$</span> <span class="t-cmd">sendkey get</span> <span class="t-str">'https://sendkey.app/s/H6847…#HLsZ…'</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sendkey get</span> <span class="t-str">'https://sendkey.xyz/s/H6847…#HLsZ…'</span>
 <span class="t-out">sendkey: server: this secret has expired or</span>
 <span class="t-out">already been viewed</span>
 </pre>
