@@ -3,7 +3,9 @@ const B = process.env.BASE || 'http://127.0.0.1:8404';
 const ANSWER = 'ask-e2e: postgres://prod:sw0rdf1sh@db.internal:5432';
 let fails = 0;
 const check = (n, ok, x = '') => { console.log(`${ok ? '  PASS' : '  FAIL'}  ${n}${x ? ' — ' + x : ''}`); if (!ok) fails++; };
-const browser = await chromium.launch({ args: ['--no-sandbox'] });
+const browser = await chromium.launch({
+  executablePath: process.env.CHROME_BIN || undefined,
+  args: ['--no-sandbox'] });
 
 // requester context: create the ask
 const ctxA = await browser.newContext();

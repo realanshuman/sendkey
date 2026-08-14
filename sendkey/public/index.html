@@ -27,8 +27,8 @@
       <span class="wordmark">sendkey</span>
     </a>
     <div class="nav-links">
+      <a href="#features">Features</a>
       <a href="#how">How it works</a>
-      <a href="#security">Security</a>
       <a href="#cli">CLI</a>
       <a href="#faq">FAQ</a>
     </div>
@@ -50,9 +50,10 @@
 
     <h1>Send a secret.<br><span class="hl">It opens once.</span></h1>
     <p class="hero-sub">
-      SendKey turns a password or API key into an encrypted one time link.
-      The first open reveals the secret and destroys it. The key never touches
-      the server, so nobody can read it in between. <strong>Not even us.</strong>
+      SendKey turns a password, an API key, or a whole file into an encrypted
+      one time link. The first open reveals it and destroys it. The key never
+      touches the server, so nobody can read it in between.
+      <strong>Not even us.</strong>
     </p>
 
     <div class="composer" id="compose">
@@ -152,35 +153,55 @@
   </div>
 </header>
 
+<!-- what it does -->
+<section id="features" class="band">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">What it does</span>
+      <h2>Three ways to move a secret</h2>
+      <p>Send one, ask for one, or ship a whole file. Same crypto underneath,
+         same burn at the end.</p>
+    </div>
+
+    <div class="hgrid hgrid-3">
+      <div class="mode-cell">
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 6h8V3h2v1h2v1h2v2h1v2h-1v2h-2v1h-2v1H9v-3H1zM11 6h2v4h-2z"/></svg>
+        <h3>Send a text secret</h3>
+        <p>Paste a password or key, get a one time link. The first open burns
+           it, and everyone can see that it burned.</p>
+        <a class="mode-link" href="#compose">Send one ↓</a>
+      </div>
+      <div class="mode-cell">
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M3 0h7l3 3v13H3zM9 1v3h3zM5 6h6v1H5zM5 8h6v1H5zM5 10h6v1H5zM5 12h4v1H5z"/></svg>
+        <h3>Drop a file</h3>
+        <p>Up to 8 MB, split into chunks and sealed in your browser, with the
+           chunk order cryptographically pinned. The link behaves exactly like
+           a text secret.</p>
+        <a class="mode-link" href="#compose">Send a file ↓</a>
+      </div>
+      <div class="mode-cell">
+        <svg viewBox="0 0 16 18" shape-rendering="crispEdges" aria-hidden="true"><path d="M2 0h10v1h-10zM1 1h12v1h-12zM0 2h4v1h-4zM10 2h4v1h-4zM0 3h3v1h-3zM11 3h3v1h-3zM0 4h3v1h-3zM11 4h3v1h-3zM0 5h3v1h-3zM11 5h3v1h-3zM0 6h3v1h-3zM11 6h3v1h-3zM0 7h4v1h-4zM10 7h4v1h-4zM0 8h6v1h-6zM8 8h6v1h-6zM0 9h6v1h-6zM10 9h4v1h-4zM0 10h6v1h-6zM10 10h4v1h-4zM0 11h6v1h-6zM8 11h6v1h-6zM0 12h6v1h-6zM8 12h6v1h-6zM0 13h14v1h-14zM0 14h6v1h-6zM8 14h6v1h-6zM0 15h14v1h-14zM0 16h10v1h-10zM4 17h12v1h-12z"/></svg>
+        <h3>Ask for a secret</h3>
+        <p>Flip the direction. Your browser makes a keypair, and whoever opens
+           your ask answers into a mailbox only this browser can unlock.</p>
+        <a class="mode-link" href="/ask">Create an ask →</a>
+      </div>
+    </div>
+
+    <p class="anatomy-cap">Every mode shares the dials: a passphrase second
+       lock, expiry from one hour to seven days, and one to five views before
+       the burn.</p>
+  </div>
+</section>
+
 <!-- how it works -->
 <section id="how">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">How it works</span>
       <h2>The key never touches the server</h2>
-      <p>This is not a policy you have to trust. It is how URLs work.</p>
-    </div>
-
-    <div class="hgrid hgrid-3">
-      <div class="step">
-        <div class="step-n">01</div>
-        <h3>Encrypted in your browser</h3>
-        <p>Your browser generates a fresh 256 bit key and seals the secret with
-           it. Only the sealed bytes are uploaded. The key stays with you.</p>
-      </div>
-      <div class="step">
-        <div class="step-n">02</div>
-        <h3>The key rides the fragment</h3>
-        <p>Everything after <code>#</code> in a URL stays inside the browser.
-           The key lives there, so it reaches your recipient without ever
-           crossing the server.</p>
-      </div>
-      <div class="step">
-        <div class="step-n">03</div>
-        <h3>The first open burns it</h3>
-        <p>Reading and deleting happen as one atomic step on the server. After
-           that, the link is dead for everyone.</p>
-      </div>
+      <p>Everything is sealed in your browser before upload. The rest is not a
+         policy you have to trust; it is how URLs work.</p>
     </div>
 
     <div class="anatomy">
@@ -205,25 +226,14 @@
         Our end to end tests fail the build if the fragment ever appears in a request.
       </p>
     </div>
-  </div>
-</section>
 
-<!-- security -->
-<section id="security" class="band">
-  <div class="wrap">
-    <div class="section-head">
-      <span class="eyebrow">Security</span>
-      <h2>Nothing worth stealing, no one to trust</h2>
-      <p>If the database leaked tomorrow, the thief would hold random bytes and
-         no keys.</p>
-    </div>
-
-    <div class="hgrid hgrid-3">
+    <div class="hgrid hgrid-3 how-grid">
       <div class="sec-cell">
-        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M4 1h8v2h2v4h-2V3H4v4H2V3h2zM2 7h12v8H2zM7 9h2v4H7z"/></svg>
-        <h3>Encrypted before upload</h3>
-        <p>AES-256-GCM runs on your device. Only sealed bytes ever leave it,
-           and only sealed bytes are stored.</p>
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M5 1h2v3h2V1h2v3h2v2h-2v4h2v2h-2v3H9v-3H7v3H5v-3H3v-2h2V6H3V4h2zM7 6v4h2V6z"/></svg>
+        <h3>The key rides the fragment</h3>
+        <p>Everything after <code>#</code> in a URL stays inside the browser.
+           The key lives there, so it reaches your recipient without ever
+           crossing the server.</p>
       </div>
       <div class="sec-cell">
         <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M7 0h2v2h1v2h1v2h1v2h1v4h-1v2h-1v1H5v-1H4v-2H3V8h1V6h1V4h1V2h1zM7 9h2v3H7z"/></svg>
@@ -259,8 +269,9 @@
   </div>
 </section>
 
+
 <!-- CLI -->
-<section id="cli">
+<section id="cli" class="band">
   <div class="wrap dev-grid">
     <div class="dev-copy">
       <span class="eyebrow">Command line</span>
@@ -296,7 +307,9 @@
 <span class="t-out">one-time link (burns after 1 view, expires in 24h):</span>
 https://sendkey.xyz/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</span>
 
-<span class="t-prompt">$</span> <span class="t-cmd">pass show prod/db</span> | <span class="t-cmd">sendkey send</span> <span class="t-flag">-ttl</span> 1h <span class="t-flag">-views</span> 2
+<span class="t-prompt">$</span> <span class="t-cmd">sendkey send</span> <span class="t-flag">-file</span> backup.tar.gz
+<span class="t-out">encrypting and uploading: 16/16 chunks</span>
+https://sendkey.xyz/s/Qm93kd0Xw1Tz<span class="t-key">#R6cdQpWvZ2xNb4Ml…</span>
 
 <span class="t-prompt">$</span> <span class="t-cmd">sendkey get</span> <span class="t-str">'https://sendkey.xyz/s/H6847…#HLsZ…'</span>
 <span class="t-out">AKIA-EXAMPLE-SECRET-KEY</span>
@@ -310,7 +323,7 @@ https://sendkey.xyz/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</sp
 </section>
 
 <!-- FAQ -->
-<section id="faq" class="band">
+<section id="faq">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">FAQ</span>
@@ -328,6 +341,30 @@ https://sendkey.xyz/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</sp
         </div>
       </details>
 
+            <details>
+        <summary>Can I send files?</summary>
+        <div class="faq-body">
+          Yes, up to 8 MB. Drop a file on the composer and it is split into
+          chunks, each encrypted in your browser under a fresh file key, with
+          the chunk order cryptographically bound so the server cannot
+          reorder or swap pieces. The link looks and burns exactly like a
+          text secret. The CLI speaks the same format:
+          <code>sendkey send -file report.pdf</code>.
+        </div>
+      </details>
+
+            <details>
+        <summary>Can someone send a secret to me instead?</summary>
+        <div class="faq-body">
+          Yes. An ask link flips the direction. Your browser generates a
+          keypair; the link you share carries the public half, and whoever
+          opens it answers into an encrypted mailbox that only your browser
+          can unlock. One answer per ask, burned on first read, and both
+          sides see the same pixel fingerprint so you can compare keys out
+          of band. Create one at <a href="/ask">sendkey.xyz/ask</a>.
+        </div>
+      </details>
+
       <details>
         <summary>What if someone else opens the link first?</summary>
         <div class="faq-body">
@@ -338,24 +375,7 @@ https://sendkey.xyz/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</sp
         </div>
       </details>
 
-      <details>
-        <summary>What happens if nobody opens the link?</summary>
-        <div class="faq-body">
-          It expires on its own after the time you chose: one hour, one day,
-          or seven days. Expired secrets are wiped whether or not anyone ever
-          opened them.
-        </div>
-      </details>
 
-      <details>
-        <summary>Why is the passphrase checked in my browser?</summary>
-        <div class="faq-body">
-          A server side check would have to either destroy the secret on a
-          typo, or give attackers something to guess against. Checking on your
-          device means you can retry as often as you need, and nobody gets to
-          guess.
-        </div>
-      </details>
 
       <details>
         <summary>What does SendKey not protect against?</summary>
@@ -368,29 +388,7 @@ https://sendkey.xyz/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</sp
         </div>
       </details>
 
-      <details>
-        <summary>Can I send files?</summary>
-        <div class="faq-body">
-          Yes, up to 8 MB. Drop a file on the composer and it is split into
-          chunks, each encrypted in your browser under a fresh file key, with
-          the chunk order cryptographically bound so the server cannot
-          reorder or swap pieces. The link looks and burns exactly like a
-          text secret. The CLI speaks the same format:
-          <code>sendkey send -file report.pdf</code>.
-        </div>
-      </details>
 
-      <details>
-        <summary>Can someone send a secret to me instead?</summary>
-        <div class="faq-body">
-          Yes. An ask link flips the direction. Your browser generates a
-          keypair; the link you share carries the public half, and whoever
-          opens it answers into an encrypted mailbox that only your browser
-          can unlock. One answer per ask, burned on first read, and both
-          sides see the same pixel fingerprint so you can compare keys out
-          of band. Create one at <a href="/ask">sendkey.xyz/ask</a>.
-        </div>
-      </details>
 
       <details>
         <summary>Can I host it myself?</summary>
@@ -432,8 +430,9 @@ https://sendkey.xyz/s/H6847TzgXETB<span class="t-key">#HLsZDskZ-NQFE5xolu…</sp
              browser, destroyed on first read.</p>
         </div>
         <div class="footer-links">
+          <a href="#features">Features</a>
+          <a href="/ask">Ask</a>
           <a href="#how">How it works</a>
-          <a href="#security">Security</a>
           <a href="#cli">CLI</a>
           <a href="#faq">FAQ</a>
           <a href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>

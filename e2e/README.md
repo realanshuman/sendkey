@@ -20,6 +20,9 @@ BASE=http://127.0.0.1:8404 node e2e/file-e2e.mjs
 ```
 
 CI runs the Go suite only (it has no browser); these are for release
-checks. The scripts read the Chromium path from Playwright's default
-resolution; set PLAYWRIGHT_BROWSERS_PATH or edit executablePath if yours
-lives elsewhere.
+checks. The scripts use Playwright's default browser resolution; if your Chromium
+lives elsewhere, point CHROME_BIN at the binary:
+
+```sh
+CHROME_BIN=/usr/bin/chromium BASE=http://127.0.0.1:8404 node e2e/browser.mjs
+```

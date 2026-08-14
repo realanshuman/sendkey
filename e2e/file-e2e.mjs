@@ -12,7 +12,9 @@ const FILE = '/tmp/sk-e2e-payload.bin';
 const CONTENT = randomBytes(1_300_000); // 3 chunks
 writeFileSync(FILE, CONTENT);
 
-const browser = await chromium.launch({ args: ['--no-sandbox'] });
+const browser = await chromium.launch({
+  executablePath: process.env.CHROME_BIN || undefined,
+  args: ['--no-sandbox'] });
 
 // --- sender uploads a file ---
 const s = await browser.newPage();

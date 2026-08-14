@@ -11,6 +11,7 @@ function check(name, ok, extra = '') {
 }
 
 const browser = await chromium.launch({
+  executablePath: process.env.CHROME_BIN || undefined,
   args: ['--no-sandbox'],
 });
 const ctx = await browser.newContext();
@@ -96,8 +97,8 @@ await p5.waitForSelector('#out:not(.hidden)', { timeout: 10000 });
 const shown2 = (await p5.textContent('#secret')).trim();
 check('retry after wrong passphrase succeeds', shown2 === SECRET, shown2);
 
-await page.screenshot({ path: 'shot-compose.png', fullPage: true });
-await p2.screenshot({ path: 'shot-revealed.png', fullPage: true });
+await page.screenshot({ path: (process.env.TMPDIR || '/tmp') + '/shot-compose.png', fullPage: true });
+await p2.screenshot({ path: (process.env.TMPDIR || '/tmp') + '/shot-revealed.png', fullPage: true });
 
 await browser.close();
 console.log(failures === 0 ? '\nALL BROWSER CHECKS PASSED' : `\n${failures} CHECK(S) FAILED`);
