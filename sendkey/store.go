@@ -12,6 +12,7 @@ import (
 // Errors returned by storage backends.
 var (
 	ErrFull     = errors.New("store is full")
+	ErrExists   = errors.New("id already occupied")
 	ErrNotFound = errors.New("secret not found")
 )
 
@@ -35,6 +36,10 @@ type Meta struct {
 // the whole product, so every implementation has to provide it.
 type Backend interface {
 	Put(ctx context.Context, ct, iv []byte, ttl time.Duration, views int) (string, error)
+	// PutAt stores under a caller-chosen id with first-write-wins semantics,
+	// returning ErrExists if the id is already occupied. It exists for ask
+	// mailboxes, whose address both sides derive from the request id.
+	PutAt(ctx context.Context, id string, ct, iv []byte, ttl time.Duration, views int) error
 	Peek(ctx context.Context, id string) (Meta, error)
 	Consume(ctx context.Context, id string) (*Secret, error)
 }
@@ -102,6 +107,33 @@ func (s *MemStore) Put(_ context.Context, ct, iv []byte, ttl time.Duration, view
 		Views:     views,
 	}
 	return id, nil
+}
+
+// PutAt stores under id if it is free; ErrExists otherwise. An expired
+// occupant does not block the slot.
+func (s *MemStore) PutAt(_ context.Context, id string, ct, iv []byte, ttl time.Duration, views int) error {
+	if views < 1 {
+		views = 1
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if len(s.items) >= s.maxItems {
+		s.sweepLocked(s.now())
+		if len(s.items) >= s.maxItems {
+			return ErrFull
+		}
+	}
+	if cur, ok := s.items[id]; ok && cur.ExpiresAt.After(s.now()) {
+		return ErrExists
+	}
+	s.items[id] = &Secret{
+		CT:        ct,
+		IV:        iv,
+		ExpiresAt: s.now().Add(ttl),
+		Views:     views,
+	}
+	return nil
 }
 
 // Peek returns metadata without consuming a view, so a recipient (or a link

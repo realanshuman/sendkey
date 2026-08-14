@@ -116,6 +116,9 @@ allowed to be playful; the sentences are not.
   NEW SECRET, tagged "encrypts locally" with the blinking square.
 - The receive page is a dialog titled ENCRYPTED MESSAGE. Revealing burns;
   the page says so before the click, in bold, on paper.
+- The ask page is a dialog titled SECRET REQUEST, one page for both roles:
+  the browser holding the private key sees its ask; anyone else sees the
+  answer form. Both render the same 8 x 8 pixel key fingerprint.
 - Errors are inverted ink blocks prefixed with `!!`. No red exists here.
 - The page ends in ink: a dithered fade strip, then the CTA and footer on
   black. The machine turns off at the bottom.

@@ -111,6 +111,25 @@ The same auto-detection works for `sendkey serve`: set those variables and it
 uses Redis, so several instances can sit behind one load balancer. Leave them
 unset and it keeps secrets in memory.
 
+## Ask links: receiving, reversed
+
+The common failure is not sending a secret badly. It is asking for one and
+getting it back in plain chat. An ask link flips the direction:
+
+1. Open `/ask`. Your browser generates a P-256 keypair. The private key
+   never leaves that browser; the public key rides the link you share.
+2. Whoever opens the link answers into an encrypted mailbox. Their browser
+   makes an ephemeral keypair, derives a key with ECDH and HKDF-SHA256, and
+   seals the answer to you. The mailbox id is derived from the request id
+   with SHA-256, so both sides find the same slot without coordinating.
+3. Your page notices the answer and opens it with the stored private key.
+   The mailbox burns on first read, and each ask accepts exactly one answer
+   (first write wins, enforced by the store).
+
+Both sides render the same 8 x 8 pixel fingerprint of the requester's
+public key, so you can compare patterns out of band before trusting a link.
+The server's role is unchanged: it stores one opaque blob it cannot read.
+
 ## The passphrase layer
 
 `-passphrase` nests a second, independently keyed envelope inside the first:

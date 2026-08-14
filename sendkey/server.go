@@ -54,10 +54,13 @@ func NewServer(store Backend, cfg Config) *Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", s.handleIndex)
 	mux.HandleFunc("GET /s/{id}", s.handleViewPage)
+	mux.HandleFunc("GET /ask", s.handleAskPage)
+	mux.HandleFunc("GET /a/{id}", s.handleAskPage)
 	mux.HandleFunc("GET /assets/{path...}", s.handleAssets)
 	mux.HandleFunc("GET /healthz", s.handleHealth)
 	mux.HandleFunc("POST /api/secret", s.handleCreate)
 	mux.HandleFunc("GET /api/secret/{id}/meta", s.handleMeta)
+	mux.HandleFunc("GET /api/mailbox/{id}", s.handleMailboxProbe)
 	mux.HandleFunc("GET /api/secret/{id}", s.handleConsume)
 	s.mux = mux
 	return s
@@ -72,6 +75,13 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
 	s.serveAsset(w, "index.html")
+}
+
+// handleAskPage serves the ask page for both roles: creating an ask link
+// and answering one. Which role renders is decided client side, by who
+// holds the private key.
+func (s *Server) handleAskPage(w http.ResponseWriter, r *http.Request) {
+	s.serveAsset(w, "a.html")
 }
 
 func (s *Server) handleViewPage(w http.ResponseWriter, r *http.Request) {
@@ -116,6 +126,10 @@ type CreateRequest struct {
 	IV    string `json:"iv"`    // base64url 12-byte nonce
 	TTL   int    `json:"ttl"`   // seconds
 	Views int    `json:"views"` // reads before burn
+	// ID, when set, asks for a specific slot (an ask mailbox both sides
+	// derived from the request id). Must decode to exactly 16 bytes;
+	// occupied slots answer 409 rather than overwriting.
+	ID string `json:"id,omitempty"`
 }
 
 func (s *Server) handleCreate(w http.ResponseWriter, r *http.Request) {
@@ -142,10 +156,24 @@ func (s *Server) handleCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := s.store.Put(r.Context(), ct, iv, ClampTTL(req.TTL), ClampViews(req.Views))
+	var id string
+	var err error
+	if req.ID != "" {
+		raw, decErr := base64.RawURLEncoding.DecodeString(req.ID)
+		if decErr != nil || len(raw) != 16 {
+			writeJSONError(w, http.StatusBadRequest, "invalid mailbox id")
+			return
+		}
+		id = req.ID
+		err = s.store.PutAt(r.Context(), id, ct, iv, ClampTTL(req.TTL), ClampViews(req.Views))
+	} else {
+		id, err = s.store.Put(r.Context(), ct, iv, ClampTTL(req.TTL), ClampViews(req.Views))
+	}
 	switch {
 	case err == nil:
 		writeJSON(w, http.StatusOK, map[string]string{"id": id})
+	case err == ErrExists:
+		writeJSONError(w, http.StatusConflict, "this ask has already been answered")
 	case err == ErrFull:
 		writeJSONError(w, http.StatusInsufficientStorage, "server at capacity, try again later")
 	default:
@@ -164,6 +192,15 @@ func (s *Server) handleMeta(w http.ResponseWriter, r *http.Request) {
 		"expiresAt": meta.ExpiresAt.UTC().Format(time.RFC3339),
 		"views":     meta.Views,
 	})
+}
+
+// handleMailboxProbe reports whether an ask mailbox holds an answer yet.
+// Unlike /meta it answers 200 either way: an empty mailbox is the normal
+// state while polling, not an error, and 404 responses would pile up in the
+// browser console once per poll tick.
+func (s *Server) handleMailboxProbe(w http.ResponseWriter, r *http.Request) {
+	_, err := s.store.Peek(r.Context(), r.PathValue("id"))
+	writeJSON(w, http.StatusOK, map[string]bool{"ready": err == nil})
 }
 
 func (s *Server) handleConsume(w http.ResponseWriter, r *http.Request) {

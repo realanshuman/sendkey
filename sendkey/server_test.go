@@ -319,7 +319,7 @@ func BenchmarkCreateConsume(b *testing.B) {
 // blocked style fails silently — the page renders unstyled rather than
 // erroring — so this is caught here instead of in production.
 func TestNoInlineStylesOrScripts(t *testing.T) {
-	for _, page := range []string{"index.html", "s.html"} {
+	for _, page := range []string{"index.html", "s.html", "a.html"} {
 		data, err := fs.ReadFile(webFS, "public/"+page)
 		if err != nil {
 			t.Fatalf("read %s: %v", page, err)
@@ -344,7 +344,7 @@ func TestNoInlineStylesOrScripts(t *testing.T) {
 // visual failure.
 func TestAssetsReferencedByPagesExist(t *testing.T) {
 	ref := regexp.MustCompile(`(?:href|src)="(/assets/[^"]+)"`)
-	for _, page := range []string{"index.html", "s.html"} {
+	for _, page := range []string{"index.html", "s.html", "a.html"} {
 		data, err := fs.ReadFile(webFS, "public/"+page)
 		if err != nil {
 			t.Fatalf("read %s: %v", page, err)

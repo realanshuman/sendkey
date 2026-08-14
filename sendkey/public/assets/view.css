@@ -110,3 +110,59 @@ body::before {
   .view-main { margin-top: 40px; }
   .view-main .win-body { padding: 18px 16px; }
 }
+
+/* ---- ask page ------------------------------------------------------------- */
+
+.ask-list {
+  margin: 16px 0 20px;
+  padding-left: 20px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  line-height: 1.9;
+}
+
+.fingerprint {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: 18px 0;
+}
+.identicon {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border: 2px solid var(--ink);
+  background: var(--field);
+  padding: 6px;
+  display: block;
+}
+.identicon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  fill: var(--ink);
+  image-rendering: pixelated;
+}
+.fingerprint .note { text-align: left; }
+
+.ask-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 16px 0;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-2);
+}
+.ask-status .dot {
+  width: 7px;
+  height: 7px;
+  background: var(--ink);
+  animation: blink 1.1s steps(1) infinite;
+}
+.ask-status.arrived .dot { animation: none; }
+
+.ans-row { margin: 14px 0 16px; }
+#owner .linkbox { margin-top: 14px; }

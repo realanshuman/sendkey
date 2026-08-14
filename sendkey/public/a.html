@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ask for a secret · SendKey</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f2efe9">
+<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/press-start-2p-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script src="/assets/theme.js"></script>
+<link rel="stylesheet" href="/assets/brand.css">
+<link rel="stylesheet" href="/assets/view.css">
+</head>
+<body>
+<div class="view-wrap">
+
+  <header class="view-head">
+    <a class="logo" href="/" aria-label="SendKey home">
+      <svg class="logo-mark" viewBox="0 0 16 18" shape-rendering="crispEdges" aria-hidden="true"><path d="M2 0h10v1h-10zM1 1h12v1h-12zM0 2h4v1h-4zM10 2h4v1h-4zM0 3h3v1h-3zM11 3h3v1h-3zM0 4h3v1h-3zM11 4h3v1h-3zM0 5h3v1h-3zM11 5h3v1h-3zM0 6h3v1h-3zM11 6h3v1h-3zM0 7h4v1h-4zM10 7h4v1h-4zM0 8h6v1h-6zM8 8h6v1h-6zM0 9h6v1h-6zM10 9h4v1h-4zM0 10h6v1h-6zM10 10h4v1h-4zM0 11h6v1h-6zM8 11h6v1h-6zM0 12h6v1h-6zM8 12h6v1h-6zM0 13h14v1h-14zM0 14h6v1h-6zM8 14h6v1h-6zM0 15h14v1h-14zM0 16h10v1h-10zM4 17h12v1h-12z"/></svg>
+      <span class="wordmark">sendkey</span>
+    </a>
+    <button id="themeBtn" class="btn btn-ghost btn-sm theme-btn" aria-label="Switch between light and dark mode" aria-pressed="false">
+      <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M1 1h14v14H1zM3 3h10v10H3z"/><path d="M3 3h5v10H3z"/></svg>
+    </button>
+  </header>
+
+  <main class="view-main">
+    <h1 id="headline">Ask for a secret</h1>
+    <p id="tagline" class="view-tag">Flip the direction. You request, they answer.</p>
+
+    <div class="win">
+      <div class="win-bar">
+        <span class="win-close" aria-hidden="true"></span>
+        <span class="win-title">Secret request</span>
+      </div>
+      <div class="win-body">
+
+        <!-- create mode: no id in the URL yet -->
+        <section id="create" class="hidden">
+          <p class="banner">
+            Your browser will generate a keypair. The public half rides the
+            link you share; the private half <strong>never leaves this
+            browser</strong>. Whatever gets sent back can only be opened
+            here.
+          </p>
+          <ul class="ask-list">
+            <li>Send the link to whoever holds the secret</li>
+            <li>They answer straight into an encrypted mailbox</li>
+            <li>You open it here. It burns on reading, as always.</li>
+          </ul>
+          <button id="askCreate" class="btn btn-lg">Create ask link</button>
+        </section>
+
+        <!-- owner mode: this browser holds the private key -->
+        <section id="owner" class="hidden">
+          <p class="msg-ok">Ask link ready. Only this browser can open the answer.</p>
+          <div class="linkbox">
+            <input id="askLink" readonly spellcheck="false" aria-label="Ask link">
+            <button id="askCopy" class="btn btn-sm">Copy</button>
+          </div>
+          <div class="fingerprint">
+            <span id="ownerIcon" class="identicon" role="img" aria-label="Key fingerprint pattern"></span>
+            <p class="note">This pattern is your keypair's fingerprint. The
+              responder sees the same one. Compare them out of band if the
+              stakes are high.</p>
+          </div>
+          <p id="askStatus" class="ask-status"><span class="dot" aria-hidden="true"></span><span id="askStatusText">Waiting for an answer…</span></p>
+          <button id="askReveal" class="btn btn-lg hidden">Open the answer</button>
+          <p id="askErr" class="msg-err hidden" role="alert"></p>
+        </section>
+
+        <!-- opened: the decrypted answer -->
+        <section id="opened" class="hidden">
+          <p class="msg-ok">Decrypted with this browser's key. The mailbox is burned.</p>
+          <pre id="askSecret" class="secret-out"></pre>
+          <button id="askSecretCopy" class="btn btn-ghost btn-sm">Copy</button>
+        </section>
+
+        <!-- responder mode: someone opened an ask link -->
+        <section id="respond" class="hidden">
+          <p class="banner">
+            <strong>Someone is asking you for a secret.</strong> Your answer
+            is encrypted to their key in this tab and can only be opened in
+            the browser that created this link.
+          </p>
+          <div class="fingerprint">
+            <span id="respIcon" class="identicon" role="img" aria-label="Key fingerprint pattern"></span>
+            <p class="note">The requester sees this same pattern. If they
+              read it to you and it differs, stop.</p>
+          </div>
+          <label class="lbl" for="ansSecret">Your answer</label>
+          <textarea id="ansSecret" rows="4" spellcheck="false" autocomplete="off"
+            placeholder="Paste the password or key they asked for"></textarea>
+          <div class="ans-row">
+            <label class="lbl" for="ansTtl">Expires after</label>
+            <div class="select">
+              <select id="ansTtl">
+                <option value="3600">1 hour</option>
+                <option value="86400" selected>1 day</option>
+                <option value="604800">7 days</option>
+              </select>
+              <svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 4h10v2H9v2H7v2H5V8H3V6H1z"/></svg>
+            </div>
+          </div>
+          <button id="ansGo" class="btn btn-lg">Encrypt and answer</button>
+          <p id="ansErr" class="msg-err hidden" role="alert"></p>
+        </section>
+
+        <!-- responder done -->
+        <section id="answered" class="hidden">
+          <p class="msg-ok">Answer sealed and delivered.</p>
+          <p class="banner">Only the requester's browser can open it. It
+            burns on first read, and your copy above is already gone.</p>
+        </section>
+
+        <!-- broken or already answered -->
+        <section id="dead" class="hidden">
+          <p class="banner" id="deadMsg">This ask link is not usable.</p>
+          <p class="note">Ask links carry their key after the # and only
+            work whole. If you created this ask, open it in the browser you
+            made it in.</p>
+        </section>
+
+      </div>
+    </div>
+
+    <p class="view-foot">
+      <a href="/">Send a secret instead →</a>
+    </p>
+  </main>
+
+</div>
+<script type="module" src="/assets/ask.js"></script>
+</body>
+</html>

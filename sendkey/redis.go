@@ -157,6 +157,34 @@ func (r *RedisStore) Put(ctx context.Context, ct, iv []byte, ttl time.Duration, 
 	return id, nil
 }
 
+// PutAt stores under a caller-chosen id. SET NX gives first-write-wins on
+// Redis itself, so two concurrent answers to one ask race safely.
+func (r *RedisStore) PutAt(ctx context.Context, id string, ct, iv []byte, ttl time.Duration, views int) error {
+	if views < 1 {
+		views = 1
+	}
+	payload, err := json.Marshal(storedSecret{
+		CT:    base64.RawURLEncoding.EncodeToString(ct),
+		IV:    base64.RawURLEncoding.EncodeToString(iv),
+		Views: views,
+	})
+	if err != nil {
+		return err
+	}
+	secs := int(ttl.Seconds())
+	if secs < 1 {
+		secs = 1
+	}
+	res, err := r.do(ctx, "SET", r.prefix+id, string(payload), "EX", strconv.Itoa(secs), "NX")
+	if err != nil {
+		return err
+	}
+	if string(res) == "null" {
+		return ErrExists
+	}
+	return nil
+}
+
 func (r *RedisStore) Peek(ctx context.Context, id string) (Meta, error) {
 	key := r.prefix + id
 
