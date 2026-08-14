@@ -26,9 +26,7 @@ package sendkey
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/pbkdf2"
 	"crypto/rand"
-	"crypto/sha256"
 	"errors"
 	"fmt"
 )
@@ -65,10 +63,7 @@ func Seal(secret []byte, passphrase string) (*Sealed, error) {
 		if err := fillRandom(salt, innerIV); err != nil {
 			return nil, err
 		}
-		innerKey, err := pbkdf2.Key(sha256.New, passphrase, salt, pbkdf2Iters, KeyLen)
-		if err != nil {
-			return nil, err
-		}
+		innerKey := pbkdf2Key([]byte(passphrase), salt, pbkdf2Iters, KeyLen)
 		innerCT, err := gcmSeal(innerKey, innerIV, secret)
 		if err != nil {
 			return nil, err
@@ -123,10 +118,7 @@ func Open(ct, iv, key []byte, passphrase string) ([]byte, error) {
 		return nil, errors.New("malformed passphrase envelope")
 	}
 	salt, innerIV, innerCT := body[:saltLen], body[saltLen:saltLen+IVLen], body[saltLen+IVLen:]
-	innerKey, err := pbkdf2.Key(sha256.New, passphrase, salt, pbkdf2Iters, KeyLen)
-	if err != nil {
-		return nil, err
-	}
+	innerKey := pbkdf2Key([]byte(passphrase), salt, pbkdf2Iters, KeyLen)
 	secret, err := gcmOpen(innerKey, innerIV, innerCT)
 	if err != nil {
 		return nil, ErrBadPassphrase
