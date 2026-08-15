@@ -12,7 +12,9 @@ body::before {
   content: "";
   position: fixed;
   inset: 0 0 auto 0;
-  height: 72px;
+  /* the tile is 64px and repeat-x does not tile vertically, so a taller box
+     leaves a strip unpainted that scaleY(-1) then puts at the very top */
+  height: 64px;
   background: url("/assets/px/fade.png") repeat-x top / 8px 64px;
   image-rendering: pixelated;
   transform: scaleY(-1);
