@@ -292,15 +292,26 @@ the same files the binary embeds.
 
 ## HTTP API
 
+Documented in full at [`/api`](https://sendkey.xyz/api), which is served by
+the binary itself; the short version:
+
 | Method | Path | Behaviour |
 | --- | --- | --- |
 | `POST` | `/api/secret` | Store ciphertext `{ct, iv, ttl, views}` → `{id}` |
 | `GET` | `/api/secret/{id}/meta` | Expiry and remaining views. **Does not burn.** |
 | `GET` | `/api/secret/{id}` | Return ciphertext and decrement. **Burns.** |
-| `GET` | `/healthz` | Liveness |
+| `GET` | `/api/secret/{id}/receipt` | Open timestamps. Outlives the burn. **Does not burn.** |
+| `GET` | `/healthz` | Liveness, and the deployment's size ceiling |
 
 `ct` and `iv` are base64url (unpadded). The server validates lengths and
 encoding, and stores bytes it cannot interpret.
+
+Every endpoint answers with `Access-Control-Allow-Origin: *`, so a page on
+any origin can use SendKey as its backend and still encrypt client side.
+This is safe precisely because there is nothing to steal: no cookie, no
+session, no credential rides on a request, so a hostile page holds exactly
+the authority curl does. The HTML pages themselves stay same-origin only,
+with an unchanged CSP.
 
 ## License
 

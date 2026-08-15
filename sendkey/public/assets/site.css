@@ -692,3 +692,126 @@ body > section { padding: 88px 0; }
 /* compact footer variant for the dialog pages */
 .page-footer { padding: 32px 0 30px; }
 .page-footer .footer-fine { margin-top: 24px; }
+
+/* ---- API reference ------------------------------------------------------- */
+
+.api-wrap { max-width: 760px; }
+
+/* The dialog pages centre their body copy, which suits a single short
+   message. Reference material is scanned, not read, so everything below the
+   page title goes back to a left edge. */
+.api-wrap .view-main > :not(h1):not(.view-tag) { text-align: left; }
+
+.api-note {
+  border: 2px solid var(--ink);
+  border-left-width: 8px;
+  background: var(--paper-2);
+  padding: 16px 18px;
+  margin-top: 28px;
+}
+.api-note p { font-size: 13px; line-height: 1.75; color: var(--ink-2); }
+.api-note strong { color: var(--ink); }
+
+.api-h {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 44px 0 6px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--ink);
+}
+.api-lede {
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--ink-2);
+  margin-top: 14px;
+}
+
+.api-list { margin-top: 8px; }
+.api-ep { padding: 22px 0; border-bottom: 2px dotted var(--ink-3); }
+.api-ep:last-child { border-bottom: 0; }
+.api-ep > p { font-size: 13px; line-height: 1.75; color: var(--ink-2); }
+.api-ep > p + p { margin-top: 8px; }
+
+.api-sig {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.api-sig code {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  padding: 0;
+  word-break: break-all;
+}
+.api-verb {
+  flex: none;
+  font-family: var(--font-px);
+  font-size: 8px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+  background: var(--ink);
+  border: 2px solid var(--ink);
+  padding: 6px 6px 5px;
+}
+
+.api-io {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+.api-io code { background: none; border: 0; padding: 0; color: var(--ink-2); }
+
+.api-fields {
+  margin-top: 10px;
+  padding-left: 18px;
+  list-style: square;
+}
+.api-fields li {
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: var(--ink-2);
+  margin-top: 5px;
+}
+
+.api-flag {
+  margin-top: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  padding: 4px 8px 3px;
+  border: 2px solid var(--ink);
+}
+.api-flag-burn { background: var(--ink); color: var(--paper); }
+.api-flag-safe,
+.api-flag-limit { background: var(--paper); color: var(--ink); }
+.api-flag-safe { border-style: dashed; }
+.api-flag-limit { border-style: dotted; }
+
+.api-code { margin-top: 18px; }
+/* commands here wrap over several lines; a stretched button would tower
+   over its own label */
+.api-code .install-row { align-items: flex-start; }
+.api-code .install-row + .api-out { margin-bottom: 22px; }
+.api-code .install { white-space: pre-wrap; word-break: break-all; }
+.api-out {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  padding: 8px 2px 0 14px;
+  word-break: break-all;
+}
+
+@media (max-width: 560px) {
+  .api-ep > p,
+  .api-note p,
+  .api-lede { font-size: 12.5px; }
+  .api-code .install { font-size: 11.5px; }
+}

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTTP API · SendKey</title>
+<meta name="description" content="The same JSON API the SendKey pages use. Store ciphertext, read it back once, and keep the key on your side.">
+<meta name="theme-color" content="#f2efe9">
+<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/press-start-2p-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script src="/assets/theme.js"></script>
+<link rel="stylesheet" href="/assets/brand.css">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/view.css">
+</head>
+<body>
+<div class="view-wrap api-wrap">
+
+  <header class="view-head">
+    <a class="logo" href="/" aria-label="SendKey home">
+      <svg class="logo-mark" viewBox="0 0 16 18" shape-rendering="crispEdges" aria-hidden="true"><path d="M2 0h10v1h-10zM1 1h12v1h-12zM0 2h4v1h-4zM10 2h4v1h-4zM0 3h3v1h-3zM11 3h3v1h-3zM0 4h3v1h-3zM11 4h3v1h-3zM0 5h3v1h-3zM11 5h3v1h-3zM0 6h3v1h-3zM11 6h3v1h-3zM0 7h4v1h-4zM10 7h4v1h-4zM0 8h6v1h-6zM8 8h6v1h-6zM0 9h6v1h-6zM10 9h4v1h-4zM0 10h6v1h-6zM10 10h4v1h-4zM0 11h6v1h-6zM8 11h6v1h-6zM0 12h6v1h-6zM8 12h6v1h-6zM0 13h14v1h-14zM0 14h6v1h-6zM8 14h6v1h-6zM0 15h14v1h-14zM0 16h10v1h-10zM4 17h12v1h-12z"/></svg>
+      <span class="wordmark">sendkey</span>
+    </a>
+    <button id="themeBtn" class="btn btn-ghost btn-sm theme-btn" aria-label="Switch between light and dark mode" aria-pressed="false">
+      <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M1 1h14v14H1zM3 3h10v10H3z"/><path d="M3 3h5v10H3z"/></svg>
+    </button>
+  </header>
+
+  <main class="view-main">
+    <h1>HTTP API</h1>
+    <p class="view-tag">Four endpoints, no keys to register, no accounts. This is
+       the same API the pages on this site use.</p>
+
+    <div class="api-note">
+      <p><strong>The server stores bytes it cannot read.</strong> There is no
+         encryption endpoint, because encryption is not the server's job. You
+         seal the secret on your side, send the ciphertext, and keep the key.
+         Anything you post in the clear is stored in the clear.</p>
+    </div>
+
+    <h2 class="api-h">Endpoints</h2>
+
+    <div class="api-list">
+      <article class="api-ep">
+        <p class="api-sig"><span class="api-verb">POST</span><code>/api/secret</code></p>
+        <p>Store ciphertext. Returns the public id used to fetch it back.</p>
+        <p class="api-io">Body <code>{ct, iv, ttl, views}</code> &rarr; <code>{id}</code></p>
+        <ul class="api-fields">
+          <li><code>ct</code>, <code>iv</code>: base64url, unpadded. Lengths and
+              encoding are validated; the contents are never interpreted.</li>
+          <li><code>ttl</code>: seconds until it expires on its own, up to 7 days.</li>
+          <li><code>views</code>: how many reads it survives, 1 to 10.</li>
+        </ul>
+        <p class="api-flag api-flag-limit">Rate limited per IP.</p>
+      </article>
+
+      <article class="api-ep">
+        <p class="api-sig"><span class="api-verb">GET</span><code>/api/secret/{id}/meta</code></p>
+        <p>Expiry and remaining views, so a client can render a gate before
+           committing to a read.</p>
+        <p class="api-io">&rarr; <code>{expiresAt, views}</code></p>
+        <p class="api-flag api-flag-safe">Does not burn.</p>
+      </article>
+
+      <article class="api-ep">
+        <p class="api-sig"><span class="api-verb">GET</span><code>/api/secret/{id}</code></p>
+        <p>Return the ciphertext and spend one view, in one atomic step. When
+           the last view goes, the ciphertext is dropped on the spot.</p>
+        <p class="api-io">&rarr; <code>{ct, iv}</code></p>
+        <p class="api-flag api-flag-burn">Burns. There is no second call.</p>
+      </article>
+
+      <article class="api-ep">
+        <p class="api-sig"><span class="api-verb">GET</span><code>/api/secret/{id}/receipt</code></p>
+        <p>When the secret was opened, as a list of timestamps. Outlives the
+           ciphertext: it keeps answering for the original lifetime, so a
+           sender can still learn that a burned link was read.</p>
+        <p class="api-io">&rarr; <code>{opens: [RFC3339, ...]}</code></p>
+        <p class="api-flag api-flag-safe">Does not burn.</p>
+      </article>
+
+      <article class="api-ep">
+        <p class="api-sig"><span class="api-verb">GET</span><code>/healthz</code></p>
+        <p>Liveness, plus the deployment's own size ceiling so a client can
+           refuse an oversized body before uploading it.</p>
+        <p class="api-io">&rarr; <code>{ok, maxBytes}</code></p>
+      </article>
+    </div>
+
+    <h2 class="api-h">A whole secret, start to finish</h2>
+    <p class="api-lede">Storing and reading back, with the encryption left where
+       it belongs. The id is public; the key is yours to deliver.</p>
+
+    <div class="api-code">
+      <div class="install-row">
+        <code class="install" id="cmdPost"><span class="install-prompt">$ </span>curl -s sendkey.xyz/api/secret -H 'Content-Type: application/json' -d '{"ct":"BASE64URL","iv":"BASE64URL","ttl":86400,"views":1}'</code>
+        <button class="btn btn-ghost btn-sm api-copy" data-copy="cmdPost" aria-label="Copy the store command">Copy</button>
+      </div>
+      <p class="api-out">{"id":"Xk3vTzqLmARt7NpQw2ZbYg"}</p>
+
+      <div class="install-row">
+        <code class="install" id="cmdGet"><span class="install-prompt">$ </span>curl -s sendkey.xyz/api/secret/Xk3vTzqLmARt7NpQw2ZbYg</code>
+        <button class="btn btn-ghost btn-sm api-copy" data-copy="cmdGet" aria-label="Copy the read command">Copy</button>
+      </div>
+      <p class="api-out">{"ct":"BASE64URL","iv":"BASE64URL"}</p>
+
+      <div class="install-row">
+        <code class="install" id="cmdGone"><span class="install-prompt">$ </span>curl -s -o /dev/null -w '%{http_code}\n' sendkey.xyz/api/secret/Xk3vTzqLmARt7NpQw2ZbYg</code>
+        <button class="btn btn-ghost btn-sm api-copy" data-copy="cmdGone" aria-label="Copy the second read command">Copy</button>
+      </div>
+      <p class="api-out">404</p>
+    </div>
+
+    <h2 class="api-h">Calling it from a browser</h2>
+    <p class="api-lede">Every endpoint answers with
+       <code>Access-Control-Allow-Origin: *</code>, so your own page can use
+       SendKey as a backend and still encrypt on the client. There is no
+       cookie and no session to protect, which is exactly why opening it costs
+       nothing.</p>
+    <p class="api-lede">If you would rather not write the crypto yourself, the
+       envelope format is small and documented, and the browser implementation
+       in <code>/assets/crypto.js</code> is the whole of it. The Go side is
+       kept byte compatible with it by tests.</p>
+
+    <div class="view-foot">
+      <a class="btn btn-sm" href="/send">Send a secret</a>
+      <a class="btn btn-ghost btn-sm" href="https://github.com/realanshuman/sendkey" rel="noopener">Read the source</a>
+    </div>
+  </main>
+
+</div>
+
+<div class="dither-fade" aria-hidden="true"></div>
+<div class="tail">
+  <footer class="footer page-footer">
+    <div class="wrap">
+      <div class="footer-in">
+        <div class="footer-brand">
+          <a class="logo" href="/" aria-label="SendKey home">
+            <svg class="logo-mark" viewBox="0 0 16 18" shape-rendering="crispEdges" aria-hidden="true"><path d="M2 0h10v1h-10zM1 1h12v1h-12zM0 2h4v1h-4zM10 2h4v1h-4zM0 3h3v1h-3zM11 3h3v1h-3zM0 4h3v1h-3zM11 4h3v1h-3zM0 5h3v1h-3zM11 5h3v1h-3zM0 6h3v1h-3zM11 6h3v1h-3zM0 7h4v1h-4zM10 7h4v1h-4zM0 8h6v1h-6zM8 8h6v1h-6zM0 9h6v1h-6zM10 9h4v1h-4zM0 10h6v1h-6zM10 10h4v1h-4zM0 11h6v1h-6zM8 11h6v1h-6zM0 12h6v1h-6zM8 12h6v1h-6zM0 13h14v1h-14zM0 14h6v1h-6zM8 14h6v1h-6zM0 15h14v1h-14zM0 16h10v1h-10zM4 17h12v1h-12z"/></svg>
+            <span class="wordmark">sendkey</span>
+          </a>
+        </div>
+        <div class="footer-links">
+          <a href="/">Home</a>
+          <a href="/send">Send</a>
+          <a href="/drop">Drop</a>
+          <a href="/ask">Ask</a>
+          <a href="/api">API</a>
+          <a href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
+        </div>
+      </div>
+      <div class="footer-fine">
+        <span>MIT licensed · No cookies · No analytics</span>
+        <span>Built by <a href="https://realanshuman.com" rel="noopener">ansh</a> · Built with Go</span>
+      </div>
+    </div>
+  </footer>
+</div>
+<script type="module" src="/assets/apidocs.js"></script>
+</body>
+</html>

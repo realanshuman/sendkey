@@ -15,6 +15,9 @@ second visitor, a file surviving a chunked round trip.
   file-first arrangement and round trips from each.
 - `receipt-e2e.mjs`: live burn receipts, proving the sender's tab learns the
   open time across browser contexts without a reload.
+- `api-e2e.mjs`: the API reference page, the API link in every footer, and
+  the CORS contract: a page on a foreign origin drives the whole
+  store-and-burn cycle with plain fetch.
 
 ## Running them
 
@@ -42,7 +45,7 @@ CHROME_BIN=/usr/bin/chromium BASE=http://127.0.0.1:8404 npm test
 
 ## CI
 
-`.github/workflows/ci.yml` runs all five in the `browser` job, against a
+`.github/workflows/ci.yml` runs all six in the `browser` job, against a
 server built and started in the same step, on every push. The `test` job runs
 the Go suite (including the Go-to-browser envelope interop tests, which use
 Node's WebCrypto rather than a browser).

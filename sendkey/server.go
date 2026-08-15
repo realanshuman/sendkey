@@ -58,6 +58,7 @@ func NewServer(store Backend, cfg Config) *Server {
 	mux.HandleFunc("GET /drop", s.handleSendPage)
 	mux.HandleFunc("GET /ask", s.handleAskPage)
 	mux.HandleFunc("GET /a/{id}", s.handleAskPage)
+	mux.HandleFunc("GET /api", s.handleAPIPage)
 	mux.HandleFunc("GET /assets/{path...}", s.handleAssets)
 	mux.HandleFunc("GET /healthz", s.handleHealth)
 	mux.HandleFunc("POST /api/secret", s.handleCreate)
@@ -71,7 +72,39 @@ func NewServer(store Backend, cfg Config) *Server {
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	setSecurityHeaders(w)
+	if setCORSHeaders(w, r) {
+		return // preflight, answered in full
+	}
 	s.mux.ServeHTTP(w, r)
+}
+
+// setCORSHeaders opens the JSON API to any origin and reports whether the
+// request was a preflight it already answered.
+//
+// This is safe here in a way it would not be for most APIs: there is no
+// session, no cookie, and no credential of any kind, so a request forged by
+// a hostile page carries exactly the authority of one made with curl, which
+// is none. What it buys is real: anyone can build their own client against
+// sendkey.xyz from a browser, and still do their own encryption, because the
+// key never belonged to the server in the first place.
+//
+// The pages themselves stay same-origin only. Their CSP is unchanged.
+func setCORSHeaders(w http.ResponseWriter, r *http.Request) bool {
+	if !strings.HasPrefix(r.URL.Path, "/api/") && r.URL.Path != "/healthz" {
+		return false
+	}
+	h := w.Header()
+	h.Set("Access-Control-Allow-Origin", "*")
+	// Deliberately no Access-Control-Allow-Credentials: browsers reject it
+	// alongside "*", and there is nothing to send.
+	if r.Method == http.MethodOptions {
+		h.Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		h.Set("Access-Control-Allow-Headers", "Content-Type")
+		h.Set("Access-Control-Max-Age", "86400")
+		w.WriteHeader(http.StatusNoContent)
+		return true
+	}
+	return false
 }
 
 // --- page + asset handlers ---------------------------------------------------
@@ -91,6 +124,13 @@ func (s *Server) handleSendPage(w http.ResponseWriter, r *http.Request) {
 // holds the private key.
 func (s *Server) handleAskPage(w http.ResponseWriter, r *http.Request) {
 	s.serveAsset(w, "a.html")
+}
+
+// handleAPIPage serves the HTTP API reference. The endpoints it documents
+// are the same ones this site's own pages use; there is no separate or
+// privileged API surface.
+func (s *Server) handleAPIPage(w http.ResponseWriter, r *http.Request) {
+	s.serveAsset(w, "api.html")
 }
 
 func (s *Server) handleViewPage(w http.ResponseWriter, r *http.Request) {
