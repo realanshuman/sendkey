@@ -199,15 +199,6 @@ body > section { padding: 88px 0; }
 }
 .compose-note span { padding: 0 6px; }
 
-.ask-cta {
-  margin-top: 12px;
-  text-align: center;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
 #compose-result .note { margin-top: 6px; }
 #compose-result #again { margin-top: 16px; }
 
