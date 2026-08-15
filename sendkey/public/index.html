@@ -46,16 +46,16 @@
 <!-- hero: the product is the hero -->
 <header class="hero">
   <div class="wrap hero-in">
-    <span class="pill"><span class="pill-dot" aria-hidden="true"></span>Open source · Zero knowledge<span class="pill-more"> · No accounts</span></span>
+    <div class="hero-copy">
+      <span class="pill"><span class="pill-dot" aria-hidden="true"></span>Open source · Zero knowledge<span class="pill-more"> · No accounts</span></span>
 
-
-    <h1>Send a secret.<br><span class="hl">It opens once.</span></h1>
-    <p class="hero-sub">
-      SendKey turns a password, an API key, or a whole file into an encrypted
-      one time link. The first open reveals it and destroys it. The key never
-      touches the server, so nobody can read it in between.
-      <strong>Not even us.</strong>
-    </p>
+      <h1>Send a secret.<br><span class="hl">It opens once.</span></h1>
+      <p class="hero-sub">
+        A password, an API key, or a whole file becomes one encrypted link.
+        The first open reveals it and destroys it, and the key never touches
+        the server. <strong>Nobody can read it in between. Not even us.</strong>
+      </p>
+    </div>
 
     <div class="composer" id="compose">
       <div class="win">
@@ -155,9 +155,28 @@
         </div>
       </div>
 
-      <p class="compose-note">AES-256-GCM<span>·</span>key stays in the # fragment<span>·</span>burns on first read</p>
       <p class="ask-cta"><a href="/ask">Need to receive one instead? Ask for a secret →</a></p>
     </div>
+
+    <!-- A grid sibling rather than part of .hero-copy: on desktop it fills
+         the copy column under the headline, and on phones it reorders below
+         the composer instead of pushing the product further down. It carries
+         the claims the old .compose-note made, so that line is gone from
+         this page (/send and /drop keep theirs, having no copy column). -->
+    <ul class="hero-proof">
+      <li>
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M5 1h6v1H5zM4 2h1v4H4zM11 2h1v4h-1zM2 6h12v9H2zM7 9h2v3H7z"/></svg>
+        <span>Sealed with AES-256-GCM inside this tab</span>
+      </li>
+      <li>
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M5 1h2v3h2V1h2v3h2v2h-2v4h2v2h-2v3H9v-3H7v3H5v-3H3v-2h2V6H3V4h2zM7 6v4h2V6z"/></svg>
+        <span>The key rides the # fragment, never the wire</span>
+      </li>
+      <li>
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M7 0h2v2h1v2h1v2h1v2h1v4h-1v2h-1v1H5v-1H4v-2H3V8h1V6h1V4h1V2h1zM7 9h2v3H7z"/></svg>
+        <span>Read and burn are one atomic step</span>
+      </li>
+    </ul>
   </div>
 </header>
 

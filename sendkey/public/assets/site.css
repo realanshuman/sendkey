@@ -53,17 +53,35 @@ body > section { padding: 88px 0; }
   opacity: 0.5;
   pointer-events: none;
 }
-.hero-in { position: relative; }
+/* Two columns from 921px up: the composer is the product, and stacked under
+   a full-height poster it started 508px down the page, which put its submit
+   button below the fold on every laptop we measured. Beside the copy it
+   starts at the top of the hero instead. Below 920px this whole block is
+   overridden back to the original centered stack. */
 .hero-in {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+  /* the composer spans both rows, so the proof list sits directly under the
+     copy while the second row absorbs whatever height the composer has */
+  grid-template-areas:
+    "copy  composer"
+    "proof composer";
+  grid-template-rows: auto 1fr;
+  column-gap: 48px;
+  row-gap: 26px;
+  align-items: start;
 }
+.hero-copy { grid-area: copy; min-width: 0; }
+.hero-in > .composer { grid-area: composer; }
+.hero-proof { grid-area: proof; }
 
 .hero h1 {
-  margin: 36px 0 0;
-  font-size: clamp(18px, 8px + 3.2vw, 36px);
+  margin: 26px 0 0;
+  /* tuned to the 408px copy column, not the full wrap: Press Start 2P is
+     near-monospace, so "Send a secret." is ~14 advances wide and overflows
+     the column above roughly 28px */
+  font-size: clamp(17px, 6px + 1.7vw, 26px);
   line-height: 1.5;
 }
 .hero h1 .hl {
@@ -75,12 +93,41 @@ body > section { padding: 88px 0; }
 }
 .hero-sub {
   max-width: 600px;
-  margin-top: 26px;
+  margin-top: 22px;
   font-size: 14.5px;
   line-height: 1.75;
   color: var(--ink-2);
 }
 .hero-sub strong { color: var(--ink); }
+
+/* three claims the rest of the page then proves, filling the copy column
+   against the taller composer instead of leaving it short */
+.hero-proof {
+  /* the UA gives <ul> a 40px padding-left that would indent these off the
+     headline's left edge, and the grid row-gap already provides the space
+     a margin-top would duplicate */
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 11px;
+}
+.hero-proof li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 11px;
+  align-items: start;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.hero-proof svg {
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+  fill: var(--ink);
+  image-rendering: pixelated;
+}
 
 /* ---- composer ------------------------------------------------------------ */
 
@@ -91,6 +138,10 @@ body > section { padding: 88px 0; }
   margin-top: 44px;
   text-align: left;
 }
+/* in the hero grid the composer is a column, not something stacked under
+   the copy, so it starts level with the headline. Scoped to .hero-in so
+   the standalone composer on /send and /drop keeps its own spacing. */
+.hero-in > .composer { margin-top: 0; }
 .win-tag {
   position: absolute;
   right: 12px;
@@ -570,6 +621,28 @@ body > section { padding: 88px 0; }
   body > section { padding: 64px 0; }
   .hero { padding: 56px 0 72px; }
   .cta-band { padding: 72px 0 80px; }
+
+  /* no room for two columns: back to the centered poster stack, with the
+     proof list moved below the composer so it stops padding the preamble */
+  .hero-in {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "copy" "composer" "proof";
+    grid-template-rows: auto;
+    row-gap: 0;
+    justify-items: center;
+  }
+  .hero-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  /* the column clamp is sized for 408px; stacked, the headline gets the
+     full wrap back and should scale with it again */
+  .hero h1 { margin-top: 32px; font-size: clamp(18px, 8px + 3.2vw, 30px); }
+  /* left-aligned rows, but the block itself centered under the composer */
+  .hero-proof { margin-top: 30px; text-align: left; }
+  .hero-in > .composer { margin-top: 38px; }
 }
 
 /* tablets: the six security cells pair up instead of stacking into a tower;
@@ -586,9 +659,13 @@ body > section { padding: 88px 0; }
   .linkbox { flex-direction: column; }
   .nav-in { gap: 14px; }
   body > section { padding: 56px 0; }
-  .hero { padding: 44px 0 60px; }
-  .hero h1 { margin-top: 24px; }
-  .hero-sub { margin-top: 20px; font-size: 14px; }
+  .hero { padding: 34px 0 56px; }
+  .hero h1 { margin-top: 22px; }
+  .hero-sub { margin-top: 18px; font-size: 14px; }
+  /* .hero-in > .composer (0,2,0) outranks a bare .composer here, so the
+     hero copy has to be addressed at the same weight to land at all */
+  .hero-in > .composer { margin-top: 26px; }
+  .hero-proof { margin-top: 26px; }
   .composer { margin-top: 36px; }
   .win-body { padding: 18px 16px; }
   .hgrid > div { padding: 20px 18px; }

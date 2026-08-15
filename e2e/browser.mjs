@@ -118,6 +118,48 @@ await p6.waitForSelector('.burn-pane[data-state="idle"].is-on', { timeout: 10000
 check('demo resets to idle',
   await p6.$eval('#burn', (el) => !el.classList.contains('is-dead')));
 
+// The hero exists to put the composer in front of people. Stacked under a
+// full-height poster its submit button sat at y=927, below the fold on every
+// laptop we measured, so the two-column layout is load-bearing rather than
+// decorative and copy added to the hero can silently undo it.
+console.log('\n--- hero keeps the product above the fold ---');
+for (const [w, h, name] of [[1512, 860, 'macbook'], [1280, 720, 'small laptop']]) {
+  const hp = await ctx.newPage();
+  await hp.setViewportSize({ width: w, height: h });
+  await hp.goto(BASE + '/');
+  const m = await hp.evaluate(() => {
+    const r = (s) => { const b = document.querySelector(s).getBoundingClientRect();
+      return { top: b.top + scrollY, bottom: b.bottom + scrollY, left: b.left, right: b.right }; };
+    return { go: r('#go'), proof: r('.hero-proof'), composer: r('.composer'),
+             scrollWidth: document.documentElement.scrollWidth };
+  });
+  check(`${name}: submit button above the fold`, m.go.bottom <= h,
+    `button ends at ${Math.round(m.go.bottom)}, viewport ${h}`);
+  check(`${name}: two columns engaged`, m.proof.right <= m.composer.left,
+    'proof list should sit left of the composer');
+  check(`${name}: no horizontal overflow`, m.scrollWidth <= w, `${m.scrollWidth}`);
+  await hp.close();
+}
+// Phones cannot fit the whole form, but the product itself must still be the
+// thing you land on, and the proof list must not pad the preamble.
+for (const [w, h, name] of [[390, 844, 'iphone'], [320, 650, 'small android']]) {
+  const hp = await ctx.newPage();
+  await hp.setViewportSize({ width: w, height: h });
+  await hp.goto(BASE + '/');
+  const m = await hp.evaluate(() => {
+    const r = (s) => { const b = document.querySelector(s).getBoundingClientRect();
+      return { top: b.top + scrollY, bottom: b.bottom + scrollY }; };
+    return { ta: r('#secret'), proof: r('.hero-proof'), composer: r('.composer'),
+             scrollWidth: document.documentElement.scrollWidth };
+  });
+  check(`${name}: secret field visible on landing`, m.ta.top < h,
+    `field starts at ${Math.round(m.ta.top)}, viewport ${h}`);
+  check(`${name}: proof list moved below the composer`,
+    m.proof.top >= m.composer.bottom, 'it must not push the composer down');
+  check(`${name}: no horizontal overflow`, m.scrollWidth <= w, `${m.scrollWidth}`);
+  await hp.close();
+}
+
 await page.screenshot({ path: (process.env.TMPDIR || '/tmp') + '/shot-compose.png', fullPage: true });
 await p2.screenshot({ path: (process.env.TMPDIR || '/tmp') + '/shot-revealed.png', fullPage: true });
 
