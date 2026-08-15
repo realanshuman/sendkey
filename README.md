@@ -293,7 +293,9 @@ the same files the binary embeds.
 ## HTTP API
 
 Documented in full at [`/api`](https://sendkey.xyz/api), which is served by
-the binary itself; the short version:
+the binary itself. The base URL is `https://sendkey.xyz`; a self-hosted
+binary serves the same paths at whatever address you run it on. The short
+version:
 
 | Method | Path | Behaviour |
 | --- | --- | --- |

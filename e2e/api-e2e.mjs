@@ -32,9 +32,16 @@ for (const ep of ['/api/secret', '/api/secret/{id}/meta', '/api/secret/{id}/rece
   check(`documents ${ep}`, body.includes(ep));
 }
 
+await page.click('[data-copy="baseUrl"]');
+const base = await page.evaluate(() => navigator.clipboard.readText());
+check('base URL copies exactly', base === 'https://sendkey.xyz', JSON.stringify(base));
+
 await page.click('[data-copy="cmdGet"]');
 const clip = await page.evaluate(() => navigator.clipboard.readText());
 check('copy button yields a runnable command', clip.startsWith('curl '), clip.slice(0, 40));
+// A bare host is not runnable: curl reads it as http://, production
+// redirects to https, and -s hides the redirect. Fully qualified or broken.
+check('copied command carries the full base URL', clip.includes('https://sendkey.xyz/api/secret'));
 check('shell prompt kept out of the clipboard', !clip.includes('$'));
 check('no JS errors on the page', errors.length === 0, errors.join('; '));
 

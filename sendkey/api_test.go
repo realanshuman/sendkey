@@ -28,8 +28,10 @@ func TestAPIPageServed(t *testing.T) {
 	}
 	body := w.Body.String()
 	// The page's whole reason to exist is naming the endpoints, so a page
-	// that renders but forgot one is still broken.
+	// that renders but forgot one is still broken. The base URL counts:
+	// paths alone do not tell a reader where to point curl.
 	for _, want := range []string{
+		"https://sendkey.xyz",
 		"/api/secret", "/api/secret/{id}/meta", "/api/secret/{id}/receipt", "/healthz",
 	} {
 		if !strings.Contains(body, want) {

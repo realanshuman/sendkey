@@ -38,6 +38,17 @@
          Anything you post in the clear is stored in the clear.</p>
     </div>
 
+    <h2 class="api-h">Base URL</h2>
+    <div class="api-code api-base">
+      <div class="install-row">
+        <code class="install" id="baseUrl">https://sendkey.xyz</code>
+        <button class="btn btn-ghost btn-sm api-copy" data-copy="baseUrl" aria-label="Copy the base URL">Copy</button>
+      </div>
+    </div>
+    <p class="api-lede">Every path on this page hangs off it. Self-hosting? The
+       binary serves this exact API at whatever address you run it on; nothing
+       here is special to sendkey.xyz.</p>
+
     <h2 class="api-h">Endpoints</h2>
 
     <div class="api-list">
@@ -93,19 +104,19 @@
 
     <div class="api-code">
       <div class="install-row">
-        <code class="install" id="cmdPost"><span class="install-prompt">$ </span>curl -s sendkey.xyz/api/secret -H 'Content-Type: application/json' -d '{"ct":"BASE64URL","iv":"BASE64URL","ttl":86400,"views":1}'</code>
+        <code class="install" id="cmdPost"><span class="install-prompt">$ </span>curl -s https://sendkey.xyz/api/secret -H 'Content-Type: application/json' -d '{"ct":"BASE64URL","iv":"BASE64URL","ttl":86400,"views":1}'</code>
         <button class="btn btn-ghost btn-sm api-copy" data-copy="cmdPost" aria-label="Copy the store command">Copy</button>
       </div>
       <p class="api-out">{"id":"Xk3vTzqLmARt7NpQw2ZbYg"}</p>
 
       <div class="install-row">
-        <code class="install" id="cmdGet"><span class="install-prompt">$ </span>curl -s sendkey.xyz/api/secret/Xk3vTzqLmARt7NpQw2ZbYg</code>
+        <code class="install" id="cmdGet"><span class="install-prompt">$ </span>curl -s https://sendkey.xyz/api/secret/Xk3vTzqLmARt7NpQw2ZbYg</code>
         <button class="btn btn-ghost btn-sm api-copy" data-copy="cmdGet" aria-label="Copy the read command">Copy</button>
       </div>
       <p class="api-out">{"ct":"BASE64URL","iv":"BASE64URL"}</p>
 
       <div class="install-row">
-        <code class="install" id="cmdGone"><span class="install-prompt">$ </span>curl -s -o /dev/null -w '%{http_code}\n' sendkey.xyz/api/secret/Xk3vTzqLmARt7NpQw2ZbYg</code>
+        <code class="install" id="cmdGone"><span class="install-prompt">$ </span>curl -s -o /dev/null -w '%{http_code}\n' https://sendkey.xyz/api/secret/Xk3vTzqLmARt7NpQw2ZbYg</code>
         <button class="btn btn-ghost btn-sm api-copy" data-copy="cmdGone" aria-label="Copy the second read command">Copy</button>
       </div>
       <p class="api-out">404</p>
