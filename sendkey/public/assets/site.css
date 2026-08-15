@@ -729,8 +729,14 @@ body > section { padding: 88px 0; }
 .api-list { margin-top: 8px; }
 .api-ep { padding: 22px 0; border-bottom: 2px dotted var(--ink-3); }
 .api-ep:last-child { border-bottom: 0; }
-.api-ep > p { font-size: 13px; line-height: 1.75; color: var(--ink-2); }
-.api-ep > p + p { margin-top: 8px; }
+/* Body paragraph defaults inside an endpoint. The `p` sits in :where() on
+   purpose: it contributes no specificity, so the single-class modifiers
+   below (.api-io, .api-flag) win on source order the way they read like
+   they should. Written as a plain `.api-ep > p` this rule scores (0,1,1)
+   and quietly beats every one of them, which is how .api-flag-burn ended
+   up painting --ink-2 text onto an --ink background. */
+.api-ep > :where(p) { font-size: 13px; line-height: 1.75; color: var(--ink-2); }
+.api-ep > :where(p + p) { margin-top: 8px; }
 
 .api-sig {
   display: flex;
@@ -810,7 +816,7 @@ body > section { padding: 88px 0; }
 }
 
 @media (max-width: 560px) {
-  .api-ep > p,
+  .api-ep > :where(p),
   .api-note p,
   .api-lede { font-size: 12.5px; }
   .api-code .install { font-size: 11.5px; }

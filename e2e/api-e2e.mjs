@@ -45,6 +45,33 @@ check('copied command carries the full base URL', clip.includes('https://sendkey
 check('shell prompt kept out of the clipboard', !clip.includes('$'));
 check('no JS errors on the page', errors.length === 0, errors.join('; '));
 
+// The burn flag paints --paper on --ink. A plain `.api-ep > p` rule scores
+// (0,1,1) and silently outranks the single-class .api-flag-burn, which once
+// left this badge dark-on-dark. Measure the rendered pixels, in both themes,
+// so a specificity accident fails the build instead of shipping.
+console.log('\n--- endpoint flags stay readable ---');
+const relLum = ([r, g, b]) => {
+  const f = (c) => (c /= 255) <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+};
+for (const theme of ['light', 'dark']) {
+  await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
+  const flags = await page.$$eval('.api-flag', (els) => els.map((e) => {
+    const c = getComputedStyle(e);
+    const n = (s) => s.match(/\d+/g).slice(0, 3).map(Number);
+    return { cls: e.className, fg: n(c.color), bg: n(c.backgroundColor), fs: c.fontSize };
+  }));
+  check(`${theme}: flags found`, flags.length >= 3, `${flags.length}`);
+  for (const f of flags) {
+    const [hi, lo] = [relLum(f.fg), relLum(f.bg)].sort((a, b) => b - a);
+    const contrast = (hi + 0.05) / (lo + 0.05);
+    const name = f.cls.replace('api-flag ', '');
+    check(`${theme}: ${name} readable`, contrast >= 4.5, `${contrast.toFixed(2)}:1`);
+    check(`${theme}: ${name} sized as a badge`, f.fs === '11px', f.fs);
+  }
+}
+await page.evaluate(() => document.documentElement.removeAttribute('data-theme'));
+
 console.log('\n--- the API link is in every footer ---');
 for (const path of ['/', '/send', '/ask', '/api']) {
   const p = await ctx.newPage();
