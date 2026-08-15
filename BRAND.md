@@ -17,19 +17,25 @@ having no shades at all.
 
 ## The mark
 
-A keyhole shaped like our key. The original pixel key, rotated upright, is
-punched straight through an ink plate: the round head becomes the hole,
-the shaft and tooth become the slot. One loose pixel floats inside the
-slot, the key dissolving after its one turn. The plate's bottom edge steps
-down and overhangs to the right, an angular Z-cut foot.
+A keyhole punched clean through a solid plate. Nothing else: no shaft, no
+teeth, no foot. The plate is the ink, the keyhole is the paper showing
+through, and at every size the mark is one silhouette with one hole in it.
 
-- Drawn on a 16 x 18 grid, integer coordinates, `crispEdges`, one path.
+The counter is the whole design, and it tapers. Reading down: a round head
+six cells wide, a neck pinched to two, a skirt that opens back out to
+four. The skirt must stay narrower than the head. Cut them the same width
+and the shape stops reading as a keyhole and starts reading as an
+hourglass, which is exactly what the earlier mark did.
+
+- Drawn on a 12 x 13 grid, integer coordinates, `crispEdges`, one path.
+  The box is tight to the plate: no padding, so a lockup can size the mark
+  by height alone and let the width follow.
 - Files under `sendkey/public/assets/`: `logo.svg` (ink plate, for paper),
   `logo-inv.svg` (paper plate, for ink panels), `mark.svg` (favicon: the
-  keyhole punched through the full 16 x 16 tile, no frame).
-- The hero emblem layers a Bayer-checker drop shadow behind the plate,
-  masked by the plate's solid silhouette so the pattern never shows
-  through the punched keyhole.
+  same keyhole through a full-bleed 16 x 16 tile, so the counter survives
+  at tab size).
+- Inline copies in the page markup use `fill: currentColor`, which is what
+  makes the plate invert with the theme rather than needing a second file.
 - The lockup pairs the plate at 26px tall with the SENDKEY wordmark in the
   pixel face, 10px apart, baselines optically centered.
 - Do not smooth it, outline it, tint it, or rotate it.

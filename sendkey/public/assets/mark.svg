@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
-  <!-- favicon: the keyhole punched straight through the full ink tile -->
-  <path fill="#141412" d="M0 0h16v1h-16zM0 1h16v1h-16zM0 2h5v1h-5zM11 2h5v1h-5zM0 3h4v1h-4zM12 3h4v1h-4zM0 4h4v1h-4zM12 4h4v1h-4zM0 5h4v1h-4zM12 5h4v1h-4zM0 6h5v1h-5zM11 6h5v1h-5zM0 7h7v1h-7zM9 7h6v1h-6zM0 8h7v1h-7zM11 8h5v1h-5zM0 9h7v1h-7zM11 9h5v1h-5zM0 10h7v1h-7zM9 10h6v1h-6zM0 11h7v1h-7zM9 11h6v1h-6zM0 12h16v1h-16zM0 13h7v1h-7zM9 13h6v1h-6zM0 14h16v1h-16zM0 15h16v1h-16z"/>
+  <!-- favicon: the same keyhole punched through a full ink tile, no margin,
+       so the counter survives at 16px in a browser tab. -->
+  <path fill="#141412" d="M0 0h16v1h-16zM0 1h16v1h-16zM0 2h6v1h-6zM10 2h6v1h-6zM0 3h5v1h-5zM11 3h5v1h-5zM0 4h5v1h-5zM11 4h5v1h-5zM0 5h5v1h-5zM11 5h5v1h-5zM0 6h6v1h-6zM10 6h6v1h-6zM0 7h7v1h-7zM9 7h7v1h-7zM0 8h7v1h-7zM9 8h7v1h-7zM0 9h7v1h-7zM9 9h7v1h-7zM0 10h6v1h-6zM10 10h6v1h-6zM0 11h6v1h-6zM10 11h6v1h-6zM0 12h6v1h-6zM10 12h6v1h-6zM0 13h16v1h-16zM0 14h16v1h-16zM0 15h16v1h-16z"/>
 </svg>
