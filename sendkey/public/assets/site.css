@@ -77,7 +77,10 @@ body > section { padding: 88px 0; }
 }
 .hero-copy { grid-area: copy; min-width: 0; }
 .hero-in > .composer { grid-area: composer; }
-.hero-proof { grid-area: proof; }
+/* pinned to the bottom of its row so the copy column ends level with the
+   composer: left-aligned to the top only, it stopped 188px short and the
+   hero's trailing padding read as a ragged void rather than section rhythm */
+.hero-proof { grid-area: proof; align-self: end; }
 
 .hero h1 {
   margin: 26px 0 0;
@@ -613,7 +616,9 @@ body > section { padding: 88px 0; }
   .hgrid-3 { grid-template-columns: 1fr; }
   .dev-grid { grid-template-columns: 1fr; gap: 36px; }
   body > section { padding: 64px 0; }
-  .hero { padding: 56px 0 72px; }
+  /* bottom padding tracks body > section so the hero's trailing space reads
+     as the same rhythm as every boundary below it; it was 72 against 64 */
+  .hero { padding: 56px 0 64px; }
   .cta-band { padding: 72px 0 80px; }
 
   /* no room for two columns: back to the centered poster stack, with the

@@ -160,6 +160,32 @@ for (const [w, h, name] of [[390, 844, 'iphone'], [320, 650, 'small android']]) 
   await hp.close();
 }
 
+// The hero ends on the same rhythm every other section boundary uses. Its
+// two columns are different heights, so this only reads as padding when the
+// shorter one is pinned to the bottom too; left top-aligned it stopped 188px
+// short and the trailing space looked like a void instead.
+console.log('\n--- hero closes on the section rhythm ---');
+for (const [w, h, name] of [[1440, 900, 'desktop'], [920, 800, 'stack edge'], [390, 844, 'iphone']]) {
+  const hp = await ctx.newPage();
+  await hp.setViewportSize({ width: w, height: h });
+  await hp.goto(BASE + '/');
+  const m = await hp.evaluate(() => {
+    const R = (s) => { const b = document.querySelector(s).getBoundingClientRect();
+      return { top: b.top + scrollY, bottom: b.bottom + scrollY }; };
+    const hero = R('.hero'), composer = R('.composer'), proof = R('.hero-proof');
+    const feat = R('#features'), head = R('#features .section-head');
+    return { trailing: Math.round(hero.bottom - Math.max(composer.bottom, proof.bottom)),
+             next: Math.round(head.top - feat.top),
+             ragged: Math.round(Math.abs(composer.bottom - proof.bottom)) };
+  });
+  check(`${name}: hero trailing space matches the next section`,
+    m.trailing === m.next, `${m.trailing} vs ${m.next}`);
+  if (w > 920) {
+    check(`${name}: both columns end level`, m.ragged === 0, `${m.ragged}px apart`);
+  }
+  await hp.close();
+}
+
 await page.screenshot({ path: (process.env.TMPDIR || '/tmp') + '/shot-compose.png', fullPage: true });
 await p2.screenshot({ path: (process.env.TMPDIR || '/tmp') + '/shot-revealed.png', fullPage: true });
 
