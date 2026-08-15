@@ -212,10 +212,34 @@
     </div>
 
     <div class="anatomy">
-      <div class="anatomy-card">
-        <div class="anatomy-link" aria-label="Anatomy of a SendKey link">
-          <span class="al-dim">sendkey.xyz/s/</span><span class="al-id">Xk3vTzqLmA</span><span class="al-key">#mVq4tRk9sX2wQ8sM</span>
+      <div class="anatomy-card burn" id="burn">
+        <div class="burn-stage">
+          <div class="burn-linkwrap">
+            <div class="anatomy-link" id="burnLink" aria-label="Anatomy of a SendKey link">
+              <span class="al-dim">sendkey.xyz/s/</span><span class="al-id">Xk3vTzqLmA</span><span class="al-key">#mVq4tRk9sX2wQ8sM</span>
+            </div>
+            <canvas class="burn-noise" id="burnNoise" aria-hidden="true"></canvas>
+          </div>
+
+          <div class="burn-panes" aria-live="polite">
+            <div class="burn-pane is-on" data-state="idle">
+              <p>Nobody has opened this one yet. It is holding exactly one view.</p>
+              <button type="button" class="btn btn-sm burn-go" data-burn="run">Open it</button>
+            </div>
+            <div class="burn-pane" data-state="open">
+              <p class="burn-plain"><span class="burn-label">Plaintext</span>AKIA4T7QZ2X9V0RB1MPD</p>
+              <p>Decrypted in this tab, with the key after the <code>#</code>. The
+                 server handed over ciphertext and forgot it in the same step.</p>
+            </div>
+            <div class="burn-pane" data-state="dead">
+              <p><strong>404.</strong> Same link, second visitor. There is nothing
+                 left on the server to hand over, and no copy of the key anywhere
+                 to ask for.</p>
+              <button type="button" class="btn btn-sm btn-ghost burn-go" data-burn="again">Run it again</button>
+            </div>
+          </div>
         </div>
+
         <div class="anatomy-legend">
           <div>
             <span class="swatch swatch-id" aria-hidden="true"></span>
@@ -467,5 +491,6 @@ https://sendkey.xyz/s/Qm93kd0Xw1Tz<span class="t-key">#R6cdQpWvZ2xNb4Ml…</span
 </div>
 
 <script type="module" src="/assets/app.js"></script>
+<script type="module" src="/assets/burn.js"></script>
 </body>
 </html>

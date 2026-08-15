@@ -267,6 +267,70 @@ body > section { padding: 88px 0; }
   text-align: center;
 }
 
+/* burn demo: the anatomy card, made mortal */
+.burn-linkwrap { position: relative; }
+.burn-noise {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+.burn-noise.is-live { display: block; }
+
+.burn-panes { display: grid; margin-top: 16px; }
+.burn-pane {
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+.burn-pane.is-on { visibility: visible; }
+.burn-pane p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+.burn-pane .burn-go { margin-top: 12px; }
+
+.burn-plain {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--field);
+  border: 2px dashed var(--ink);
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.burn-label {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--paper);
+  background: var(--ink);
+  padding: 2px 5px 1px;
+  margin-right: 10px;
+  vertical-align: 2px;
+}
+
+/* the link, after: same URL, nothing behind it */
+.burn.is-dead .al-dim,
+.burn.is-dead .al-id {
+  color: var(--ink-3);
+  text-decoration: line-through;
+}
+.burn.is-dead .al-key {
+  background: transparent;
+  color: var(--ink-3);
+  text-decoration: line-through;
+  padding: 3px 0;
+}
+
 /* ---- security grid --------------------------------------------------------- */
 
 .sec-cell svg {

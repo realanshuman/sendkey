@@ -97,6 +97,27 @@ await p5.waitForSelector('#out:not(.hidden)', { timeout: 10000 });
 const shown2 = (await p5.textContent('#secret')).trim();
 check('retry after wrong passphrase succeeds', shown2 === SECRET, shown2);
 
+console.log('\n--- burn demo (landing) ---');
+const p6 = await ctx.newPage();
+await p6.goto(BASE + '/');
+const demoRequests = [];
+p6.on('request', (r) => demoRequests.push(r.url()));
+await p6.waitForSelector('.burn-pane[data-state="idle"].is-on', { timeout: 10000 });
+await p6.click('[data-burn="run"]');
+await p6.waitForSelector('.burn-pane[data-state="open"].is-on', { timeout: 10000 });
+check('demo opens to staged plaintext',
+  (await p6.textContent('.burn-plain')).includes('AKIA'));
+await p6.waitForSelector('.burn-pane[data-state="dead"].is-on', { timeout: 10000 });
+check('demo link ends dead',
+  await p6.$eval('#burn', (el) => el.classList.contains('is-dead')));
+const demoAPI = demoRequests.filter((u) => u.includes('/api/'));
+check('demo touches no API (pure theater)', demoAPI.length === 0,
+  demoAPI.join(', '));
+await p6.click('[data-burn="again"]');
+await p6.waitForSelector('.burn-pane[data-state="idle"].is-on', { timeout: 10000 });
+check('demo resets to idle',
+  await p6.$eval('#burn', (el) => !el.classList.contains('is-dead')));
+
 await page.screenshot({ path: (process.env.TMPDIR || '/tmp') + '/shot-compose.png', fullPage: true });
 await p2.screenshot({ path: (process.env.TMPDIR || '/tmp') + '/shot-revealed.png', fullPage: true });
 
