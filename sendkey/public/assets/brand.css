@@ -132,6 +132,9 @@ code {
   align-items: center;
   gap: 10px;
   text-decoration: none;
+  /* the mark shrinks to 21px on the narrowest phones, which put the home
+     link under the 24px minimum target size; the floor costs no layout */
+  min-height: 24px;
 }
 .logo:hover { background: none; color: var(--ink); }
 @media (hover: hover) {
@@ -354,6 +357,9 @@ textarea:focus, input:focus, select:focus {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  /* the label is the real target for the checkbox inside it, and a 16px box
+     beside 13px text lands at 22px, just under the 24px minimum */
+  min-height: 24px;
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;

@@ -88,6 +88,16 @@ for (const ev of ['dragleave', 'drop']) {
 }
 dz.addEventListener('drop', (e) => setFile(e.dataTransfer.files[0]));
 
+// Touch devices cannot drag and drop, which left the whole zone inert on a
+// phone and the 20px "browse" text as the only way in. The zone itself opens
+// the picker now. The two guards matter: fileInput.click() dispatches a click
+// that bubbles back here, and pickBtn runs its own handler, so without them
+// this recurses or fires the picker twice.
+dz.addEventListener('click', (e) => {
+  if (e.target === $('fileInput') || e.target.closest('#pickBtn')) return;
+  $('fileInput').click();
+});
+
 // an upload in flight is the one moment leaving the page loses work
 window.addEventListener('beforeunload', (e) => {
   if (uploading) e.preventDefault();

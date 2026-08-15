@@ -96,6 +96,30 @@ await tv.waitForSelector('#out:not(.hidden)');
 check('text secret still renders as text', (await tv.textContent('#secret')).trim() === 'text still works');
 check('file block stays hidden for text', await tv.locator('#fileOut').isHidden());
 
+// Touch devices have no drag and drop, so on a phone the drop zone is only
+// reachable by tapping it. The two guards in app.js are easy to remove by
+// accident: without them fileInput.click() bubbles back into this handler
+// and recurses, or the browse button fires the picker twice.
+console.log('\n--- drop zone is usable by tap, not just drag ---');
+for (const path of ['/', '/send', '/drop']) {
+  const tp = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  const tErrs = [];
+  tp.on('pageerror', (e) => tErrs.push(String(e)));
+  await tp.goto(B + path);
+  let opened = 0;
+  tp.on('filechooser', () => { opened++; });
+  const zone = await tp.locator('#dropzone').boundingBox();
+  await tp.mouse.click(zone.x + 12, zone.y + zone.height - 6); // zone, not the button
+  await tp.waitForTimeout(400);
+  check(`${path}: tapping the zone opens the picker once`, opened === 1, `${opened}`);
+  opened = 0;
+  await tp.click('#pickBtn');
+  await tp.waitForTimeout(400);
+  check(`${path}: browse opens the picker once`, opened === 1, `${opened}`);
+  check(`${path}: no JS errors on the zone`, tErrs.length === 0, tErrs.join('; '));
+  await tp.close();
+}
+
 await browser.close();
 console.log(fails === 0 ? '\nALL FILE CHECKS PASSED' : `\n${fails} FAILED`);
 process.exit(fails ? 1 : 0);

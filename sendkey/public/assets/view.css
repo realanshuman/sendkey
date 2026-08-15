@@ -109,6 +109,14 @@ body::before {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+/* the only way across to the other mode from these pages, and a link alone
+   in its paragraph rather than inside a sentence, so it owes the 24px
+   minimum target size that inline links in prose are exempt from */
+.view-foot a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
 
 @media (max-width: 480px) {
   .view-wrap { padding: 20px 16px 56px; }

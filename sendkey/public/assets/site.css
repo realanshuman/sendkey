@@ -706,8 +706,13 @@ body > section { padding: 88px 0; }
   text-transform: uppercase;
   letter-spacing: 0.04em;
   flex-wrap: wrap;
+  cursor: pointer;
 }
 .dropzone svg { width: 16px; height: 16px; fill: var(--ink-2); flex: none; }
+/* the visible text stays inline-sized; the padding buys the 24px of height
+   WCAG 2.5.8 asks of a control, and the negative margin keeps the row from
+   growing to pay for it */
+.dropzone .linklike { padding: 6px 2px; margin: -6px -2px; }
 .dropzone.dz-hot { border-color: var(--ink); border-style: solid; background: var(--paper-2); color: var(--ink); }
 .dz-cap { margin-left: auto; color: var(--ink-3); font-weight: 700; font-size: 11px; }
 .linklike {
@@ -742,7 +747,12 @@ body > section { padding: 88px 0; }
 .mode-cell h3 { font-size: 11px; line-height: 1.7; margin-bottom: 9px; }
 .mode-cell p { font-size: 13px; line-height: 1.7; color: var(--ink-2); flex: 1; }
 .mode-link {
-  margin-top: 14px;
+  /* each cell's only call to action, so it carries the 24px minimum target
+     size; width-fit keeps the hit area on the words rather than the row */
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  margin-top: 12px;
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
