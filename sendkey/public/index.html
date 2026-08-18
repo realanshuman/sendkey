@@ -29,7 +29,7 @@
     <div class="nav-links">
       <a href="#features">Features</a>
       <a href="#how">How it works</a>
-      <a href="#cli">CLI</a>
+      <a href="#dev">Developers</a>
       <a href="/ask">Ask</a>
       <a href="/api">API</a>
       <a href="#faq">FAQ</a>
@@ -186,38 +186,39 @@
     <div class="section-head">
       <span class="eyebrow">What it does</span>
       <h2>Three ways to move a secret</h2>
-      <p>Send one, ask for one, or ship a whole file. Same crypto underneath,
-         same burn at the end.</p>
+      <p>Send one, ask for one, or send a whole file. Every mode ends the same
+         way: opened once, then gone.</p>
     </div>
 
     <div class="hgrid hgrid-3">
       <div class="mode-cell">
         <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 6h8V3h2v1h2v1h2v2h1v2h-1v2h-2v1h-2v1H9v-3H1zM11 6h2v4h-2z"/></svg>
         <h3>Send a text secret</h3>
-        <p>Paste a password or key, get a one time link. The first open burns
-           it, and everyone can see that it burned.</p>
+        <p>Paste a password or an API key and get back a link. The first person
+           to open it sees the secret. The next person sees nothing.</p>
+        <p class="spec">AES-256-GCM<span>·</span>1 to 5 views</p>
         <a class="mode-link" href="/send">Send one →</a>
       </div>
       <div class="mode-cell">
         <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M3 0h7l3 3v13H3zM9 1v3h3zM5 6h6v1H5zM5 8h6v1H5zM5 10h6v1H5zM5 12h4v1H5z"/></svg>
         <h3>Drop a file</h3>
-        <p>Up to 8 MB, split into chunks and sealed in your browser, with the
-           chunk order cryptographically pinned. The link behaves exactly like
-           a text secret.</p>
+        <p>Send a file up to 8 MB. It is locked on your device before it
+           uploads, and the link behaves exactly like a text secret.</p>
+        <p class="spec">512 KiB chunks<span>·</span>index bound as AAD</p>
         <a class="mode-link" href="/drop">Send a file →</a>
       </div>
       <div class="mode-cell">
         <svg viewBox="0 0 12 13" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h12v1h-12zM0 1h12v1h-12zM0 2h4v1h-4zM8 2h4v1h-4zM0 3h3v1h-3zM9 3h3v1h-3zM0 4h3v1h-3zM9 4h3v1h-3zM0 5h3v1h-3zM9 5h3v1h-3zM0 6h4v1h-4zM8 6h4v1h-4zM0 7h5v1h-5zM7 7h5v1h-5zM0 8h5v1h-5zM7 8h5v1h-5zM0 9h4v1h-4zM8 9h4v1h-4zM0 10h4v1h-4zM8 10h4v1h-4zM0 11h12v1h-12zM0 12h12v1h-12z"/></svg>
         <h3>Ask for a secret</h3>
-        <p>Flip the direction. Your browser makes a keypair, and whoever opens
-           your ask answers into a mailbox only this browser can unlock.</p>
+        <p>Need a password from someone else? Send them an ask link. Their
+           reply can only be opened by the browser tab you made it in.</p>
+        <p class="spec">ECDH P-256<span>·</span>HKDF-SHA256</p>
         <a class="mode-link" href="/ask">Create an ask →</a>
       </div>
     </div>
 
-    <p class="anatomy-cap">Every mode shares the dials: a passphrase second
-       lock, expiry from one hour to seven days, and one to five views before
-       the burn.</p>
+    <p class="anatomy-cap">Every mode shares the same dials: an optional
+       passphrase, how long it lives, and how many opens it survives.</p>
   </div>
 </section>
 
@@ -282,39 +283,45 @@
       <div class="sec-cell">
         <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M5 1h2v3h2V1h2v3h2v2h-2v4h2v2h-2v3H9v-3H7v3H5v-3H3v-2h2V6H3V4h2zM7 6v4h2V6z"/></svg>
         <h3>The key rides the fragment</h3>
-        <p>Everything after <code>#</code> in a URL stays inside the browser.
-           The key lives there, so it reaches your recipient without ever
-           crossing the server.</p>
+        <p>Everything after the <code>#</code> in a web address stays in your
+           browser. Your key lives there, so it reaches your recipient without
+           the server ever seeing it.</p>
+        <p class="spec">URL fragment<span>·</span>never sent in any request</p>
       </div>
       <div class="sec-cell">
         <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M7 0h2v2h1v2h1v2h1v2h1v4h-1v2h-1v1H5v-1H4v-2H3V8h1V6h1V4h1V2h1zM7 9h2v3H7z"/></svg>
         <h3>Burns exactly once</h3>
-        <p>Read and delete are one atomic step. If fifty people click at the
-           same moment, exactly one sees the secret.</p>
+        <p>Reading and deleting happen together, as a single step. If fifty
+           people click at the same instant, exactly one sees the secret.</p>
+        <p class="spec">atomic consume<span>·</span>Lua CAS on Redis</p>
       </div>
       <div class="sec-cell">
         <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M2 2h12v12H2zM4 4h8v8H4z M7 5h2v4h3v2H7z"/></svg>
         <h3>Expires on its own</h3>
-        <p>Unopened secrets wipe themselves after one hour, one day, or seven
-           days. Nothing waits around.</p>
+        <p>If nobody opens it, it deletes itself anyway. You choose an hour, a
+           day, or a week. Nothing sits around waiting.</p>
+        <p class="spec">server-side TTL<span>·</span>1h / 24h / 7d</p>
       </div>
       <div class="sec-cell">
         <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M7 2h2v12H7z M2 7h12v2H2z M3 3h2v2H3z M11 3h2v2h-2z M3 11h2v2H3z M11 11h2v2h-2z"/></svg>
         <h3>Optional passphrase</h3>
-        <p>A second lock, checked on the recipient's device. A typo burns
-           nothing, and there is nothing for attackers to guess against.</p>
+        <p>Add a second lock and share it another way. It is checked on your
+           recipient's device, so a typo costs them nothing but a retry.</p>
+        <p class="spec">PBKDF2-HMAC-SHA256<span>·</span>310,000 iterations</p>
       </div>
       <div class="sec-cell">
         <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M2 6h12v5H2zM6 8h4v1H6z M12 1h2v2h-2z M10 3h2v2h-2z M8 5h2v2H8z M6 7h2v2H6z M4 9h2v2H4z M2 11h2v2H2z"/></svg>
         <h3>No accounts, no tracking</h3>
-        <p>No signup, no cookies, no analytics, no third party scripts. The
-           page cannot talk to anyone but this server.</p>
+        <p>Nothing to sign up for. No cookies, no analytics, no third party
+           scripts anywhere on the page.</p>
+        <p class="spec">CSP default-src 'self'<span>·</span>zero third parties</p>
       </div>
       <div class="sec-cell">
         <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M5 3h2v2H5z M3 5h2v2H3z M1 7h2v2H1z M3 9h2v2H3z M5 11h2v2H5z M9 3h2v2H9z M11 5h2v2h-2z M13 7h2v2h-2z M11 9h2v2h-2z M9 11h2v2H9z"/></svg>
         <h3>Open source</h3>
-        <p>A small Go codebase with zero dependencies, MIT licensed. Audit it
-           in an afternoon, host it anywhere.</p>
+        <p>Every line is public and MIT licensed. Read it yourself, or run
+           your own copy on your own server.</p>
+        <p class="spec">Go, no dependencies<span>·</span>one static binary</p>
       </div>
     </div>
   </div>
@@ -322,32 +329,44 @@
 
 
 <!-- CLI -->
-<section id="cli" class="band">
-  <div class="wrap dev-grid">
-    <div class="dev-copy">
-      <span class="eyebrow">Command line</span>
-      <h2>The same tool lives in your terminal</h2>
-      <p>One static binary is the server, the site, and the client. A link made
-         in the terminal opens in the browser, and the other way round.</p>
-      <div class="dev-list">
-        <div>
-          <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 8h2v2H3z M5 10h2v2H5z M7 8h2v2H7z M9 6h2v2H9z M11 4h2v2h-2z"/></svg>
-          <span>Reads stdin, writes stdout, fits into pipes</span>
-        </div>
-        <div>
-          <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 8h2v2H3z M5 10h2v2H5z M7 8h2v2H7z M9 6h2v2H9z M11 4h2v2h-2z"/></svg>
-          <span>Encrypts locally, before anything touches the network</span>
-        </div>
-        <div>
-          <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 8h2v2H3z M5 10h2v2H5z M7 8h2v2H7z M9 6h2v2H9z M11 4h2v2h-2z"/></svg>
-          <span>Self hosts with a single command</span>
-        </div>
-      </div>
-      <div class="install-row">
-        <code class="install"><span class="install-prompt">$ </span><span id="installCmd">go install github.com/realanshuman/sendkey/cmd/sendkey@latest</span></code>
-        <button id="copyCmd" class="btn btn-ghost btn-sm" aria-label="Copy the install command">Copy</button>
-      </div>
+<section id="dev" class="band">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">For developers</span>
+      <h2>A binary and an HTTP API</h2>
+      <p>Everything the site does also works from a terminal or from your own
+         code. Same encryption, same burn, nothing to sign up for.</p>
     </div>
+
+    <div class="dev-grid">
+      <div class="dev-copy">
+        <div class="dev-list">
+          <div>
+            <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 8h2v2H3z M5 10h2v2H5z M7 8h2v2H7z M9 6h2v2H9z M11 4h2v2h-2z"/></svg>
+            <span>Reads stdin, writes stdout, fits into pipes</span>
+          </div>
+          <div>
+            <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 8h2v2H3z M5 10h2v2H5z M7 8h2v2H7z M9 6h2v2H9z M11 4h2v2h-2z"/></svg>
+            <span>Encrypts locally, before anything touches the network</span>
+          </div>
+          <div>
+            <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 8h2v2H3z M5 10h2v2H5z M7 8h2v2H7z M9 6h2v2H9z M11 4h2v2h-2z"/></svg>
+            <span>One static binary is the server, the site and the client</span>
+          </div>
+        </div>
+        <div class="install-row">
+          <code class="install"><span class="install-prompt">$ </span><span id="installCmd">go install github.com/realanshuman/sendkey/cmd/sendkey@latest</span></code>
+          <button id="copyCmd" class="btn btn-ghost btn-sm" aria-label="Copy the install command">Copy</button>
+        </div>
+
+        <div class="dev-api">
+          <strong>Or skip the binary</strong>
+          <p>Four JSON endpoints, no key to register, and CORS is open, so your
+             own page can use SendKey as a backend and still do the encryption
+             on the client.</p>
+          <a class="mode-link" href="/api">Read the API docs →</a>
+        </div>
+      </div>
 
     <div class="terminal">
       <div class="terminal-bar">
@@ -369,6 +388,7 @@ https://sendkey.xyz/s/Qm93kd0Xw1Tz<span class="t-key">#R6cdQpWvZ2xNb4Ml…</span
 <span class="t-out">sendkey: server: this secret has expired or</span>
 <span class="t-out">already been viewed</span>
 </pre>
+    </div>
     </div>
   </div>
 </section>
@@ -498,7 +518,7 @@ https://sendkey.xyz/s/Qm93kd0Xw1Tz<span class="t-key">#R6cdQpWvZ2xNb4Ml…</span
           <a href="/ask">Ask</a>
           <a href="/api">API</a>
           <a href="#how">How it works</a>
-          <a href="#cli">CLI</a>
+          <a href="#dev">Developers</a>
           <a href="#faq">FAQ</a>
           <a href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
         </div>

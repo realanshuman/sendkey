@@ -388,8 +388,14 @@ body > section { padding: 88px 0; }
   margin-bottom: 16px;
   image-rendering: pixelated;
 }
+/* same column mechanics as .mode-cell: the plain copy takes the slack so the
+   spec rules line up across each row of the grid */
+.sec-cell { display: flex; flex-direction: column; align-items: flex-start; }
 .sec-cell h3 { font-size: 11px; line-height: 1.7; margin-bottom: 9px; }
-.sec-cell p { font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+/* :where() so this scores as one class, not class+element. At (0,1,1) it
+   outranks .spec below and silently reimposes 13px/1.7 on the spec line,
+   which is what made the dotted rules step across each row. */
+.sec-cell :where(p) { font-size: 13px; line-height: 1.7; color: var(--ink-2); flex: 1; }
 
 /* ---- CLI ------------------------------------------------------------------- */
 
@@ -745,7 +751,59 @@ body > section { padding: 88px 0; }
   margin-bottom: 16px;
 }
 .mode-cell h3 { font-size: 11px; line-height: 1.7; margin-bottom: 9px; }
-.mode-cell p { font-size: 13px; line-height: 1.7; color: var(--ink-2); flex: 1; }
+.mode-cell :where(p) { font-size: 13px; line-height: 1.7; color: var(--ink-2); flex: 1; }
+
+/* ---- the two registers ------------------------------------------------------
+   Every claim on this page is made twice: a plain sentence anyone can read,
+   and a .spec line carrying the same fact in the terms a developer would
+   check it against. Keeping them in one visual system, rather than splitting
+   the page into a friendly half and a technical half, means neither audience
+   has to skip anything to find the register they came for. */
+
+.spec {
+  margin-top: 14px;
+  padding-top: 11px;
+  border-top: 2px dotted var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  /* integer line box, and room reserved for two of them. Specs run one or
+     two lines depending on the cell and the viewport; without a floor the
+     dotted rules step up and down across a row as copy rewraps. Two lines
+     is the ceiling too: the longest spec is 43 characters against ~35 per
+     line at the narrowest three-column width. */
+  line-height: 18px;
+  /* border-box, so the floor has to pay for the rule and its padding too:
+     two 18px lines + 11px padding-top + the 2px dotted border = 49 */
+  min-height: 49px;
+  color: var(--ink-3);
+  /* the row wraps at narrow widths rather than forcing the cell wider */
+  overflow-wrap: break-word;
+}
+.spec span { padding: 0 5px; }
+/* .mode-cell p carries flex:1 so the plain copy absorbs the cell's slack and
+   the spec lines land on one baseline across the row. That rule also matches
+   .spec, which would make the two paragraphs split the slack instead, so the
+   spec is pinned back to its content height here. */
+.mode-cell .spec, .sec-cell .spec { width: 100%; flex: none; }
+.mode-cell .mode-link { margin-top: 12px; }
+
+/* the API half of the developer band */
+.dev-api {
+  margin-top: 26px;
+  padding: 18px 20px;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.dev-api strong {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.dev-api p { font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+.dev-api .mode-link { margin-top: 10px; }
 .mode-link {
   /* each cell's only call to action, so it carries the 24px minimum target
      size; width-fit keeps the hit area on the words rather than the row */
