@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sonara</title>
+<meta name="description" content="Sonara listens to the consultation, tells the doctor and patient apart, and writes the case sheet — signed before the next token is called.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter+Tight:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0B2422; --petrol:#12514B; --petrol-deep:#0D423D; --sea:#2F8C7F;
+  --mist:#C9DBD5; --paper:#F1F4F1; --chalk:#FFFFFF; --line:#D5DEDA;
+  --muted:#5E736E; --faint:#9AACA7;
+  --soft:#F7FAF8; --panel-head:#FAFCFB; --sea-wash:#EAF3F0; --ok-wash:#E0EDE9;
+  --amber:#B7801E; --amber-deep:#8A6412; --amber-wash:#FBF4E8; --amber-line:#EBDCC0;
+  --signal:#D8452F; --signal-deep:#B23422; --signal-wash:#FBE2DE;
+  --brick:#9E3A2B; --brick-wash:#F6E3DF; --brick-line:#E3C4BD;
+  --ink-2:#12312E; --ink-line:#1E4340; --ink-text:#DCE7E4; --ink-muted:#8FA8A3; --ink-faint:#6E8C87;
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'Inter Tight',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sh-card:0 1px 2px rgba(11,36,34,.04);
+  --sh-float:0 1px 2px rgba(11,36,34,.05),0 18px 44px -28px rgba(11,36,34,.30);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+a{color:inherit}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2.5px solid var(--sea);outline-offset:3px;border-radius:4px}
+img,svg{max-width:100%}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.wordmark{font-family:var(--display);font-weight:800;letter-spacing:-.045em;line-height:1}
+.lockup{display:inline-flex;align-items:center;gap:10px;text-decoration:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:15px;padding:12px 20px;border-radius:9px;border:1px solid transparent;text-decoration:none;transition:background .15s ease,border-color .15s ease;white-space:nowrap}
+.btn-primary{background:var(--petrol);color:#fff}
+.btn-primary:hover{background:var(--petrol-deep)}
+.btn-ghost{border-color:var(--line);background:var(--chalk);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--sea)}
+.btn-onink{background:var(--chalk);color:var(--petrol)}
+.btn-onink:hover{background:var(--mist)}
+.btn-ghost-ink{border-color:#2C5A55;background:transparent;color:#fff}
+.btn-ghost-ink:hover{border-color:var(--sea)}
+
+/* ── nav ── */
+nav{position:sticky;top:0;z-index:50;background:rgba(11,36,34,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--ink-line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;padding:15px 0;gap:20px}
+.nav-links{display:flex;gap:26px;align-items:center;font-size:15px}
+.nav-links a:not(.btn){text-decoration:none;color:var(--ink-muted)}
+.nav-links a:not(.btn):hover{color:#fff}
+.nav-links .btn{padding:9px 16px}
+@media(max-width:820px){.nav-links a:not(.btn){display:none}}
+
+/* ── hero (ink) ── */
+.hero{background:var(--ink);color:var(--ink-text);padding:88px 0 0;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+@media(max-width:960px){.hero-grid{grid-template-columns:1fr}}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(42px,6.6vw,84px);line-height:.97;letter-spacing:-.04em;margin:18px 0 22px;color:#fff;max-width:13ch;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--mist)}
+.hero .lede{font-size:19px;color:var(--ink-muted);max-width:50ch;margin:0 0 30px}
+.hero .lede b{color:var(--ink-text);font-weight:600}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.hero-note{font-family:var(--mono);font-size:12px;color:var(--ink-muted);margin-top:18px;line-height:1.8}
+
+/* hero sheet (the artifact) */
+.sheet{background:var(--chalk);color:var(--ink);border-radius:16px;box-shadow:0 24px 80px -24px rgba(0,0,0,.55);overflow:hidden;max-width:440px;justify-self:end;width:100%}
+@media(max-width:960px){.sheet{justify-self:start;margin-bottom:0}}
+.sheet-bar{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--panel-head)}
+.sheet-bar .who{font-weight:600;font-size:13.5px}
+.sheet-bar .tm{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto}
+.livechip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--signal-deep);background:var(--signal-wash);padding:2.5px 7px;border-radius:5px}
+.livechip .d{width:6px;height:6px;border-radius:50%;background:var(--signal);animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.sheet-body{padding:14px 16px 16px}
+.sf{padding:8px 0;border-bottom:1px dashed var(--line)}
+.sf:last-child{border-bottom:0}
+.sf .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.sf .v{font-size:13.5px;line-height:1.5}
+.pill{display:inline-block;font-family:var(--mono);font-size:10.5px;background:#E7EEEB;color:var(--petrol);padding:2px 7px;border-radius:5px;margin:4px 4px 0 0}
+.sf .sig{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.sf .sig .nm{font-family:var(--display);font-weight:600;font-size:13.5px}
+.sf .sig .rg{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.sf .sig .st-sg{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--petrol);background:var(--ok-wash);padding:2.5px 7px;border-radius:5px}
+
+/* the trace strip across the hero bottom */
+.trace{margin-top:72px;border-top:1px solid var(--ink-line);background:var(--ink)}
+.trace-in{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;padding:18px 0}
+.trace .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap}
+#traceWave{width:100%;height:40px;display:block}
+@media(max-width:700px){.trace-in{grid-template-columns:1fr}.trace .cap{display:none}}
+
+/* ── ticker ── */
+.ticker{background:var(--petrol);color:#fff;overflow:hidden;border-bottom:1px solid var(--petrol-deep)}
+.ticker-in{display:flex;gap:0;white-space:nowrap;will-change:transform;animation:tick 46s linear infinite;width:max-content;padding:12px 0}
+@keyframes tick{to{transform:translateX(-50%)}}
+.tick-item{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:13px;padding:0 26px;color:#CFE3DD}
+.tick-item .spk{font-size:9.5px;letter-spacing:.06em;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.14);color:#fff}
+.ticker:hover .ticker-in{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.ticker-in{animation:none}}
+
+/* ── sections ── */
+section{padding:96px 0}
+.sec-head{max-width:62ch;margin-bottom:52px}
+.sec-head h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.4vw,48px);letter-spacing:-.032em;line-height:1.03;margin:12px 0 14px;text-wrap:balance}
+.sec-head p{color:var(--muted);font-size:17px;margin:0;max-width:58ch}
+
+/* acts */
+.act{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:44px 0;border-top:1px solid var(--line)}
+.act:first-of-type{border-top:0;padding-top:0}
+@media(max-width:900px){.act{grid-template-columns:1fr;gap:26px}}
+.act .tstamp{font-family:var(--mono);font-size:13px;color:var(--sea);display:block;margin-bottom:12px}
+.act h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,2.6vw,28px);letter-spacing:-.022em;margin:0 0 10px;line-height:1.15}
+.act p{color:var(--muted);margin:0 0 14px;max-width:44ch}
+.act .fine{font-family:var(--mono);font-size:12px;color:var(--faint)}
+.act:nth-child(odd) .act-vis{order:-1}
+@media(max-width:900px){.act .act-vis{order:0!important}}
+
+/* demo cards inside acts (real components) */
+.card{background:var(--chalk);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-card);overflow:hidden}
+.card .chead{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--panel-head);font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.card .cbody{padding:16px}
+.consent-demo{background:var(--amber-wash);border:1px solid var(--amber-line);border-radius:10px;padding:12px 14px;font-size:14px}
+.consent-demo .langs{display:flex;gap:6px;margin-bottom:8px}
+.consent-demo .langs span{font-size:12px;font-weight:600;padding:3px 9px;border-radius:6px;color:var(--amber-deep)}
+.consent-demo .langs span.on{background:var(--chalk);border:1px solid var(--amber-line);color:var(--ink)}
+.consent-demo p{margin:0 0 10px;font-size:14.5px;color:var(--ink)}
+.consent-demo label{display:flex;gap:8px;font-weight:600;font-size:13.5px;align-items:flex-start;color:var(--ink)}
+.consent-demo input{accent-color:var(--petrol);margin-top:2px}
+.rec-demo{display:flex;gap:12px;align-items:center;margin-top:14px}
+.btn-rec{background:var(--signal);color:#fff;font-size:13.5px;padding:8px 14px}
+.btn-rec[disabled]{opacity:.45;cursor:not-allowed}
+.btn-rec .d{width:7px;height:7px;border-radius:50%;background:#fff}
+.rec-demo .hint{font-size:12.5px;color:var(--muted)}
+
+.trl{display:flex;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);opacity:0;transform:translateY(5px);transition:opacity .45s,transform .45s}
+.trl.on{opacity:1;transform:none}
+.trl:last-child{border-bottom:0}
+.spk{font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.06em;padding:2px 6px;border-radius:4px;height:fit-content;margin-top:2px;flex:none}
+.spk-dr{background:var(--ok-wash);color:var(--petrol)}
+.spk-pt{background:#EDEAE2;color:#6B6250}
+.spk-att{background:#E8E9F0;color:#565C74}
+.trl .ts{font-family:var(--mono);font-size:10.5px;color:var(--faint);flex:none;margin-top:3px}
+.trl .tx{font-size:13.5px;line-height:1.5}
+#actWave{width:100%;height:34px;display:block;margin-bottom:10px}
+
+.note-demo .nf{padding:9px 0;border-bottom:1px dashed var(--line)}
+.note-demo .nf:last-child{border-bottom:0}
+.note-demo .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;display:flex;justify-content:space-between}
+.note-demo .v{font-size:13.5px;line-height:1.5}
+.note-demo .saved{color:var(--sea);text-transform:none;letter-spacing:.04em}
+.signrow{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.signrow small{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+
+/* ── wedge (code-mix typography) ── */
+.wedge{background:var(--chalk);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.bigsent{font-family:var(--display);font-weight:800;font-size:clamp(30px,5.4vw,64px);line-height:1.12;letter-spacing:-.035em;margin:0 0 20px;max-width:22ch}
+.bigsent .hi{color:var(--sea);position:relative}
+.bigsent .en{color:var(--ink)}
+.legend{display:flex;gap:22px;font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:44px}
+.legend .sw{display:inline-block;width:12px;height:12px;border-radius:4px;vertical-align:-1px;margin-right:7px}
+.wedge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:860px){.wedge-grid{grid-template-columns:1fr}}
+.wcard{border:1px solid var(--line);border-radius:14px;padding:22px;background:var(--paper)}
+.wcard h3{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:-.02em;margin:0 0 6px}
+.wcard p{margin:0;color:var(--muted);font-size:14.5px}
+.wcard .mono-x{font-family:var(--mono);font-size:12px;color:var(--sea);display:block;margin-bottom:12px}
+
+/* ── bento ── */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.bcell{background:var(--chalk);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:8px;min-height:180px}
+.bcell h3{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:-.02em;margin:0}
+.bcell p{margin:0;color:var(--muted);font-size:14px}
+.bcell .art{margin-top:auto;padding-top:14px}
+.b-3{grid-column:span 3}.b-2{grid-column:span 2}.b-4{grid-column:span 4}
+@media(max-width:900px){.b-3,.b-2,.b-4{grid-column:span 6}}
+.mini-offline{background:var(--ink);color:var(--ink-text);border-radius:9px;padding:9px 12px;font-size:12.5px;display:flex;gap:8px;align-items:center}
+.mini-offline b{color:#fff;font-weight:600}
+.kbd-row{display:flex;gap:6px;flex-wrap:wrap}
+kbd{font-family:var(--mono);font-size:11px;background:var(--soft);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:2px 7px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font-family:var(--mono);font-size:11px;background:#E7EEEB;color:var(--petrol);padding:2.5px 8px;border-radius:5px}
+.mini403{font-family:var(--mono);font-size:12px;background:var(--brick-wash);border:1px solid var(--brick-line);color:var(--brick);border-radius:8px;padding:8px 11px}
+.deliv{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:5px}
+.deliv .ok{color:var(--petrol)}
+.dial{font-family:var(--mono);font-size:26px;letter-spacing:-.02em;color:var(--ink)}
+.dial small{font-size:12px;color:var(--muted);letter-spacing:0}
+
+/* ── gates (ink band) ── */
+.gates{background:var(--ink);color:var(--ink-text)}
+.gates .sec-head h2{color:#fff}
+.gates .sec-head p{color:var(--ink-muted)}
+.gate-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--ink-line);border-radius:16px;overflow:hidden}
+@media(max-width:900px){.gate-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.gate-grid{grid-template-columns:1fr}}
+.gate{padding:28px 26px;border-right:1px solid var(--ink-line);background:var(--ink-2)}
+.gate:last-child{border-right:0}
+@media(max-width:900px){.gate{border-bottom:1px solid var(--ink-line)}}
+.gate .n{font-family:var(--display);font-weight:800;font-size:clamp(34px,3.6vw,46px);letter-spacing:-.03em;color:#fff;line-height:1;font-variant-numeric:tabular-nums}
+.gate .n small{font-size:16px;color:var(--ink-muted);font-weight:600;letter-spacing:0}
+.gate .t{font-size:14.5px;color:var(--ink-muted);margin-top:10px;line-height:1.5}
+.gate .t b{color:var(--ink-text);font-weight:600}
+.gates .fine{font-family:var(--mono);font-size:12px;color:var(--ink-faint);margin-top:20px}
+
+/* ── ledger ── */
+.line-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+@media(max-width:900px){.line-grid{grid-template-columns:1fr}}
+.claim{font-family:var(--display);font-weight:800;font-size:clamp(28px,3.8vw,44px);line-height:1.06;letter-spacing:-.03em;margin:14px 0 20px;text-wrap:balance}
+.claim em{font-style:normal;color:var(--sea)}
+.trust{display:flex;flex-direction:column;gap:0;margin-top:26px}
+.trust .ti{display:flex;gap:12px;padding:13px 0;border-top:1px dashed var(--line);font-size:15px;color:var(--muted)}
+.trust .ti b{color:var(--ink);font-weight:600}
+.trust .ti .m{font-family:var(--mono);font-size:11px;color:var(--sea);flex:none;padding-top:3px;width:20px}
+.ledger{border:1px solid var(--line);border-radius:14px;background:var(--chalk);overflow:hidden;box-shadow:var(--sh-card)}
+.ledger .chead{display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--panel-head);font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ledger table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
+.ledger td{padding:9px 16px;border-bottom:1px dashed var(--line);vertical-align:top}
+.ledger tr:last-child td{border-bottom:0}
+.ledger .t{color:var(--faint);white-space:nowrap}
+.ledger .a{color:var(--petrol);font-weight:500;white-space:nowrap}
+.ledger .w{color:var(--brick);font-weight:500;white-space:nowrap}
+.ledger .d{color:var(--muted)}
+.ledger .foot{padding:10px 16px;font-family:var(--mono);font-size:11px;color:var(--faint);border-top:1px solid var(--line);background:var(--panel-head)}
+@media(max-width:560px){.ledger td:nth-child(4){display:none}}
+
+/* ── faq ── */
+.faq{max-width:760px}
+.faq details{border-top:1px solid var(--line)}
+.faq details:last-child{border-bottom:1px solid var(--line)}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 4px;font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:-.015em}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .m{font-family:var(--mono);font-size:16px;color:var(--sea);flex:none;transition:transform .2s}
+.faq details[open] summary .m{transform:rotate(45deg)}
+.faq .a{padding:0 4px 22px;color:var(--muted);max-width:60ch}
+.faq .a p{margin:0 0 10px}
+.faq .a p:last-child{margin:0}
+
+/* ── cta ── */
+.cta{background:var(--petrol);color:#fff;border-radius:22px;padding:64px 44px;text-align:center;position:relative;overflow:hidden}
+.cta h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.6vw,50px);letter-spacing:-.032em;line-height:1.03;margin:0 0 14px;text-wrap:balance}
+.cta p{color:#A9CCC6;max-width:46ch;margin:0 auto 28px;font-size:17px}
+.cta .mono-note{font-family:var(--mono);font-size:12px;color:#7FA8A1;margin-top:18px}
+
+/* ── footer ── */
+footer{background:var(--ink);color:var(--ink-muted);margin-top:96px}
+.foot-in{display:flex;justify-content:space-between;gap:32px;padding:56px 0 48px;flex-wrap:wrap;align-items:flex-start}
+.foot-in .stack{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.foot-cols{display:flex;gap:56px;flex-wrap:wrap;font-size:14px}
+.foot-cols .col{display:flex;flex-direction:column;gap:9px}
+.foot-cols .h{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)}
+.foot-cols a{text-decoration:none;color:var(--ink-muted)}
+.foot-cols a:hover{color:#fff}
+.foot-base{border-top:1px solid var(--ink-line);padding:20px 0 28px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}.trl{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<mask id="cut"><rect width="48" height="48" fill="#fff"/><path d="M8 24H17l3-7 4 14 4-11.5 3 6.5 2.5-2H45" stroke="#000" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></mask>
+<symbol id="mk" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="none" stroke="currentColor" stroke-width="3.6" mask="url(#cut)"/><path d="M8 24H17l3-7 4 14 4-11.5 3 6.5 2.5-2H45" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs></svg>
+
+<nav aria-label="Main"><div class="wrap nav-in">
+  <a class="lockup" href="#top" aria-label="Sonara — home">
+    <svg width="24" height="24" style="color:var(--mist)" aria-hidden="true"><use href="#mk"/></svg>
+    <span class="wordmark" style="font-size:19px;color:#fff">Sonara</span>
+  </a>
+  <div class="nav-links">
+    <a href="#visit">How a visit runs</a>
+    <a href="#wedge">Languages</a>
+    <a href="#theline">Where the line is</a>
+    <a href="#faq">Questions</a>
+    <a href="#pilot" class="btn btn-onink">Book a pilot day</a>
+  </div>
+</div></nav>
+
+<!-- ═════════ HERO ═════════ -->
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow" style="color:var(--ink-faint)">Ambient case sheets · for Indian OPD practice</span>
+      <h1>Six minutes in the room. <em>Eight seconds of typing.</em></h1>
+      <p class="lede">Sonara listens to the consultation, tells the doctor and patient apart, and writes the case sheet and a draft prescription. <b>You read, fix, and sign</b> — before the next token is called.</p>
+      <div class="hero-cta">
+        <a class="btn btn-onink" href="#pilot">Book a pilot day</a>
+        <a class="btn btn-ghost-ink" href="#visit">How a visit runs ↓</a>
+      </div>
+      <p class="hero-note">Consent before the mic opens · you sign everything that leaves · audio deleted on your schedule</p>
+    </div>
+
+    <div class="sheet" aria-label="Example case sheet, drafted by Sonara">
+      <div class="sheet-bar">
+        <span class="livechip"><span class="d"></span>Rec</span>
+        <span class="who">Priya Nair · 34F</span>
+        <span class="tm" id="heroClock">06:12</span>
+      </div>
+      <div class="sheet-body">
+        <div class="sf"><div class="k">Presenting complaint</div><div class="v">Fever ×2 days, sore throat, dry cough worse at night</div>
+          <div><span class="pill">fever · R50.9</span><span class="pill">sore throat</span><span class="pill">dry cough · R05</span></div></div>
+        <div class="sf"><div class="k">On examination</div><div class="v">Pharyngeal erythema, tonsils mildly enlarged, temp 100.8°F</div></div>
+        <div class="sf"><div class="k">Assessment — draft</div><div class="v">Acute pharyngitis, likely viral</div></div>
+        <div class="sf"><div class="sig">
+          <span><span class="nm">Dr. A. Menon, MD</span><br><span class="rg">NMC 4471 22 09 · Navi Mumbai</span></span>
+          <span class="st-sg">Awaits signature</span>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="trace">
+    <div class="wrap trace-in">
+      <span class="cap">The room</span>
+      <svg id="traceWave" viewBox="0 0 900 40" preserveAspectRatio="none" aria-hidden="true"></svg>
+      <span class="cap">The record</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═════════ TICKER ═════════ -->
+<div class="ticker" aria-hidden="true"><div class="ticker-in" id="tickerIn">
+  <span class="tick-item"><span class="spk">PT</span>Do din se bukhar hai, and throat is paining a lot.</span>
+  <span class="tick-item"><span class="spk">DR</span>BP ki dawa time pe le rahe hain?</span>
+  <span class="tick-item"><span class="spk">PT</span>Dry cough hai — raat ko zyada hota hai.</span>
+  <span class="tick-item"><span class="spk">ATT</span>Doctor, kal raatri pasun khup khokla aahe.</span>
+  <span class="tick-item"><span class="spk">PT</span>Pet mein jalan hoti hai, especially after dinner.</span>
+  <span class="tick-item"><span class="spk">DR</span>Pichhli baar azithromycin suit hua tha?</span>
+  <span class="tick-item"><span class="spk">PT</span>Sugar fasting one thirty aayi thi last week.</span>
+  <span class="tick-item"><span class="spk">DR</span>Sāns lene mein taqleef? Chest dekhte hain.</span>
+</div></div>
+
+<!-- ═════════ ACTS ═════════ -->
+<section class="wrap" id="visit">
+  <div class="sec-head">
+    <span class="eyebrow">How a visit runs</span>
+    <h2>Nothing about your OPD changes. One thing stops happening at 9pm.</h2>
+    <p>Timestamps from a real six-minute consultation. The evening hour of writing it all up is the part Sonara removes.</p>
+  </div>
+
+  <div class="act">
+    <div>
+      <span class="tstamp">00:00 — the patient sits down</span>
+      <h3>Consent first. The mic won't open without it.</h3>
+      <p>A one-line script sits on screen in English, Hindi and Marathi. The patient agrees, you tick the box, and only then does the record button arm. Consent is stored per visit — language, method, time — and if the patient declines, you simply write the note yourself, same as today.</p>
+      <span class="fine">consent.captured · verbal · Marathi · 11:21 — in the audit log, every time</span>
+    </div>
+    <div class="act-vis"><div class="card">
+      <div class="chead">Consent · this visit only</div>
+      <div class="cbody">
+        <div class="consent-demo">
+          <div class="langs"><span class="on">English</span><span>हिन्दी</span><span>मराठी</span></div>
+          <p>"I'd like to record our conversation so your notes are written properly. The recording stays private and is deleted on a schedule. Is that okay?"</p>
+          <label><input type="checkbox" id="landCons"> Patient agreed — record consent for this visit</label>
+        </div>
+        <div class="rec-demo">
+          <button class="btn btn-rec" id="landRec" disabled><span class="d"></span>Start recording</button>
+          <span class="hint" id="landHint">Disabled until consent is ticked — try it.</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="act">
+    <div>
+      <span class="tstamp">00:04 — you just talk</span>
+      <h3>It hears both of you, and knows who's who.</h3>
+      <p>The transcript streams live, labelled DR and PT — and ATT when a parent or family member answers, which in a real OPD is half the time. History stays in the patient's words; findings stay in yours. Switch languages mid-sentence; it follows.</p>
+      <span class="fine">No wake words · no dictation voice · no "period, new paragraph"</span>
+    </div>
+    <div class="act-vis"><div class="card">
+      <div class="chead"><span>Live transcript</span><span style="margin-left:auto;text-transform:none;letter-spacing:.04em">Marathi + English · 3 speakers</span></div>
+      <div class="cbody" id="actTr">
+        <svg id="actWave" viewBox="0 0 560 34" preserveAspectRatio="none"></svg>
+        <div class="trl"><span class="spk spk-dr">DR</span><span class="ts">00:03</span><span class="tx">Arjun, kasa aahes? Aai, kay hot aahe?</span></div>
+        <div class="trl"><span class="spk spk-att">ATT</span><span class="ts">00:06</span><span class="tx">Doctor, kal raatri pasun khup khokla aahe, ani thoda taap pan hota.</span></div>
+        <div class="trl"><span class="spk spk-pt">PT</span><span class="ts">00:24</span><span class="tx">Ghasa dukhtoy.</span></div>
+        <div class="trl"><span class="spk spk-dr">DR</span><span class="ts">00:28</span><span class="tx">Baghto… throat thoda red aahe. Chest clear. Temp 99.6.</span></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="act">
+    <div>
+      <span class="tstamp">06:20 — you end the visit</span>
+      <h3>Read it. Fix a word. Sign it.</h3>
+      <p>The case sheet arrives in the structure you already use, every sentence traceable to the words that produced it. The assessment is phrased as a draft, because it is one. You compose the prescription; Sonara checks it against recorded allergies, formats it, and sends it — after you sign, never before.</p>
+      <span class="fine">Draft in under 15 seconds · median correction under 30 seconds</span>
+    </div>
+    <div class="act-vis"><div class="card note-demo">
+      <div class="chead"><span>Draft case sheet</span><span style="margin-left:auto" class="saved">Saved</span></div>
+      <div class="cbody">
+        <div class="nf"><div class="k"><span>Presenting complaint</span></div><div class="v">Cough since last night with mild fever, reported by mother. Sore throat.</div></div>
+        <div class="nf"><div class="k"><span>Assessment — draft</span></div><div class="v">Viral upper respiratory infection, likely</div></div>
+        <div class="nf"><div class="k"><span>Plan</span></div><div class="v">Symptomatic treatment for 3 days. Return if fever rises or breathing is laboured.</div></div>
+        <div class="signrow">
+          <span class="btn btn-primary" style="font-size:13.5px;padding:8px 14px">Review &amp; sign</span>
+          <small>Dr. A. Menon · NMC 4471 22 09</small>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ═════════ WEDGE ═════════ -->
+<section class="wedge" id="wedge">
+  <div class="wrap">
+    <div class="sec-head" style="margin-bottom:36px">
+      <span class="eyebrow">The part imports get wrong</span>
+      <h2>Your patients speak one and a half languages at once.</h2>
+    </div>
+    <p class="bigsent" aria-label="Do din se bukhar hai, and throat is paining — one sentence, two languages">
+      <span class="hi">"Do din se bukhar hai,</span> <span class="en">and throat is paining."</span>
+    </p>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--sea)"></span>Hindi</span>
+      <span><span class="sw" style="background:var(--ink)"></span>English</span>
+      <span style="margin-left:auto">One sentence. Not two.</span>
+    </div>
+    <div class="wedge-grid">
+      <div class="wcard"><span class="mono-x">code-mixed → transcribed as one</span><h3>The switch happens mid-sentence</h3><p>Global scribes transcribe the English and drop the Hindi, or the reverse. Sonara treats the sentence as what it is — one utterance — and the note comes out in clean clinical English either way.</p></div>
+      <div class="wcard"><span class="mono-x">"Azithral" → azithromycin 500mg</span><h3>Drug names as actually said</h3><p>Indian brand names, as spoken at the counter, resolved against a licensed drug database — salt, strength, form. Corrections you make teach your clinic's vocabulary, nobody else's.</p></div>
+      <div class="wcard"><span class="mono-x">ceiling fan · corridor · four relatives</span><h3>Tuned for a real OPD room</h3><p>A fan overhead, a queue outside the door, an attendant answering half the questions. That's the audio Sonara is built and tested against — not a quiet exam room abroad.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ BENTO ═════════ -->
+<section class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Built for the room it sits in</span>
+    <h2>A clinic tool, not a demo that needs perfect wifi.</h2>
+  </div>
+  <div class="bento">
+    <div class="bcell b-3">
+      <h3>The internet drops. The recording doesn't.</h3>
+      <p>Audio buffers on the clinic computer and uploads when the connection returns. A sixty-second outage loses zero seconds of the consult — and the screen says so in words, not a spinner.</p>
+      <div class="art"><div class="mini-offline"><svg width="16" height="16" viewBox="0 0 20 20" style="flex:none;color:var(--ink-muted)" aria-hidden="true"><path d="M5.5 14.5a3.5 3.5 0 0 1 .4-6.98 4.5 4.5 0 0 1 8.7 1.23A3 3 0 0 1 14 14.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3 17.5 17 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg> <span><b>Connection lost — saving locally.</b> Recording continues; uploads when the clinic is back online.</span></div></div>
+    </div>
+    <div class="bcell b-3">
+      <h3>Forgot to stop it? It stops itself.</h3>
+      <p>A warning at 20 minutes, auto-stop at 45. Never a silent discard — the audio is always kept, the state always named.</p>
+      <div class="art"><span class="dial">20:00 <small>warn</small> · 45:00 <small>auto-stop</small></span></div>
+    </div>
+    <div class="bcell b-2">
+      <h3>Front desk sees the queue, not the chart</h3>
+      <p>Roles are enforced where the data lives. A blocked read is still a logged read.</p>
+      <div class="art"><div class="mini403">record.read → 403 · logged</div></div>
+    </div>
+    <div class="bcell b-2">
+      <h3>Your clinic's vocabulary</h3>
+      <p>Seeded with the ~500 most-prescribed Indian brands; every correction you save sharpens it.</p>
+      <div class="art"><div class="chips"><span>Azithral</span><span>Pantop</span><span>Ecosprin</span><span>Vashi</span><span>+ yours</span></div></div>
+    </div>
+    <div class="bcell b-2">
+      <h3>Prescription, delivered</h3>
+      <p>Print for the desk, WhatsApp or email for the patient — each attempt logged per channel.</p>
+      <div class="art"><div class="deliv"><span class="ok">print · printed 11:31</span><span class="ok">whatsapp · delivered ✓✓</span><span>email · queued</span></div></div>
+    </div>
+    <div class="bcell b-3">
+      <h3>Runs on the desktop you already have</h3>
+      <p>Chrome or Edge on a three-year-old Windows machine over clinic broadband. No install, no new hardware, no configuration afternoon.</p>
+      <div class="art"><span class="fine mono" style="font-size:12px;color:var(--faint)">Today view first paint &lt; 1.5s on a 10Mbps line</span></div>
+    </div>
+    <div class="bcell b-3">
+      <h3>Hands stay on the keyboard</h3>
+      <p>The whole loop — pick patient, consent, record, edit, sign — works without touching the mouse.</p>
+      <div class="art"><div class="kbd-row"><kbd>/</kbd> search · <kbd>↵</kbd> add drug · <kbd>Esc</kbd> close · <kbd>Tab</kbd> everything</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ GATES ═════════ -->
+<section class="gates">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" style="color:var(--ink-faint)">Release gates, not marketing claims</span>
+      <h2>Numbers we hold every release to.</h2>
+      <p>Every build runs against a held-out set of real consultations with hand-written gold notes. Below any of these, it doesn't ship — the eval harness was built before the product was.</p>
+    </div>
+    <div class="gate-grid">
+      <div class="gate"><div class="n">≤15<small>s</small></div><div class="t"><b>End visit → draft on screen</b>, p95, for a ten-minute consult. Slower than this and the next patient is already talking.</div></div>
+      <div class="gate"><div class="n">≥95<small>%</small></div><div class="t"><b>Speaker attribution.</b> History belongs to the patient, findings to the doctor. Mixing them corrupts the note.</div></div>
+      <div class="gate"><div class="n">≤1<small>%</small></div><div class="t"><b>Unsupported clinical assertions.</b> If it wasn't said in the room, it isn't in the note. This gate blocks release.</div></div>
+      <div class="gate"><div class="n">0</div><div class="t"><b>Unsigned prescriptions, ever.</b> Not a policy — a database invariant. No code path produces one.</div></div>
+    </div>
+    <p class="fine">When audio is unclear, the note says so instead of guessing — a confident wrong note is more dangerous than an honest thin one.</p>
+  </div>
+</section>
+
+<!-- ═════════ THE LINE ═════════ -->
+<section class="wrap" id="theline">
+  <div class="line-grid">
+    <div>
+      <span class="eyebrow">Where the line is</span>
+      <p class="claim">Sonara drafts. <em>A registered doctor decides everything.</em></p>
+      <p style="color:var(--muted);max-width:46ch;margin:0">Under Indian practice rules only a registered medical practitioner may prescribe — so the product is built so nothing else can. Every action lands in an append-only ledger you can show a patient, a partner, or a procurement committee.</p>
+      <div class="trust">
+        <div class="ti"><span class="m">01</span><span><b>Consent gates the mic.</b> Per visit, in the patient's language, withdrawable mid-visit — withdrawal deletes the audio and transcript.</span></div>
+        <div class="ti"><span class="m">02</span><span><b>Signed means sealed.</b> Notes and prescriptions lock at signature; corrections are timestamped addenda, never edits.</span></div>
+        <div class="ti"><span class="m">03</span><span><b>Your patients train nothing.</b> Zero-retention terms with every provider that touches audio or text, in the contract.</span></div>
+      </div>
+    </div>
+    <div class="ledger" aria-label="Example audit ledger">
+      <div class="chead"><span>Audit ledger · visit V-8841</span><span>append-only</span></div>
+      <table>
+        <tr><td class="t">11:21:04</td><td class="a">consent.captured</td><td class="d">verbal · Marathi</td><td class="d">Dr. Menon</td></tr>
+        <tr><td class="t">11:21:36</td><td class="a">recording.started</td><td class="d">16kHz · encrypted</td><td class="d">Dr. Menon</td></tr>
+        <tr><td class="t">11:27:48</td><td class="a">recording.stopped</td><td class="d">06:12</td><td class="d">Dr. Menon</td></tr>
+        <tr><td class="t">11:28:02</td><td class="a">note.generated</td><td class="d">prompt v14 · 7.8s</td><td class="d">system</td></tr>
+        <tr><td class="t">11:29:15</td><td class="a">note.edited</td><td class="d">examination · 41 chars</td><td class="d">Dr. Menon</td></tr>
+        <tr><td class="t">11:31:44</td><td class="a">note.signed</td><td class="d">hash 9f2c…a1</td><td class="d">Dr. Menon</td></tr>
+        <tr><td class="t">11:31:58</td><td class="a">rx.delivered</td><td class="d">whatsapp · ✓✓</td><td class="d">system</td></tr>
+        <tr><td class="t">14:02:11</td><td class="w">record.read → 403</td><td class="d">clinical note blocked</td><td class="d">front desk</td></tr>
+      </table>
+      <div class="foot">No update. No delete. The database role can only INSERT — reads are logged too.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ FAQ ═════════ -->
+<section class="wrap" id="faq">
+  <div class="sec-head">
+    <span class="eyebrow">Questions doctors ask first</span>
+    <h2>Asked in every demo. Answered here.</h2>
+  </div>
+  <div class="faq">
+    <details>
+      <summary>What do I tell the patient?<span class="m">+</span></summary>
+      <div class="a"><p>One line, on screen, in English, Hindi or Marathi: "I'd like to record our conversation so your notes are written properly. The recording stays private and is deleted on a schedule. Is that okay?" If they decline, the record button stays off and you write the note as you do today — that path is first-class, not a punishment.</p></div>
+    </details>
+    <details>
+      <summary>What happens when the clinic internet drops?<span class="m">+</span></summary>
+      <div class="a"><p>Recording never depends on the connection. Audio buffers on your computer and uploads when the line returns; the screen says "Saving locally" so you're never guessing. A backend outage delays your note — it cannot lose your consult.</p></div>
+    </details>
+    <details>
+      <summary>Does it prescribe?<span class="m">+</span></summary>
+      <div class="a"><p>No. You compose every prescription. Sonara autocompletes from a licensed drug database, blocks drugs that match a recorded allergy (you can override, with a typed reason that's logged), formats the prescription, and delivers it after you sign. Nothing reaches a patient unsigned — there is no code path for it.</p></div>
+    </details>
+    <details>
+      <summary>Which languages does it handle?<span class="m">+</span></summary>
+      <div class="a"><p>Hindi–English and Marathi–English code-mixing at launch, including the mid-sentence switches your patients actually make. The written note is always clinical English. More language pairs follow the same bar: real-consultation evals, not vendor benchmarks.</p></div>
+    </details>
+    <details>
+      <summary>Where does the audio live, and for how long?<span class="m">+</span></summary>
+      <div class="a"><p>Encrypted in object storage, accessible only through short-lived signed links, retained for a window you choose (90 days by default) and then purged automatically — each purge writes an audit entry. The signed note is the medical record and is kept per medical-records law; the audio is not the record. No provider in the chain trains on your patients' data — that's contractual.</p></div>
+    </details>
+    <details>
+      <summary>What does the pilot cost?<span class="m">+</span></summary>
+      <div class="a"><p>The pilot day costs nothing but the afternoon it takes to set up. Bring your next twenty patients; if the evening write-up hour doesn't disappear, you've lost an afternoon and we've learned something. Pricing after that is per doctor per month — no per-note meter punishing your busiest days.</p></div>
+    </details>
+  </div>
+</section>
+
+<!-- ═════════ CTA ═════════ -->
+<section class="wrap" id="pilot" style="padding-top:0">
+  <div class="cta">
+    <h2>Try it on one clinic day.</h2>
+    <p>Bring your next twenty patients. If Sonara doesn't give you the evening back, you've lost an afternoon of setup and nothing else.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn-onink" href="#">Book a pilot day</a>
+      <a class="btn btn-ghost-ink" href="#" style="border-color:#41716B">Talk to a doctor using it</a>
+    </div>
+    <p class="mono-note">Setup is one afternoon · works on your existing desktop · no patient app required</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="stack">
+      <svg width="40" height="40" style="color:var(--mist)" aria-hidden="true"><use href="#mk"/></svg>
+      <span class="wordmark" style="font-size:24px;color:#fff">Sonara</span>
+      <span class="mono" style="font-size:11.5px;color:var(--ink-faint);max-width:30ch;line-height:1.7">The sound of a consult,<br>turned into a case sheet.</span>
+    </div>
+    <div class="foot-cols">
+      <div class="col"><span class="h">Product</span><a href="#visit">How a visit runs</a><a href="#wedge">Languages</a><a href="#faq">Questions</a></div>
+      <div class="col"><span class="h">Trust</span><a href="#theline">Where the line is</a><a href="#">Consent policy</a><a href="#">Security</a><a href="#">DPDP &amp; data rights</a></div>
+      <div class="col"><span class="h">Company</span><a href="#pilot">Book a pilot</a><a href="#">Write to us</a></div>
+    </div>
+  </div>
+  <div class="wrap foot-base">
+    <span>© 2026 Sonara · Navi Mumbai</span>
+    <span>Sonara drafts · a registered practitioner signs</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* duplicate ticker content for a seamless loop */
+  const tick=document.getElementById('tickerIn');
+  tick.innerHTML+=tick.innerHTML;
+
+  /* hero trace: flat line → speech → flat line */
+  const tw=document.getElementById('traceWave');
+  const N=110, W=900, H=40, bars=[];
+  for(let i=0;i<N;i++){
+    const r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    r.setAttribute('x',i*(W/N)+1);r.setAttribute('width',(W/N)-2.2);r.setAttribute('rx',1.2);
+    r.setAttribute('fill','#1E4340');tw.appendChild(r);bars.push(r);
+  }
+  function setB(r,h){h=Math.max(2,h);r.setAttribute('y',(H-h)/2);r.setAttribute('height',h);}
+  /* envelope: flat at both ends, speech in the middle */
+  function env(i){const x=i/N;return Math.max(0,Math.sin(Math.PI*Math.min(1,Math.max(0,(x-.12)/.76))));}
+  function paint(el){
+    for(let i=0;i<N;i++){
+      const e=env(i);
+      const s=Math.sin(el*6.4+i*.52)*Math.sin(el*2.2+i*.13)*Math.sin(i*.88+el*.9);
+      setB(bars[i],2+Math.abs(s)*e*30);
+      bars[i].setAttribute('fill', e<.04?'#1E4340' : (i%9===0?'#2F8C7F':'#3E6660'));
+    }
+  }
+  if(reduce){paint(1.7);}
+  else{
+    let t0=null;
+    (function loop(ts){
+      if(t0===null)t0=ts;paint((ts-t0)/1000);
+      requestAnimationFrame(loop);
+    })(0);
+  }
+
+  /* hero clock — quiet tick */
+  if(!reduce){
+    let s=372;const c=document.getElementById('heroClock');
+    setInterval(()=>{s=(s+1)%2700;c.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');},1000);
+  }
+
+  /* consent demo arms the record button */
+  const lc=document.getElementById('landCons'),lr=document.getElementById('landRec'),lh=document.getElementById('landHint');
+  lc.addEventListener('change',()=>{
+    lr.disabled=!lc.checked;
+    lh.textContent=lc.checked?'Armed. Consent stored: verbal · English · this visit only.':'Disabled until consent is ticked — try it.';
+  });
+  lr.addEventListener('click',()=>{lh.textContent='Recording would begin — this is the landing page, so it doesn’t.';});
+
+  /* act 2: transcript lines + waveform reveal on scroll */
+  const aw=document.getElementById('actWave');
+  const AB=[],AN=70;
+  for(let i=0;i<AN;i++){
+    const r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    r.setAttribute('x',i*(560/AN)+1);r.setAttribute('width',(560/AN)-2.2);r.setAttribute('rx',1.1);
+    r.setAttribute('fill','#C9DBD5');aw.appendChild(r);AB.push(r);
+  }
+  AB.forEach((b,i)=>{const h=Math.max(2,2+Math.abs(Math.sin(i*.5)*Math.cos(i*.23))*22);b.setAttribute('y',(34-h)/2);b.setAttribute('height',h);if(i%9===0)b.setAttribute('fill','#2F8C7F');});
+  const lines=document.querySelectorAll('#actTr .trl');
+  if(reduce){lines.forEach(l=>l.classList.add('on'));}
+  else{
+    const io=new IntersectionObserver(es=>{
+      es.forEach(e=>{if(e.isIntersecting){lines.forEach((l,i)=>setTimeout(()=>l.classList.add('on'),300+i*520));io.disconnect();}});
+    },{threshold:.35});
+    io.observe(document.getElementById('actTr'));
+  }
+})();
+</script>
+</body>
+</html>

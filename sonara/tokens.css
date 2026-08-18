@@ -1,0 +1,100 @@
+/* ═══════════════════════════════════════════════════════════════════
+   SONARA · design tokens · v1
+   Source of truth for the dashboard and marketing surfaces.
+   Derived from the Sonara brand kit (Aug 2026); the Amber and Brick
+   families are v1 extensions — rationale in design-system.html §Color.
+
+   In the product build these map 1:1 onto the Tailwind theme
+   (colors, fontFamily, borderRadius, boxShadow) via CSS variables.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─── brand core ─── */
+  --ink:        #0B2422;  /* primary text, dark surfaces               */
+  --petrol:     #12514B;  /* primary actions, the mark                 */
+  --petrol-deep:#0D423D;  /* primary hover / pressed                   */
+  --sea:        #2F8C7F;  /* active states, focus, accents             */
+  --mist:       #C9DBD5;  /* fills, chips, idle waveform               */
+  --paper:      #F1F4F1;  /* app ground                                */
+  --chalk:      #FFFFFF;  /* cards, sheets, inputs                     */
+  --line:       #D5DEDA;  /* borders, dividers                         */
+  --muted:      #5E736E;  /* secondary text                            */
+  --faint:      #9AACA7;  /* tertiary text: timestamps, placeholders   */
+
+  /* ─── surface tints ─── */
+  --soft:       #F7FAF8;  /* inset panels, row hover                   */
+  --panel-head: #FAFCFB;  /* panel headers, sticky bars                */
+  --sea-wash:   #EAF3F0;  /* selected fills, informational wash        */
+  --ok-wash:    #E0EDE9;  /* done/ok chips — text always petrol        */
+
+  /* ─── amber · caution (consent, low confidence, warnings) ─── */
+  --amber:      #B7801E;
+  --amber-deep: #8A6412;
+  --amber-wash: #FBF4E8;
+  --amber-line: #EBDCC0;
+
+  /* ─── signal · RECORDING ONLY ───
+     The one saturated red in the system. It means "the mic is live"
+     and nothing else. Never on buttons, links, errors, or badges. */
+  --signal:      #D8452F;
+  --signal-deep: #B23422;  /* record-button hover; text on signal-wash */
+  --signal-wash: #FBE2DE;
+
+  /* ─── brick · hard stops, destructive, errors ───
+     Deeper and browner than Signal, and it never pulses. Allergy
+     blocks, failed jobs, destructive confirmation live here so that
+     Signal keeps its single meaning. */
+  --brick:      #9E3A2B;
+  --brick-deep: #7E2E22;
+  --brick-wash: #F6E3DF;
+  --brick-line: #E3C4BD;
+
+  /* ─── on-ink (rail, dark bands) ─── */
+  --ink-2:     #12312E;   /* raised surface on ink                     */
+  --ink-line:  #1E4340;   /* borders on ink                            */
+  --ink-text:  #DCE7E4;   /* body text on ink                          */
+  --ink-muted: #8FA8A3;   /* secondary text on ink                     */
+  --ink-faint: #6E8C87;   /* tertiary text on ink                      */
+
+  /* ─── focus ─── */
+  --focus:       #2F8C7F;                  /* 2.5px outline, offset 2  */
+  --field-focus: rgba(47,140,127,.14);     /* input focus halo         */
+
+  /* ─── type ─── */
+  --display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --body:    'Inter Tight', system-ui, sans-serif;
+  --mono:    'IBM Plex Mono', ui-monospace, monospace;
+
+  /* app scale — body text never below 16px (PRD §11.5) */
+  --fs-display-xl: 40px;   /* auth headline, hero moments · 800 · -0.035em */
+  --fs-display-lg: 26px;   /* view titles                 · 600 · -0.02em  */
+  --fs-display-sm: 17px;   /* panel titles                · 600 · -0.015em */
+  --fs-body:       16px;   /* paragraphs, note fields, inputs             */
+  --fs-body-sm:    14px;   /* metadata and row detail — never paragraphs  */
+  --fs-mono-md:    14px;   /* doses, timecodes, IDs                       */
+  --fs-mono-sm:    12px;   /* hints, table meta                           */
+  --fs-label:      11px;   /* eyebrows, table headers · caps · +0.13em    */
+
+  /* ─── space · 4px base ─── */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-7: 32px; --sp-8: 40px;
+  --sp-9: 56px; --sp-10: 80px;
+
+  /* ─── radius ─── */
+  --r-chip:  6px;
+  --r-ctl:   8px;    /* buttons                                        */
+  --r-field: 9px;    /* inputs                                         */
+  --r-card:  13px;   /* panels, cards                                  */
+  --r-sheet: 18px;   /* modals, the confirmation sheet                 */
+  --r-pill:  999px;
+
+  /* ─── elevation ─── */
+  --sh-card:  0 1px 2px rgba(11,36,34,.04);
+  --sh-float: 0 1px 2px rgba(11,36,34,.05), 0 18px 44px -28px rgba(11,36,34,.30);
+  --sh-modal: 0 24px 64px -16px rgba(11,36,34,.35);
+
+  /* ─── motion ─── */
+  --t-fast:   150ms ease;                        /* controls           */
+  --t-reveal: 450ms cubic-bezier(.2,.7,.2,1);    /* content arriving   */
+  --t-pulse:  1100ms;                            /* the recording dot  */
+}

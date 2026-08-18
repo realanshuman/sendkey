@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sonara Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter+Tight:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══ tokens · mirrored in sonara/tokens.css ═══ */
+:root{
+  --ink:#0B2422; --petrol:#12514B; --petrol-deep:#0D423D; --sea:#2F8C7F;
+  --mist:#C9DBD5; --paper:#F1F4F1; --chalk:#FFFFFF; --line:#D5DEDA;
+  --muted:#5E736E; --faint:#9AACA7;
+  --soft:#F7FAF8; --panel-head:#FAFCFB; --sea-wash:#EAF3F0; --ok-wash:#E0EDE9;
+  --amber:#B7801E; --amber-deep:#8A6412; --amber-wash:#FBF4E8; --amber-line:#EBDCC0;
+  --signal:#D8452F; --signal-deep:#B23422; --signal-wash:#FBE2DE;
+  --brick:#9E3A2B; --brick-deep:#7E2E22; --brick-wash:#F6E3DF; --brick-line:#E3C4BD;
+  --ink-2:#12312E; --ink-line:#1E4340; --ink-text:#DCE7E4; --ink-muted:#8FA8A3; --ink-faint:#6E8C87;
+  --focus:#2F8C7F; --field-focus:rgba(47,140,127,.14);
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'Inter Tight',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --r-chip:6px; --r-ctl:8px; --r-field:9px; --r-card:13px; --r-sheet:18px; --r-pill:999px;
+  --sh-card:0 1px 2px rgba(11,36,34,.04);
+  --sh-float:0 1px 2px rgba(11,36,34,.05),0 18px 44px -28px rgba(11,36,34,.30);
+  --sh-modal:0 24px 64px -16px rgba(11,36,34,.35);
+  --t-fast:150ms ease; --t-reveal:450ms cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+a{color:inherit}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2.5px solid var(--focus);outline-offset:2px;border-radius:5px}
+.mono{font-family:var(--mono)}
+.lbl{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.wordmark{font-family:var(--display);font-weight:800;letter-spacing:-.045em;line-height:1}
+code{font-family:var(--mono);font-size:12.5px;background:#E7ECE9;padding:2px 6px;border-radius:5px;white-space:nowrap}
+
+/* ── frame ── */
+.top{position:sticky;top:0;z-index:30;background:rgba(241,244,241,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1240px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:12px}
+.top-in .tag{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-left:auto}
+.shell{max-width:1240px;margin:0 auto;padding:0 28px;display:grid;grid-template-columns:208px 1fr;gap:44px}
+@media(max-width:960px){.shell{grid-template-columns:1fr}.index{display:none}}
+.index{position:sticky;top:76px;align-self:start;padding:28px 0 60px;max-height:calc(100vh - 76px);overflow-y:auto}
+.index a{display:block;text-decoration:none;color:var(--muted);font-size:14px;padding:5px 10px;border-left:2px solid transparent;border-radius:0 6px 6px 0}
+.index a:hover{color:var(--ink);background:var(--soft)}
+.index a.h{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;margin-top:18px;color:var(--faint)}
+.index a.h:first-child{margin-top:0}
+main{padding-bottom:120px;min-width:0}
+
+.hero{padding:56px 0 40px;border-bottom:1px solid var(--line)}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,4.6vw,52px);line-height:1;letter-spacing:-.035em;margin:14px 0 16px;max-width:18ch}
+.hero p{color:var(--muted);max-width:60ch;margin:0;font-size:17px}
+
+section{padding:52px 0 8px}
+section>h2{font-family:var(--display);font-weight:600;font-size:26px;letter-spacing:-.02em;margin:0 0 6px;scroll-margin-top:84px}
+section>.sub{color:var(--muted);margin:0 0 28px;max-width:64ch}
+h3.sh{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500;margin:34px 0 14px}
+
+/* ── specimen ── */
+.spec{background:var(--chalk);border:1px solid var(--line);border-radius:var(--r-card);margin-bottom:18px;overflow:hidden;box-shadow:var(--sh-card)}
+.spec-head{display:flex;align-items:baseline;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel-head)}
+.spec-head b{font-size:15px;font-weight:600}
+.spec-head span{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.spec-canvas{padding:24px 20px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.spec-canvas.col{flex-direction:column;align-items:stretch;gap:0}
+.spec-canvas.paper{background:var(--paper)}
+.spec-canvas.ink{background:var(--ink)}
+.spec-note{padding:14px 20px;border-top:1px dashed var(--line);color:var(--muted);font-size:14px;line-height:1.55}
+.spec-note b{color:var(--ink);font-weight:600}
+
+.rule{display:flex;gap:12px;padding:10px 20px;border-top:1px dashed var(--line);font-size:14px;align-items:flex-start;color:var(--muted)}
+.rule b{color:var(--ink)}
+.yes,.no{font-family:var(--mono);font-size:10.5px;font-weight:500;padding:2px 7px;border-radius:5px;flex:none;margin-top:2px}
+.yes{background:var(--ok-wash);color:var(--petrol)}
+.no{background:var(--brick-wash);color:var(--brick)}
+
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* ── principles ── */
+.prin{background:var(--chalk);border:1px solid var(--line);border-radius:var(--r-card);padding:22px;box-shadow:var(--sh-card)}
+.prin .n{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--sea);display:block;margin-bottom:12px}
+.prin h3{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:-.015em;margin:0 0 6px}
+.prin p{margin:0;color:var(--muted);font-size:14.5px}
+
+/* ── color ── */
+.swatch{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--chalk)}
+.swatch .chip-c{height:72px}
+.swatch .meta{padding:10px 13px}
+.swatch .nm{font-weight:600;font-size:14px}
+.swatch .hx{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+table.tbl{width:100%;border-collapse:collapse;font-size:14px;background:var(--chalk)}
+.tbl th{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel-head)}
+.tbl td{padding:10px 14px;border-bottom:1px dashed var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .mono{font-size:12.5px}
+.dot-s{display:inline-block;width:13px;height:13px;border-radius:4px;vertical-align:-2px;margin-right:8px;border:1px solid rgba(11,36,34,.12)}
+.pass{font-family:var(--mono);font-size:11px;color:var(--petrol);background:var(--ok-wash);padding:1.5px 6px;border-radius:5px;white-space:nowrap}
+.limit{font-family:var(--mono);font-size:11px;color:var(--amber-deep);background:var(--amber-wash);padding:1.5px 6px;border-radius:5px;white-space:nowrap}
+
+/* ── type ── */
+.tspec{display:flex;gap:16px;align-items:baseline;padding:16px 20px;border-bottom:1px dashed var(--line)}
+.tspec:last-child{border-bottom:0}
+.tspec .tl{font-family:var(--mono);font-size:11px;color:var(--muted);width:150px;flex:none;letter-spacing:.05em}
+.tspec .ts{flex:1;min-width:220px}
+
+/* ═══ components ═══ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);font-weight:600;font-size:15px;padding:10px 16px;border-radius:var(--r-ctl);border:1px solid transparent;transition:background var(--t-fast),border-color var(--t-fast),color var(--t-fast);text-decoration:none}
+.btn-primary{background:var(--petrol);color:#fff}
+.btn-primary:hover{background:var(--petrol-deep)}
+.btn-ghost{border-color:var(--line);background:var(--chalk);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--sea)}
+.btn-quiet{background:none;color:var(--petrol)}
+.btn-quiet:hover{background:var(--sea-wash)}
+.btn-danger{border-color:var(--brick-line);background:var(--chalk);color:var(--brick)}
+.btn-danger:hover{background:var(--brick-wash);border-color:var(--brick)}
+.btn-rec{background:var(--signal);color:#fff}
+.btn-rec:hover{background:var(--signal-deep)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{font-size:13.5px;padding:6px 11px;border-radius:7px}
+.btn.lg{font-size:16px;padding:13px 22px}
+kbd{font-family:var(--mono);font-size:11px;background:var(--soft);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1.5px 6px;color:var(--muted)}
+
+.input{width:100%;max-width:320px;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-field);background:var(--chalk);font:inherit;font-size:16px;color:var(--ink)}
+.input::placeholder{color:var(--faint)}
+.input:focus{outline:none;border-color:var(--sea);box-shadow:0 0 0 3px var(--field-focus)}
+.input[aria-invalid="true"]{border-color:var(--brick);box-shadow:0 0 0 3px rgba(158,58,43,.12)}
+.f-lbl{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.f-hint{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:6px}
+.f-err{font-size:13.5px;color:var(--brick);margin-top:6px;font-weight:500}
+.otp{display:flex;gap:8px}
+.otp input{width:44px;height:52px;text-align:center;font-family:var(--mono);font-size:20px;border:1px solid var(--line);border-radius:var(--r-field);background:var(--chalk)}
+.otp input:focus{outline:none;border-color:var(--sea);box-shadow:0 0 0 3px var(--field-focus)}
+.search{position:relative;max-width:320px;width:100%}
+.search .input{padding-left:36px;max-width:none}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--faint)}
+.search kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%)}
+
+.check{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.check input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--petrol);flex:none}
+
+/* status chips */
+.st{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:var(--r-chip)}
+.st .d{width:7px;height:7px;border-radius:50%;flex:none}
+.st-sched{background:#EDF2F0;color:var(--muted)}.st-sched .d{background:var(--faint)}
+.st-arr{background:#EFEADF;color:#7A6B48}.st-arr .d{background:#B7A26A}
+.st-room{background:var(--signal-wash);color:var(--signal-deep)}.st-room .d{background:var(--signal);animation:pulse 1.1s infinite}
+.st-proc{background:var(--amber-wash);color:var(--amber-deep)}.st-proc .d{background:var(--amber);animation:pulse 1.1s infinite}
+.st-draft{background:var(--sea-wash);color:var(--petrol)}.st-draft .d{background:var(--sea)}
+.st-signed{background:var(--ok-wash);color:var(--petrol)}.st-signed .d{background:var(--petrol)}
+.st-ns{background:#EDF2F0;color:var(--faint)}.st-ns .d{background:var(--line)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* flags */
+.flag{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;padding:4px 9px;border-radius:var(--r-chip);font-weight:500}
+.flag-allergy{background:var(--brick-wash);color:var(--brick)}
+.flag-chronic{background:var(--amber-wash);color:var(--amber-deep)}
+.flag-med{background:var(--sea-wash);color:var(--petrol)}
+.flag-ok{background:var(--ok-wash);color:var(--petrol)}
+
+/* tags */
+.tg{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11.5px;background:#E7EEEB;color:var(--petrol);padding:3px 8px;border-radius:var(--r-chip)}
+.tg small{font-size:10px;color:var(--sea)}
+.tg.uncoded{background:var(--soft);border:1px dashed var(--line);color:var(--muted)}
+
+/* speaker tags */
+.spk{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.06em;padding:2.5px 7px;border-radius:5px}
+.spk-dr{background:var(--ok-wash);color:var(--petrol)}
+.spk-pt{background:#EDEAE2;color:#6B6250}
+.spk-att{background:#E8E9F0;color:#565C74}
+.spk-un{background:var(--soft);color:var(--faint);border:1px dashed var(--line)}
+
+/* panel */
+.panel{background:var(--chalk);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;box-shadow:var(--sh-card);width:100%}
+.phead{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--panel-head)}
+.phead h4{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.015em;margin:0}
+.pbody{padding:18px}
+
+/* banners */
+.banner{display:flex;gap:11px;padding:12px 15px;border-radius:var(--r-field);font-size:14.5px;line-height:1.5;align-items:flex-start;width:100%;border:1px solid}
+.banner svg{flex:none;margin-top:2px}
+.banner b{font-weight:600}
+.banner .act{margin-left:auto;flex:none}
+.bn-info{background:var(--sea-wash);border-color:#CFE3DD;color:var(--ink)}
+.bn-warn{background:var(--amber-wash);border-color:var(--amber-line);color:var(--ink)}
+.bn-offline{background:var(--ink);border-color:var(--ink);color:var(--ink-text)}
+.bn-error{background:var(--brick-wash);border-color:var(--brick-line);color:var(--ink)}
+.bn-hold{background:var(--soft);border-color:var(--line);color:var(--ink)}
+
+/* toast */
+.toast{display:inline-flex;align-items:center;gap:9px;background:var(--ink);color:var(--ink-text);font-size:14px;padding:10px 16px;border-radius:10px;box-shadow:var(--sh-float)}
+.toast .tick-i{color:var(--sea)}
+
+/* pipeline */
+.steps{display:flex;flex-wrap:wrap;width:100%}
+.stg{flex:1;min-width:130px;padding:12px 16px;border-right:1px solid var(--line)}
+.stg:last-child{border-right:0}
+.stg .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.stg .v{font-size:14.5px;font-weight:600;margin-top:3px;display:flex;align-items:center;gap:7px}
+.stg .v small{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--muted)}
+.tick{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+.stg.done .tick{background:var(--sea)}
+.stg.run .tick{background:var(--amber);animation:pulse 1s infinite}
+.stg.fail .tick{background:var(--brick)}
+.stg.idle .v{color:var(--faint);font-weight:400}
+
+/* waveform */
+.wavebox{width:100%;background:var(--chalk)}
+.wave-lbl{display:flex;justify-content:space-between;margin-bottom:6px}
+
+/* transcript */
+.trl{display:flex;gap:11px;padding:9px 0;border-bottom:1px dashed var(--line);width:100%}
+.trl:last-child{border-bottom:0}
+.trl .ts{font-family:var(--mono);font-size:11px;color:var(--faint);flex:none;margin-top:3px;width:38px}
+.trl .tx{font-size:15px;line-height:1.5}
+.trl .tx .lowc{border-bottom:2px dotted var(--amber);cursor:help}
+.trl.hl{background:var(--sea-wash);margin:0 -12px;padding:9px 12px;border-radius:8px;border-bottom-color:transparent}
+.trl .gap{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.08em}
+
+/* note field */
+.nf{padding:14px 0;border-bottom:1px dashed var(--line);width:100%}
+.nf:last-child{border-bottom:0}
+.nf .k{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:10px}
+.save-st{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.save-st.on{color:var(--sea)}
+.edit{border:1px solid transparent;border-radius:8px;padding:8px 10px;margin:-8px -10px;font-size:16px;line-height:1.55;min-height:24px}
+.edit:hover{border-color:var(--line);background:var(--soft)}
+.edit:focus{outline:none;border-color:var(--sea);background:var(--chalk);box-shadow:0 0 0 3px var(--field-focus)}
+
+/* rx */
+.rx-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line);width:100%}
+.rx-item .n{font-family:var(--mono);font-size:11px;color:var(--faint);width:20px;flex:none;padding-top:3px}
+.rx-item .nm{font-weight:600;font-size:15px}
+.rx-item .gen{font-size:13px;color:var(--muted)}
+.rx-item .dz{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:2px}
+.rx-item .x{margin-left:auto;background:none;border:0;color:var(--muted);font-size:17px;line-height:1;padding:4px 8px;border-radius:6px;flex:none}
+.rx-item .x:hover{background:var(--brick-wash);color:var(--brick)}
+.ac{position:relative;width:100%;max-width:420px}
+.ac-list{border:1px solid var(--line);border-radius:10px;background:var(--chalk);box-shadow:var(--sh-float);margin-top:6px;overflow:hidden}
+.ac-row{display:flex;gap:10px;padding:10px 13px;border-bottom:1px dashed var(--line);align-items:baseline}
+.ac-row:last-child{border-bottom:0}
+.ac-row:hover,.ac-row.sel{background:var(--soft)}
+.ac-row .b{font-weight:600;font-size:14.5px}
+.ac-row .s{font-size:12.5px;color:var(--muted)}
+.ac-row .f{font-family:var(--mono);font-size:11px;color:var(--faint);margin-left:auto}
+.ac-free{padding:10px 13px;font-size:13.5px;color:var(--amber-deep);background:var(--amber-wash)}
+
+/* modal specimens */
+.modal{background:var(--chalk);border-radius:var(--r-sheet);box-shadow:var(--sh-modal);max-width:480px;width:100%;overflow:hidden}
+.modal .mh{padding:20px 24px 0}
+.modal h4{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.02em;margin:0 0 6px}
+.modal .mb{padding:12px 24px 20px;font-size:15px;color:var(--muted)}
+.modal .mf{display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--line);background:var(--panel-head)}
+.modal.stop{border-top:4px solid var(--brick)}
+
+/* timeline */
+.tlv{width:100%}
+.tlv-row{display:flex;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.tlv-row:last-child{border-bottom:0}
+.tlv-row .d{font-family:var(--mono);font-size:11.5px;color:var(--muted);flex:none;width:74px;padding-top:2px}
+.tlv-row .t b{font-weight:600;font-size:15px}
+.tlv-row .t p{margin:2px 0 0;font-size:13.5px;color:var(--muted)}
+
+/* audit */
+.aud{font-family:var(--mono);font-size:12.5px;width:100%;border-collapse:collapse}
+.aud td{padding:8px 12px;border-bottom:1px dashed var(--line);white-space:nowrap}
+.aud td:last-child{white-space:normal}
+.aud .t{color:var(--faint)}
+.aud .a{color:var(--petrol);font-weight:500}
+.aud .warn-a{color:var(--brick);font-weight:500}
+
+/* avatar */
+.avatar{width:36px;height:36px;border-radius:9px;background:var(--mist);color:var(--petrol);display:inline-grid;place-items:center;font-weight:600;font-size:13px}
+.avatar.dk{background:var(--petrol);color:#fff}
+.role-b{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:2.5px 8px;border-radius:5px;background:var(--soft);border:1px solid var(--line);color:var(--muted)}
+
+/* empty + skeleton */
+.empty{text-align:center;padding:36px 20px;width:100%}
+.empty h5{font-family:var(--display);font-weight:600;font-size:18px;margin:14px 0 4px;letter-spacing:-.015em}
+.empty p{margin:0 0 16px;color:var(--muted);font-size:14.5px}
+.skel{border-radius:7px;background:linear-gradient(100deg,#E7ECE9 40%,#F1F4F1 50%,#E7ECE9 60%);background-size:200% 100%;animation:sh 1.4s infinite linear}
+@keyframes sh{to{background-position:-200% 0}}
+
+/* shell diagram */
+.shell-d{display:grid;grid-template-columns:34px 110px 1fr 120px;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;width:100%;min-height:190px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em}
+.shell-d>div{display:flex;align-items:flex-end;padding:10px}
+.sd-rail{background:var(--ink);color:var(--ink-muted)}
+.sd-queue{background:var(--chalk);border-right:1px solid var(--line);color:var(--muted)}
+.sd-canvas{background:var(--paper);color:var(--muted)}
+.sd-aside{background:var(--chalk);border-left:1px solid var(--line);color:var(--muted)}
+
+/* overlay for live modal demos */
+.overlay{position:fixed;inset:0;background:rgba(11,36,34,.44);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+.overlay.on{display:flex}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<mask id="cut"><rect width="48" height="48" fill="#fff"/><path d="M8 24H17l3-7 4 14 4-11.5 3 6.5 2.5-2H45" stroke="#000" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></mask>
+<symbol id="mk" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="none" stroke="currentColor" stroke-width="3.6" mask="url(#cut)"/><path d="M8 24H17l3-7 4 14 4-11.5 3 6.5 2.5-2H45" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13.2 13.2 17 17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+<symbol id="i-check" viewBox="0 0 20 20"><path d="M4 10.5 8.2 15 16 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-warn" viewBox="0 0 20 20"><path d="M10 3 18 17H2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 8.2v3.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="10" cy="14.4" r=".9" fill="currentColor"/></symbol>
+<symbol id="i-info" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M10 9v4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="10" cy="6.2" r=".9" fill="currentColor"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 20 20"><path d="M5.5 14.5a3.5 3.5 0 0 1 .4-6.98 4.5 4.5 0 0 1 8.7 1.23A3 3 0 0 1 14 14.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3 17.5 17 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+<symbol id="i-lock" viewBox="0 0 20 20"><rect x="4.5" y="9" width="11" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+<symbol id="i-mic" viewBox="0 0 20 20"><rect x="7.2" y="2.5" width="5.6" height="9.5" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4.5 9.5a5.5 5.5 0 0 0 11 0M10 15v2.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+</defs></svg>
+
+<header class="top">
+  <div class="top-in">
+    <svg width="24" height="24" style="color:var(--petrol)" aria-hidden="true"><use href="#mk"/></svg>
+    <span class="wordmark" style="font-size:19px">Sonara</span>
+    <span class="tag">Design system · dashboard · v1</span>
+  </div>
+</header>
+
+<div class="shell">
+
+<nav class="index" aria-label="Sections">
+  <a class="h" href="#principles">Foundations</a>
+  <a href="#principles">Principles</a>
+  <a href="#color">Color</a>
+  <a href="#type">Typography</a>
+  <a href="#space">Space &amp; shape</a>
+  <a href="#shell">The app shell</a>
+  <a href="#motion">Motion</a>
+  <a class="h" href="#actions">Components</a>
+  <a href="#actions">Buttons</a>
+  <a href="#forms">Forms</a>
+  <a href="#status">Status &amp; flags</a>
+  <a href="#consent">Consent module</a>
+  <a href="#recording">Recording</a>
+  <a href="#pipeline">Pipeline</a>
+  <a href="#transcript">Transcript</a>
+  <a href="#note">Case sheet</a>
+  <a href="#rx">Prescription</a>
+  <a href="#banners">Banners &amp; toasts</a>
+  <a href="#modals">Modals &amp; sheets</a>
+  <a href="#records">Records &amp; audit</a>
+  <a href="#states">Empty &amp; loading</a>
+  <a class="h" href="#patterns">Patterns</a>
+  <a href="#patterns">Safety patterns</a>
+  <a href="#a11y">Accessibility</a>
+  <a href="#voice">Voice in product</a>
+  <a href="#reserved">Reserved for V1.5</a>
+</nav>
+
+<main>
+
+<div class="hero">
+  <span class="lbl">Sonara · clinical dashboard</span>
+  <h1>An instrument panel, not an app.</h1>
+  <p>This system turns the Sonara brand kit into working parts for the product a doctor uses forty-five times a day. The bar is legibility across a desk on a three-year-old Windows monitor: paper-calm surfaces, one saturated red that only ever means "the mic is live", and type a 41-year-old can read at arm's length. Tokens are mirrored in <code>tokens.css</code>.</p>
+</div>
+
+<!-- ═══════════ PRINCIPLES ═══════════ -->
+<section id="principles">
+  <h2>Principles</h2>
+  <p class="sub">Five rules that outrank every component on this page.</p>
+  <div class="grid g2">
+    <div class="prin"><span class="n">01</span><h3>The doctor signs</h3><p>Nothing clinical is ever presented as decided. Drafts look like drafts, suggestions carry their source, and the only primary-colored action on a finished note is the one that makes the doctor read it.</p></div>
+    <div class="prin"><span class="n">02</span><h3>Signal means live</h3><p>One saturated red exists in the interface and it means a microphone is capturing this room. It pulses; nothing else ever pulses red. Errors and hard stops use Brick, which is darker and never animates.</p></div>
+    <div class="prin"><span class="n">03</span><h3>Say the thing</h3><p>Every state is written in plain words: "Saving locally — nothing is lost." A spinner without a sentence is a bug. Sentence case everywhere; Title Case reads as marketing.</p></div>
+    <div class="prin"><span class="n">04</span><h3>Paper calm</h3><p>The room is stressful; the screen is not allowed to be. Chalk cards on paper, one accent, no gradients, shadows only where something floats. Density comes from type discipline, not from shrinking text.</p></div>
+    <div class="prin"><span class="n">05</span><h3>Keyboard first</h3><p>Hands are on a keyboard between patients. Everything reachable by Tab, visible focus on everything, and the common actions carry shortcuts. Hit targets never shrink below 40px.</p></div>
+  </div>
+</section>
+
+<!-- ═══════════ COLOR ═══════════ -->
+<section id="color">
+  <h2>Color</h2>
+  <p class="sub">The brand palette, plus two families the dashboard needs that the kit deliberately left open: Amber for caution and Brick for hard stops. Both exist so Signal can keep its single meaning.</p>
+
+  <h3 class="sh">Core</h3>
+  <div class="grid g4">
+    <div class="swatch"><div class="chip-c" style="background:#0B2422"></div><div class="meta"><div class="nm">Ink</div><div class="hx">#0B2422 · text, rail</div></div></div>
+    <div class="swatch"><div class="chip-c" style="background:#12514B"></div><div class="meta"><div class="nm">Petrol</div><div class="hx">#12514B · primary, mark</div></div></div>
+    <div class="swatch"><div class="chip-c" style="background:#2F8C7F"></div><div class="meta"><div class="nm">Sea</div><div class="hx">#2F8C7F · active, focus</div></div></div>
+    <div class="swatch"><div class="chip-c" style="background:#C9DBD5"></div><div class="meta"><div class="nm">Mist</div><div class="hx">#C9DBD5 · fills, waveform</div></div></div>
+    <div class="swatch"><div class="chip-c" style="background:#F1F4F1"></div><div class="meta"><div class="nm">Paper</div><div class="hx">#F1F4F1 · app ground</div></div></div>
+    <div class="swatch"><div class="chip-c" style="background:#FFFFFF;box-shadow:inset 0 0 0 1px var(--line)"></div><div class="meta"><div class="nm">Chalk</div><div class="hx">#FFFFFF · surfaces</div></div></div>
+    <div class="swatch"><div class="chip-c" style="background:#D5DEDA"></div><div class="meta"><div class="nm">Line</div><div class="hx">#D5DEDA · borders</div></div></div>
+    <div class="swatch"><div class="chip-c" style="background:#5E736E"></div><div class="meta"><div class="nm">Muted</div><div class="hx">#5E736E · secondary text</div></div></div>
+  </div>
+
+  <h3 class="sh">Signal, Amber, Brick — three jobs, never traded</h3>
+  <div class="grid g3">
+    <div class="swatch"><div class="chip-c" style="background:#D8452F"></div><div class="meta"><div class="nm">Signal</div><div class="hx">#D8452F · recording only</div><div class="hx">wash #FBE2DE · deep #B23422</div></div></div>
+    <div class="swatch"><div class="chip-c" style="background:#B7801E"></div><div class="meta"><div class="nm">Amber</div><div class="hx">#B7801E · caution, low confidence</div><div class="hx">wash #FBF4E8 · text #8A6412</div></div></div>
+    <div class="swatch"><div class="chip-c" style="background:#9E3A2B"></div><div class="meta"><div class="nm">Brick</div><div class="hx">#9E3A2B · hard stops, destructive</div><div class="hx">wash #F6E3DF · deep #7E2E22</div></div></div>
+  </div>
+  <div class="spec" style="margin-top:14px">
+    <div class="rule"><span class="yes">do</span><span><b>Signal</b> marks exactly one thing: audio is being captured now. The dot pulses; the record button is the only Signal-filled control in the product.</span></div>
+    <div class="rule"><span class="yes">do</span><span><b>Amber</b> carries anything the doctor should look at but may proceed past: unclear audio, an unverified account, a free-text drug, the 20-minute banner.</span></div>
+    <div class="rule"><span class="yes">do</span><span><b>Brick</b> carries what must not be walked past: an allergy match, a failed job, a destructive confirmation. Brick is static — a hard stop does not blink for attention, it simply refuses to move.</span></div>
+    <div class="rule"><span class="no">don't</span><span>Use Signal for errors, badges, links, or destructive buttons — if red can mean three things, it means nothing when the mic is actually on.</span></div>
+  </div>
+
+  <h3 class="sh">Contrast — measured, not assumed</h3>
+  <div class="spec"><div style="overflow-x:auto"><table class="tbl">
+    <tr><th>Pair</th><th>Ratio</th><th>Verdict</th></tr>
+    <tr><td><span class="dot-s" style="background:#0B2422"></span>Ink on Chalk / Paper</td><td class="mono">16.3 / 14.7</td><td><span class="pass">AAA body</span></td></tr>
+    <tr><td><span class="dot-s" style="background:#12514B"></span>Petrol on Chalk · white on Petrol</td><td class="mono">9.1</td><td><span class="pass">AAA body</span></td></tr>
+    <tr><td><span class="dot-s" style="background:#5E736E"></span>Muted on Chalk / Paper</td><td class="mono">5.1 / 4.6</td><td><span class="pass">AA body</span></td></tr>
+    <tr><td><span class="dot-s" style="background:#2F8C7F"></span>Sea on Chalk</td><td class="mono">4.1</td><td><span class="limit">Large text, icons, focus only</span></td></tr>
+    <tr><td><span class="dot-s" style="background:#8A6412"></span>Amber-deep on Amber-wash</td><td class="mono">4.9</td><td><span class="pass">AA body</span></td></tr>
+    <tr><td><span class="dot-s" style="background:#9E3A2B"></span>Brick on Chalk / on Brick-wash</td><td class="mono">6.8 / 5.5</td><td><span class="pass">AA body</span></td></tr>
+    <tr><td><span class="dot-s" style="background:#D8452F"></span>Signal on Chalk</td><td class="mono">4.4</td><td><span class="limit">Dot + ≥14px 600 label, never body</span></td></tr>
+  </table></div>
+  <div class="spec-note">Sea and Signal sit below 4.5:1 on light surfaces by design — they are state colors, not reading colors. Anything a doctor must <b>read</b> is set in Ink, Muted, Petrol, Amber-deep or Brick.</div></div>
+</section>
+
+<!-- ═══════════ TYPE ═══════════ -->
+<section id="type">
+  <h2>Typography</h2>
+  <p class="sub">Three faces, three jobs. Bricolage Grotesque is the only place the product raises its voice. Inter Tight runs the interface. IBM Plex Mono handles everything a doctor scans rather than reads — timecodes, doses, IDs, statuses.</p>
+
+  <div class="spec"><div class="spec-canvas col" style="padding:6px 20px">
+    <div class="tspec"><span class="tl">display-xl · 40/800</span><span class="ts" style="font-family:var(--display);font-weight:800;font-size:40px;letter-spacing:-.035em;line-height:1.05">Good morning, Dr. Menon</span></div>
+    <div class="tspec"><span class="tl">display-lg · 26/600</span><span class="ts" style="font-family:var(--display);font-weight:600;font-size:26px;letter-spacing:-.02em">Today · view titles</span></div>
+    <div class="tspec"><span class="tl">display-sm · 17/600</span><span class="ts" style="font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.015em">Draft case sheet · panel titles</span></div>
+    <div class="tspec"><span class="tl">body · 16/400</span><span class="ts">Fever for two days with sore throat; dry cough worse at night. Paragraphs, note fields and inputs never render below 16px.</span></div>
+    <div class="tspec"><span class="tl">body-sm · 14/400</span><span class="ts" style="font-size:14px;color:var(--muted)">34F · follow-up · 11:20 — metadata and row detail only, never running text</span></div>
+    <div class="tspec"><span class="tl">mono-md · 14/400</span><span class="ts mono" style="font-size:14px">04:12 · DR &nbsp;|&nbsp; PT-40219 &nbsp;|&nbsp; Paracetamol 500mg · 1-0-1 · 3d</span></div>
+    <div class="tspec"><span class="tl">label · 11/500 caps</span><span class="ts lbl">Presenting complaint · table headers · statuses</span></div>
+  </div>
+  <div class="rule"><span class="yes">do</span><span>Set <code>font-variant-numeric: tabular-nums</code> globally — queue positions, timers and doses must not shuffle as they change.</span></div>
+  <div class="rule"><span class="yes">do</span><span>Sentence case for every label, button and heading. The product sits next to a patient, not on a billboard.</span></div>
+  <div class="rule"><span class="no">don't</span><span>Introduce sizes between 17 and 26 — the gap is what makes hierarchy legible at a glance in a busy OPD.</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ SPACE ═══════════ -->
+<section id="space">
+  <h2>Space &amp; shape</h2>
+  <p class="sub">A 4px base scale, four radii, three shadows. Everything else is a misuse.</p>
+  <div class="spec"><div style="overflow-x:auto"><table class="tbl">
+    <tr><th>Token</th><th>Value</th><th>Used for</th></tr>
+    <tr><td class="mono">--sp-1 … --sp-10</td><td class="mono">4 8 12 16 20 24 32 40 56 80</td><td>Gaps and padding; section rhythm uses 24/32, in-card rhythm 12/16</td></tr>
+    <tr><td class="mono">--r-chip / --r-ctl / --r-field</td><td class="mono">6 / 8 / 9</td><td>Chips and tags / buttons / inputs</td></tr>
+    <tr><td class="mono">--r-card / --r-sheet</td><td class="mono">13 / 18</td><td>Panels and cards / modals and the confirmation sheet</td></tr>
+    <tr><td class="mono">--sh-card</td><td class="mono">0 1 2 · 4%</td><td>Resting panels — barely there</td></tr>
+    <tr><td class="mono">--sh-float</td><td class="mono">18 44 −28 · 30%</td><td>Menus, autocomplete, toasts</td></tr>
+    <tr><td class="mono">--sh-modal</td><td class="mono">24 64 −16 · 35%</td><td>Modals and hard stops only</td></tr>
+  </table></div></div>
+</section>
+
+<!-- ═══════════ SHELL ═══════════ -->
+<section id="shell">
+  <h2>The app shell</h2>
+  <p class="sub">Four columns, one job each. The rail navigates, the queue is the clinic day, the canvas is the current visit, the aside is the patient's memory. On smaller screens the aside folds first, then the queue becomes a drawer.</p>
+  <div class="spec"><div class="spec-canvas">
+    <div class="shell-d">
+      <div class="sd-rail">rail 64</div>
+      <div class="sd-queue">queue 272</div>
+      <div class="sd-canvas">canvas · flex</div>
+      <div class="sd-aside">aside 320</div>
+    </div>
+  </div>
+  <div class="spec-note">The rail is the only Ink surface in the working screen — a fixed dark edge that anchors the layout without darkening the room. The canvas alone scrolls; the queue and aside scroll their own lists. The patient header (name, age, flags) is sticky over the canvas and can never be collapsed while a visit is open.</div></div>
+</section>
+
+<!-- ═══════════ MOTION ═══════════ -->
+<section id="motion">
+  <h2>Motion</h2>
+  <p class="sub">Motion states facts; it never decorates. Three durations, and a total ban on movement the doctor didn't cause — with two named exceptions.</p>
+  <div class="spec"><div style="overflow-x:auto"><table class="tbl">
+    <tr><th>Token</th><th>Value</th><th>Used for</th></tr>
+    <tr><td class="mono">--t-fast</td><td class="mono">150ms ease</td><td>Hover, press, chip changes</td></tr>
+    <tr><td class="mono">--t-reveal</td><td class="mono">450ms cubic-bezier(.2,.7,.2,1)</td><td>Content arriving: transcript lines, the drafted note</td></tr>
+    <tr><td class="mono">--t-pulse</td><td class="mono">1100ms</td><td>The recording dot and live status chips — the two legal ambient animations</td></tr>
+  </table></div>
+  <div class="rule"><span class="yes">do</span><span>Honor <code>prefers-reduced-motion</code> globally: the pulse becomes a solid dot, reveals become instant.</span></div>
+  <div class="rule"><span class="no">don't</span><span>Animate anything during recording except the waveform and the dot. The screen must be boring while the room is talking.</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ BUTTONS ═══════════ -->
+<section id="actions">
+  <h2>Buttons</h2>
+  <p class="sub">One primary action per screen region. The record button is its own species — Signal-filled, never used for anything else.</p>
+  <div class="spec">
+    <div class="spec-head"><b>Hierarchy</b><span>primary · ghost · quiet · destructive · record</span></div>
+    <div class="spec-canvas">
+      <button class="btn btn-primary">Review &amp; sign</button>
+      <button class="btn btn-ghost">Add medicine</button>
+      <button class="btn btn-quiet">View transcript</button>
+      <button class="btn btn-danger">Discard draft</button>
+      <button class="btn btn-rec"><span style="width:8px;height:8px;border-radius:50%;background:#fff"></span>Start recording</button>
+      <button class="btn btn-primary" disabled>Review &amp; sign</button>
+    </div>
+    <div class="spec-canvas" style="border-top:1px dashed var(--line)">
+      <button class="btn btn-primary lg">Sign and send</button>
+      <button class="btn btn-ghost">Default</button>
+      <button class="btn btn-ghost sm">Small · dense rows</button>
+      <span style="display:inline-flex;gap:8px;align-items:center;font-size:14px;color:var(--muted)">End visit <kbd>⌥</kbd><kbd>E</kbd></span>
+    </div>
+    <div class="rule"><span class="yes">do</span><span>Disable with a reason nearby. A dead button with no sentence is a dead end — "Signing unlocks when your registration is verified."</span></div>
+    <div class="rule"><span class="no">don't</span><span>Use <b>btn-danger</b> for anything recoverable. Removing one Rx line is a ghost button; discarding a draft is Brick.</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ FORMS ═══════════ -->
+<section id="forms">
+  <h2>Forms</h2>
+  <p class="sub">16px inputs, labels above, hints in mono below. Errors are Brick sentences that say what to do, not what went wrong in machine terms.</p>
+  <div class="spec">
+    <div class="spec-canvas" style="gap:22px;align-items:flex-start">
+      <div style="flex:1;min-width:240px">
+        <label class="f-lbl" for="ds-in1">Patient name</label>
+        <input class="input" id="ds-in1" placeholder="e.g. Priya Nair">
+        <div class="f-hint">Required · as printed on the prescription</div>
+      </div>
+      <div style="flex:1;min-width:240px">
+        <label class="f-lbl" for="ds-in2">Phone</label>
+        <input class="input" id="ds-in2" aria-invalid="true" value="98200 4417">
+        <div class="f-err">That's 9 digits — Indian mobile numbers have 10.</div>
+      </div>
+    </div>
+    <div class="spec-canvas" style="border-top:1px dashed var(--line);gap:22px;align-items:flex-start">
+      <div>
+        <label class="f-lbl">One-time code</label>
+        <div class="otp">
+          <input inputmode="numeric" maxlength="1" value="4" aria-label="Digit 1"><input inputmode="numeric" maxlength="1" value="7" aria-label="Digit 2"><input inputmode="numeric" maxlength="1" aria-label="Digit 3"><input inputmode="numeric" maxlength="1" aria-label="Digit 4"><input inputmode="numeric" maxlength="1" aria-label="Digit 5"><input inputmode="numeric" maxlength="1" aria-label="Digit 6">
+        </div>
+        <div class="f-hint">Sent to a.menon@… · valid 10 minutes</div>
+      </div>
+      <div style="flex:1;min-width:240px">
+        <label class="f-lbl" for="ds-se">Search patients</label>
+        <div class="search">
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-search"/></svg>
+          <input class="input" id="ds-se" placeholder="Name or phone — 'priya nai' works">
+          <kbd>/</kbd>
+        </div>
+        <div class="f-hint">Fuzzy on names · exact on phone</div>
+      </div>
+      <label class="check" style="min-width:220px"><input type="checkbox" checked> <span>Send a copy to the front desk</span></label>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ STATUS ═══════════ -->
+<section id="status">
+  <h2>Status &amp; flags</h2>
+  <p class="sub">Two different vocabularies. <b>Status chips</b> track a visit through the day. <b>Flag chips</b> are clinical facts on the patient header — they can never be collapsed, truncated or hidden while a visit is open.</p>
+  <div class="spec">
+    <div class="spec-head"><b>Visit status</b><span>the queue's six states</span></div>
+    <div class="spec-canvas">
+      <span class="st st-sched"><span class="d"></span>Scheduled</span>
+      <span class="st st-arr"><span class="d"></span>Arrived</span>
+      <span class="st st-room"><span class="d"></span>In room</span>
+      <span class="st st-proc"><span class="d"></span>Processing</span>
+      <span class="st st-draft"><span class="d"></span>Drafted</span>
+      <span class="st st-signed"><span class="d"></span>Signed</span>
+      <span class="st st-ns"><span class="d"></span>No show</span>
+    </div>
+    <div class="spec-note">"In room" pulses Signal because a live mic may be involved. "Processing" pulses Amber while jobs run. Everything else is still.</div>
+  </div>
+  <div class="spec">
+    <div class="spec-head"><b>Patient flags</b><span>allergy · chronic · running medication</span></div>
+    <div class="spec-canvas">
+      <span class="flag flag-allergy"><svg width="13" height="13" aria-hidden="true"><use href="#i-warn"/></svg>Penicillin — rash, severe</span>
+      <span class="flag flag-chronic">Type 2 diabetes · 2019</span>
+      <span class="flag flag-med">Metformin 500 · ongoing</span>
+      <span class="flag flag-ok">No known allergies</span>
+    </div>
+    <div class="rule"><span class="yes">do</span><span>Show allergy flags with drug, reaction and severity — a bare "allergy" chip is a liability, not information.</span></div>
+    <div class="rule"><span class="no">don't</span><span>Let flags scroll away. The header they live on is sticky for exactly this reason.</span></div>
+  </div>
+  <div class="spec">
+    <div class="spec-head"><b>Symptom tags</b><span>coded vs uncoded</span></div>
+    <div class="spec-canvas">
+      <span class="tg">fever <small>R50.9</small></span>
+      <span class="tg">sore throat <small>J02.9</small></span>
+      <span class="tg">dry cough <small>R05</small></span>
+      <span class="tg uncoded">"gala baith gaya" · uncoded</span>
+    </div>
+    <div class="spec-note">Tags carry an ICD-10 code where the extractor is confident. Free-text tags stay — dashed and grey — so the doctor can see what the system couldn't code rather than having it silently dropped.</div>
+  </div>
+  <div class="spec">
+    <div class="spec-head"><b>Speaker tags</b><span>who said what</span></div>
+    <div class="spec-canvas">
+      <span class="spk spk-dr">DR</span>
+      <span class="spk spk-pt">PT</span>
+      <span class="spk spk-att">ATT</span>
+      <span class="spk spk-un">?</span>
+      <span style="font-size:14px;color:var(--muted)">ATT is the attendant — a parent or family member. "?" is an honest unknown, one tap to assign.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CONSENT ═══════════ -->
+<section id="consent">
+  <h2>Consent module</h2>
+  <p class="sub">Legally load-bearing. The checkbox arms the record button; nothing else does. Consent is per visit — it always loads unticked — and the script the doctor reads sits in the open, in the patient's language.</p>
+  <div class="spec">
+    <div class="spec-canvas col" style="gap:0;padding:20px">
+      <div style="background:var(--amber-wash);border:1px solid var(--amber-line);border-radius:11px;padding:14px 16px">
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <button class="btn sm" style="background:var(--chalk);border-color:var(--amber-line);font-weight:600" aria-pressed="true">English</button>
+          <button class="btn sm btn-ghost" style="background:transparent;border-color:transparent;color:var(--amber-deep)" aria-pressed="false">हिन्दी</button>
+          <button class="btn sm btn-ghost" style="background:transparent;border-color:transparent;color:var(--amber-deep)" aria-pressed="false">मराठी</button>
+        </div>
+        <p style="margin:0 0 12px;font-size:16px">"I'd like to record our conversation so your notes are written properly. The recording stays private and is deleted on a schedule. Is that okay?"</p>
+        <label class="check" style="font-weight:600"><input type="checkbox" id="ds-cons"> <span>Patient agreed — record verbal consent for this visit</span></label>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:14px;flex-wrap:wrap">
+        <button class="btn btn-rec" id="ds-recbtn" disabled><span style="width:8px;height:8px;border-radius:50%;background:#fff"></span>Start recording</button>
+        <span style="font-size:14px;color:var(--muted)" id="ds-rechint">The record button stays off until consent is ticked.</span>
+      </div>
+    </div>
+    <div class="rule"><span class="yes">do</span><span>Offer the manual path at equal rank when consent is refused — "Write the note without recording" is a first-class button, not a fallback link.</span></div>
+    <div class="rule"><span class="yes">do</span><span>Store language, method and timestamp with the consent record; show "asked in Marathi at 11:21" on the visit afterwards.</span></div>
+    <div class="rule"><span class="no">don't</span><span>Pre-tick, remember across visits, or hide the script behind a tooltip. Ever.</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ RECORDING ═══════════ -->
+<section id="recording">
+  <h2>Recording</h2>
+  <p class="sub">The waveform is an instrument reading, not decoration — it must reflect the real input level, because a flat line is how the doctor discovers a dead mic before losing a consult to it.</p>
+  <div class="spec">
+    <div class="spec-canvas col" style="gap:18px;padding:20px">
+      <div class="wavebox">
+        <div class="wave-lbl"><span class="lbl" style="color:var(--signal)">● Recording · 04:12</span><span class="lbl">Mic: default — Realtek</span></div>
+        <svg id="ds-wave-live" viewBox="0 0 600 44" preserveAspectRatio="none" style="width:100%;height:44px" aria-label="Live input level"></svg>
+      </div>
+      <div class="wavebox">
+        <div class="wave-lbl"><span class="lbl">Idle · armed</span></div>
+        <svg id="ds-wave-idle" viewBox="0 0 600 30" preserveAspectRatio="none" style="width:100%;height:30px" aria-hidden="true"></svg>
+      </div>
+      <div class="wavebox">
+        <div class="wave-lbl"><span class="lbl" style="color:var(--brick)">Flat — check the mic</span></div>
+        <svg id="ds-wave-flat" viewBox="0 0 600 30" preserveAspectRatio="none" style="width:100%;height:30px" aria-hidden="true"></svg>
+        <div class="banner bn-error" style="margin-top:10px"><svg width="17" height="17" style="color:var(--brick)" aria-hidden="true"><use href="#i-warn"/></svg><span><b>No sound is reaching Sonara.</b> Check the Windows sound settings, then reload. The visit can continue — write the note manually if needed.</span></div>
+      </div>
+    </div>
+    <div class="rule"><span class="yes">do</span><span>Warn at 20 minutes, auto-stop at 45 — with a banner, never silently. Audio is always kept.</span></div>
+    <div class="rule"><span class="yes">do</span><span>Keep recording through network loss: buffer locally and say so in words ("Saving locally — will upload when the connection returns").</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ PIPELINE (part of recording flow) ═══════════ -->
+<section id="pipeline">
+  <h2>Processing pipeline</h2>
+  <p class="sub">From "End visit" to a reviewable draft in under 15 seconds. The stepper names each stage in words a doctor recognizes, and a permanent failure gets a Retry button — never a silent stall.</p>
+  <div class="spec">
+    <div class="spec-canvas" style="padding:0"><div class="steps">
+      <div class="stg done"><span class="k">Audio</span><span class="v"><span class="tick"></span>Saved <small>encrypted</small></span></div>
+      <div class="stg done"><span class="k">Transcript</span><span class="v"><span class="tick"></span>Complete <small>98.4%</small></span></div>
+      <div class="stg run"><span class="k">Speakers</span><span class="v"><span class="tick"></span>Separating</span></div>
+      <div class="stg idle"><span class="k">Case sheet</span><span class="v"><span class="tick"></span>—</span></div>
+    </div></div>
+    <div class="spec-canvas" style="padding:0;border-top:1px dashed var(--line)"><div class="steps">
+      <div class="stg done"><span class="k">Audio</span><span class="v"><span class="tick"></span>Saved</span></div>
+      <div class="stg done"><span class="k">Transcript</span><span class="v"><span class="tick"></span>Complete</span></div>
+      <div class="stg done"><span class="k">Speakers</span><span class="v"><span class="tick"></span>2 found <small>DR · PT</small></span></div>
+      <div class="stg fail"><span class="k">Case sheet</span><span class="v"><span class="tick"></span>Didn't finish <button class="btn btn-ghost sm" style="margin-left:6px">Retry</button></span></div>
+    </div></div>
+    <div class="spec-note">Jobs are idempotent and retried 3× behind the scenes before the doctor ever sees "Didn't finish". The transcript is always kept — a failed draft never costs the visit.</div>
+  </div>
+</section>
+
+<!-- ═══════════ TRANSCRIPT ═══════════ -->
+<section id="transcript">
+  <h2>Transcript</h2>
+  <p class="sub">Speaker-tagged, timestamped, code-mix left exactly as spoken. Low-confidence words get a dotted amber underline instead of silent smoothing. Tap a line to correct it — corrections feed the clinic's own vocabulary, nobody else's.</p>
+  <div class="spec">
+    <div class="spec-canvas col" style="padding:14px 20px">
+      <div class="trl"><span class="spk spk-dr">DR</span><span class="ts">00:04</span><span class="tx">Haan Priya, batao — kya taqleef ho rahi hai?</span></div>
+      <div class="trl hl"><span class="spk spk-pt">PT</span><span class="ts">00:07</span><span class="tx">Do din se bukhar hai, and throat is paining a lot.</span></div>
+      <div class="trl"><span class="spk spk-dr">DR</span><span class="ts">00:26</span><span class="tx">Throat dekhte hain… erythema present, tonsils <span class="lowc" title="Low confidence — tap to correct">mildly enlarged</span>. Temp 100.8.</span></div>
+      <div class="trl"><span class="ts"></span><span class="gap">— paused 00:41–02:10 · phone call —</span></div>
+      <div class="trl"><span class="spk spk-att">ATT</span><span class="ts">02:12</span><span class="tx">Doctor, raat ko saans lene mein bhi taqleef thi.</span></div>
+    </div>
+    <div class="spec-note">The highlighted line shows <b>provenance</b>: hovering a sentence in the drafted note lights up the transcript lines it came from. The green wash is the same one used for selection everywhere.</div>
+    <div class="rule"><span class="yes">do</span><span>Offer "Swap DR ↔ PT" as a single action when the heuristic guesses wrong. One tap, whole transcript.</span></div>
+    <div class="rule"><span class="no">don't</span><span>Translate or clean the transcript. It is evidence; the note is the interpretation.</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ NOTE ═══════════ -->
+<section id="note">
+  <h2>Case sheet fields</h2>
+  <p class="sub">Five sections, every one inline-editable, autosaved at 800ms. A drafted assessment is always phrased as a draft. Sections the audio couldn't support are flagged, not padded with plausible filler.</p>
+  <div class="spec">
+    <div class="spec-canvas col" style="padding:14px 20px">
+      <div class="banner bn-warn" style="margin:6px 0 10px"><svg width="17" height="17" style="color:var(--amber-deep)" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Audio was unclear from 03:10 to 03:40.</b> Please check the examination section.</span></div>
+      <div class="nf">
+        <div class="k"><span class="lbl">Presenting complaint</span><span class="save-st on">Saved</span></div>
+        <div class="edit" contenteditable="true" spellcheck="false">Fever ×2 days, sore throat, dry cough worse at night.</div>
+        <div style="margin-top:8px"><span class="tg">fever <small>R50.9</small></span> <span class="tg">sore throat <small>J02.9</small></span> <span class="tg">dry cough <small>R05</small></span></div>
+      </div>
+      <div class="nf">
+        <div class="k"><span class="lbl" style="color:var(--amber-deep)">On examination · check this</span><span class="save-st">Editing…</span></div>
+        <div class="edit" contenteditable="true" spellcheck="false" style="border-color:var(--amber-line);background:var(--amber-wash)">Pharyngeal erythema, tonsils mildly enlarged, temp 100.8°F. Chest clear.</div>
+      </div>
+      <div class="nf">
+        <div class="k"><span class="lbl">Assessment — draft</span></div>
+        <div class="edit" contenteditable="true" spellcheck="false">Acute pharyngitis, likely viral.</div>
+      </div>
+    </div>
+    <div class="rule"><span class="yes">do</span><span>Keep "Regenerate from transcript" and "Discard draft, keep transcript" one level down, behind a confirm — available, never tempting.</span></div>
+    <div class="rule"><span class="no">don't</span><span>Let the model write a drug, dose, or anything not present in the transcript. The prescription is a separate module and the eval gate is ≤1% unsupported assertions.</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ RX ═══════════ -->
+<section id="rx">
+  <h2>Prescription composer</h2>
+  <p class="sub">In V1 the doctor composes everything — Sonara autocompletes from a licensed drug database, checks allergies, formats, and delivers. Free text is allowed with an amber warning; an allergy match is a Brick hard stop.</p>
+  <div class="spec">
+    <div class="spec-canvas col" style="padding:14px 20px">
+      <div class="rx-item"><span class="n">1</span><span><span class="nm">Crocin Advance 500</span> <span class="gen">· paracetamol 500mg · tab</span><div class="dz">1-0-1 · after food · 3 days</div></span><button class="x" aria-label="Remove Crocin">×</button></div>
+      <div class="rx-item"><span class="n">2</span><span><span class="nm">Warm saline gargle</span> <span class="gen" style="color:var(--amber-deep)">· free text — not in the drug database</span><div class="dz">Twice daily · 5 days</div></span><button class="x" aria-label="Remove gargle">×</button></div>
+      <div class="ac" style="margin-top:12px">
+        <label class="f-lbl" for="ds-drug">Add medicine</label>
+        <input class="input" id="ds-drug" style="max-width:none" value="azith">
+        <div class="ac-list" role="listbox" aria-label="Drug matches">
+          <div class="ac-row sel" role="option" aria-selected="true"><span class="b">Azithral 500</span><span class="s">azithromycin 500mg</span><span class="f">tab</span></div>
+          <div class="ac-row" role="option" aria-selected="false"><span class="b">Azee 250</span><span class="s">azithromycin 250mg</span><span class="f">tab</span></div>
+          <div class="ac-free">↵ on no match adds "azith" as free text — it will print exactly as typed, unchecked.</div>
+        </div>
+      </div>
+    </div>
+    <div class="rule"><span class="yes">do</span><span>Resolve every entry to salt + strength + form from the licensed database. The database is licensed data, never generated.</span></div>
+    <div class="rule"><span class="yes">do</span><span>Keep the sign action showing the <b>full final content</b> — the confirmation sheet renders the prescription exactly as the patient receives it.</span></div>
+    <div class="rule"><span class="no">don't</span><span>Ship any path where an unsigned prescription reaches print, WhatsApp or email. This is a database invariant, not a UI convention.</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ BANNERS ═══════════ -->
+<section id="banners">
+  <h2>Banners &amp; toasts</h2>
+  <p class="sub">Every banner is a full sentence with the consequence included. The offline banner is Ink — calm, factual, impossible to miss — because losing a consult is the one unforgivable failure.</p>
+  <div class="spec"><div class="spec-canvas col" style="gap:12px;padding:20px">
+    <div class="banner bn-info"><svg width="17" height="17" style="color:var(--petrol)" aria-hidden="true"><use href="#i-info"/></svg><span><b>Priya's record moved.</b> This visit is now filed under Priya Nair · PT-40219.</span></div>
+    <div class="banner bn-warn"><svg width="17" height="17" style="color:var(--amber-deep)" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Recording has been running 20 minutes.</b> It will stop by itself at 45 — nothing is discarded.</span></div>
+    <div class="banner bn-offline"><svg width="17" height="17" style="color:var(--ink-muted)" aria-hidden="true"><use href="#i-cloud"/></svg><span><b style="color:#fff">Connection lost — saving locally.</b> Recording continues on this computer and uploads when the clinic is back online.</span></div>
+    <div class="banner bn-error"><svg width="17" height="17" style="color:var(--brick)" aria-hidden="true"><use href="#i-warn"/></svg><span><b>The case sheet didn't finish.</b> The transcript is safe. <span style="white-space:nowrap">Try again, or write the note manually.</span></span><span class="act"><button class="btn btn-ghost sm">Retry</button></span></div>
+    <div class="banner bn-hold"><svg width="17" height="17" style="color:var(--muted)" aria-hidden="true"><use href="#i-lock"/></svg><span><b>Registration under review.</b> You can record and draft today; signing unlocks when verification completes — usually within 24 hours.</span></div>
+    <div><span class="toast"><svg width="16" height="16" class="tick-i" aria-hidden="true"><use href="#i-check"/></svg>Note signed · prescription sent to WhatsApp</span></div>
+  </div></div>
+</section>
+
+<!-- ═══════════ MODALS ═══════════ -->
+<section id="modals">
+  <h2>Modals &amp; sheets</h2>
+  <p class="sub">Two special forms matter more than the generic dialog: the allergy hard stop, and the signing sheet. Try them live.</p>
+  <div class="spec">
+    <div class="spec-canvas">
+      <button class="btn btn-ghost" id="ds-open-stop">Open the allergy hard stop</button>
+      <button class="btn btn-primary" id="ds-open-sign">Open the signing sheet</button>
+    </div>
+    <div class="rule"><span class="yes">do</span><span>Make the override cost deliberate effort: a typed reason, minimum 10 characters, logged with the doctor's name in the audit trail.</span></div>
+    <div class="rule"><span class="yes">do</span><span>Render the signing sheet as the actual artifact — the doctor sees the identical content the patient will hold, plus their own signature block.</span></div>
+    <div class="rule"><span class="no">don't</span><span>Summarize at signing time ("3 medicines, 1 note"). Counts hide mistakes; content exposes them.</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ RECORDS & AUDIT ═══════════ -->
+<section id="records">
+  <h2>Records &amp; audit</h2>
+  <p class="sub">The visit timeline reads newest-first in the aside; the audit log is a mono ledger — append-only in the database and visibly so in the UI.</p>
+  <div class="spec">
+    <div class="spec-head"><b>Visit timeline</b><span>aside · paginated at 20</span></div>
+    <div class="spec-canvas col" style="padding:10px 20px">
+      <div class="tlv">
+        <div class="tlv-row"><span class="d">12 Mar 26</span><span class="t"><b>Sinusitis</b><p>Azithral 500 · 5d · tolerated well</p></span></div>
+        <div class="tlv-row"><span class="d">04 Jan 26</span><span class="t"><b>Routine check</b><p>BP 118/76 · no complaints</p></span></div>
+        <div class="tlv-row"><span class="d">2019</span><span class="t"><b>Noted</b><p>Childhood asthma · no inhaler since 2016</p></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="spec">
+    <div class="spec-head"><b>Audit ledger</b><span>who did what, including reads</span></div>
+    <div class="spec-canvas col" style="padding:8px 0"><div style="overflow-x:auto"><table class="aud">
+      <tr><td class="t">11:21:04</td><td class="a">consent.captured</td><td>Dr. Menon</td><td>verbal · Marathi · visit V-8841</td></tr>
+      <tr><td class="t">11:21:36</td><td class="a">recording.started</td><td>Dr. Menon</td><td>visit V-8841</td></tr>
+      <tr><td class="t">11:29:02</td><td class="a">note.generated</td><td>system</td><td>model claude-fable-5 · prompt v14 · 8.2s</td></tr>
+      <tr><td class="t">11:31:44</td><td class="a">note.signed</td><td>Dr. Menon</td><td>hash 9f2c…a1 · IP 103.86.—</td></tr>
+      <tr><td class="t">11:31:58</td><td class="warn-a">allergy.override</td><td>Dr. Menon</td><td>"Tolerated cephalexin post-desensitisation, 2024"</td></tr>
+      <tr><td class="t">14:02:11</td><td class="warn-a">record.read</td><td>front desk · Sunita</td><td style="color:var(--brick)">403 — clinical note blocked at query layer</td></tr>
+    </table></div></div>
+    <div class="spec-note">Overrides and blocked reads render in Brick — the ledger is where the product proves the safety rules are real. Rows are never editable; there is no delete affordance to grey out because none exists.</div>
+  </div>
+</section>
+
+<!-- ═══════════ EMPTY & LOADING ═══════════ -->
+<section id="states">
+  <h2>Empty &amp; loading</h2>
+  <p class="sub">Empty states teach the next action. Skeletons hold layout for under 500ms; anything longer becomes a sentence.</p>
+  <div class="spec"><div class="spec-canvas" style="gap:20px;align-items:stretch">
+    <div class="panel" style="flex:1;min-width:240px"><div class="empty">
+      <svg width="40" height="40" style="color:var(--mist)" aria-hidden="true"><use href="#mk"/></svg>
+      <h5>No patients yet today</h5>
+      <p>Add a walk-in, or import this week's appointment book.</p>
+      <button class="btn btn-primary sm">Add walk-in</button>
+    </div></div>
+    <div class="panel" style="flex:1;min-width:240px"><div class="pbody">
+      <div class="skel" style="height:14px;width:40%;margin-bottom:12px"></div>
+      <div class="skel" style="height:11px;width:90%;margin-bottom:8px"></div>
+      <div class="skel" style="height:11px;width:84%;margin-bottom:8px"></div>
+      <div class="skel" style="height:11px;width:60%"></div>
+    </div></div>
+  </div></div>
+</section>
+
+<!-- ═══════════ PATTERNS ═══════════ -->
+<section id="patterns">
+  <h2>Safety patterns</h2>
+  <p class="sub">The §10 invariants, as interface law. These are the rules a redesign is not allowed to touch.</p>
+  <div class="spec"><div style="overflow-x:auto"><table class="tbl">
+    <tr><th>Invariant</th><th>What the interface does</th></tr>
+    <tr><td><b>Consent gates the mic</b></td><td>Record is disabled until the per-visit checkbox; refusing consent routes to an equal-rank manual note. Withdrawal stops recording and schedules deletion, stated on screen.</td></tr>
+    <tr><td><b>Only the doctor prescribes</b></td><td>Rx state is visibly <span class="mono" style="font-size:12px">unsigned</span> until the signing sheet; sign is blocked for unverified registrations with the reason shown; the sheet renders full content, never a summary.</td></tr>
+    <tr><td><b>Signed means immutable</b></td><td>A signed note locks — fields lose their edit affordance entirely. Corrections happen as addenda with author, time and reason; a corrected Rx is a new Rx referencing the original.</td></tr>
+    <tr><td><b>Roles are walls</b></td><td>Front desk sees the queue and demographics; clinical panels don't render at all for them — no disabled previews, no teasers. Blocked reads still get audited.</td></tr>
+    <tr><td><b>Honest uncertainty</b></td><td>Low-confidence sections carry the amber banner; unclear words are dotted, never smoothed; a thin section stays thin.</td></tr>
+    <tr><td><b>Connection honesty</b></td><td>Offline is a named state ("Saving locally"), not a spinner. The doctor's next action is never blocked on a round trip.</td></tr>
+  </table></div></div>
+</section>
+
+<!-- ═══════════ A11Y ═══════════ -->
+<section id="a11y">
+  <h2>Accessibility</h2>
+  <p class="sub">The primary user is over 40, reading across a desk, on Chrome or Edge on Windows. These are requirements, not aspirations.</p>
+  <div class="spec">
+    <div class="rule" style="border-top:0"><span class="yes">rule</span><span><b>16px floor.</b> Body text, inputs and note fields never render below 16px. 14px exists only for metadata; 11–12px only for mono labels.</span></div>
+    <div class="rule"><span class="yes">rule</span><span><b>Focus is visible everywhere:</b> 2.5px Sea outline, 2px offset, on every interactive element including contenteditable fields and table rows.</span></div>
+    <div class="rule"><span class="yes">rule</span><span><b>Keyboard-complete:</b> the core loop — pick patient, consent, record, end, edit, sign — works without a pointer. <kbd>/</kbd> focuses search, <kbd>Esc</kbd> closes sheets, arrows walk the queue.</span></div>
+    <div class="rule"><span class="yes">rule</span><span><b>State never rides on color alone:</b> every status chip pairs its color with a word; the live states also pulse; the flat-mic state adds a banner.</span></div>
+    <div class="rule"><span class="yes">rule</span><span><b>Hit targets ≥40px</b> on anything tapped during a consult — the doctor is not aiming carefully while a patient talks.</span></div>
+    <div class="rule"><span class="yes">rule</span><span><b>Reduced motion honored</b> globally; the recording state remains distinguishable as a solid Signal dot plus the word.</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ VOICE ═══════════ -->
+<section id="voice">
+  <h2>Voice in product</h2>
+  <p class="sub">The audience is a doctor with eleven people waiting outside. Say the thing, then stop.</p>
+  <div class="spec"><div style="overflow-x:auto"><table class="tbl">
+    <tr><th>Moment</th><th>Write this</th><th>Not this</th></tr>
+    <tr><td>Draft ready</td><td>Note ready. Review before signing.</td><td style="color:var(--muted)">Your AI-powered documentation is complete! 🎉</td></tr>
+    <tr><td>Poor audio</td><td>Couldn't hear 03:10–03:40 — the room got loud. Recording saved anyway.</td><td style="color:var(--muted)">Transcription confidence below threshold.</td></tr>
+    <tr><td>Assessment</td><td>Acute pharyngitis, likely viral <span class="mono" style="font-size:11px">(draft)</span></td><td style="color:var(--muted)">The patient has acute pharyngitis.</td></tr>
+    <tr><td>Empty queue</td><td>No patients yet today.</td><td style="color:var(--muted)">Oops! Nothing to see here 👀</td></tr>
+    <tr><td>Job failed</td><td>The case sheet didn't finish. The transcript is safe.</td><td style="color:var(--muted)">Error 500: generation pipeline exception.</td></tr>
+  </table></div>
+  <div class="rule"><span class="yes">use</span><span><b>Draft, suggestion, review, sign · visit, case sheet, complaint, follow-up.</b></span></div>
+  <div class="rule"><span class="no">avoid</span><span><b>Diagnose, recommend, prescribe</b> (Sonara does none of these) · <b>seamless, revolutionary, powered by AI</b> (carry no information).</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ RESERVED ═══════════ -->
+<section id="reserved">
+  <h2>Reserved for V1.5</h2>
+  <p class="sub">Drug suggestions ship only after real notes exist to ground them. The component is specified now so V1.5 doesn't invent a new visual language: a suggestion is a proposal with a visible source, never an auto-added line.</p>
+  <div class="spec">
+    <div class="spec-canvas" style="background:var(--paper)">
+      <div class="panel" style="max-width:400px">
+        <div class="pbody" style="padding:16px 18px">
+          <div style="font-weight:600;font-size:15px;margin-bottom:5px">Hold the antibiotic</div>
+          <p style="margin:0 0 10px;font-size:14px;color:var(--muted)">Presentation reads viral: gradual onset, no exudate noted, dry cough. Nothing added to the draft.</p>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--sea);background:var(--sea-wash);border-radius:6px;padding:6px 9px;margin-bottom:12px;line-height:1.5">Why → examination line · "dry cough, raat ko zyada" at 00:17</div>
+          <div style="display:flex;gap:8px"><button class="btn btn-ghost sm">Add anyway</button><button class="btn btn-ghost sm">Dismiss</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="spec-note">Every suggestion selects from the licensed database, carries a "Why →" trace to a transcript line or record entry, and offers Add / Dismiss. Dismissals are logged; a suggestion type dismissed &gt;70% of the time is removed, not tuned. Withholding advice ("antibiotic not added") is a first-class suggestion.</div>
+  </div>
+</section>
+
+<footer style="padding:48px 0 20px;color:var(--muted);font-family:var(--mono);font-size:12px;border-top:1px solid var(--line);margin-top:40px">
+  Sonara design system v1 · tokens mirrored in tokens.css · specimens are the reference implementation for app.html
+</footer>
+
+</main>
+</div>
+
+<!-- ═══ live modal demos ═══ -->
+<div class="overlay" id="ov-stop" role="dialog" aria-modal="true" aria-labelledby="stop-t">
+  <div class="modal stop">
+    <div class="mh">
+      <span class="lbl" style="color:var(--brick)">Allergy on record · hard stop</span>
+      <h4 id="stop-t">Amoxicillin conflicts with a recorded allergy</h4>
+    </div>
+    <div class="mb">
+      <p style="margin:0 0 12px">Rakesh Bhosale has <b style="color:var(--ink)">penicillin — rash, severe (2021)</b> on file. Amoxicillin is a penicillin-class drug.</p>
+      <div style="background:var(--brick-wash);border:1px solid var(--brick-line);border-radius:9px;padding:10px 12px;font-size:14px;color:var(--ink)">Mox 500 · amoxicillin 500mg · 1-0-1 · 5 days</div>
+      <label class="f-lbl" for="ov-reason" style="margin-top:16px">To prescribe anyway, state your reason — it is recorded in the audit log</label>
+      <input class="input" id="ov-reason" style="max-width:none" placeholder="Minimum 10 characters">
+    </div>
+    <div class="mf">
+      <button class="btn btn-ghost" data-close>Remove the drug</button>
+      <button class="btn btn-danger" disabled id="ov-override">Prescribe with reason</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ov-sign" role="dialog" aria-modal="true" aria-labelledby="sign-t">
+  <div class="modal" style="max-width:560px">
+    <div class="mh">
+      <span class="lbl">Review &amp; sign · exactly what the patient receives</span>
+      <h4 id="sign-t">Prescription — Priya Nair · 34F</h4>
+    </div>
+    <div class="mb" style="color:var(--ink)">
+      <div style="border:1px solid var(--line);border-radius:11px;padding:16px;background:var(--chalk)">
+        <div class="lbl" style="margin-bottom:10px">Rx · 18 Aug 2026</div>
+        <div class="rx-item" style="padding-top:0"><span class="n">1</span><span><span class="nm">Crocin Advance 500</span> <span class="gen">· paracetamol 500mg</span><div class="dz">1-0-1 · after food · 3 days</div></span></div>
+        <div class="rx-item" style="border-bottom:0"><span class="n">2</span><span><span class="nm">Warm saline gargle</span><div class="dz">Twice daily · 5 days</div></span></div>
+        <div style="border-top:1px solid var(--line);margin-top:8px;padding-top:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div style="font-size:13.5px;color:var(--muted)">Review in 3 days if fever persists.</div>
+          <div style="text-align:right"><div style="font-family:var(--display);font-weight:600;font-size:15px">Dr. A. Menon, MD</div><div class="mono" style="font-size:11px;color:var(--muted)">NMC 4471 22 09 · Sunrise Polyclinic, Navi Mumbai</div></div>
+        </div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);margin:12px 0 0">Signing locks the case sheet and this prescription, writes the audit entry, and enables print / WhatsApp / email.</p>
+    </div>
+    <div class="mf">
+      <button class="btn btn-ghost" data-close>Back to editing</button>
+      <button class="btn btn-primary" data-close>Sign — Dr. A. Menon</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* consent arms the record button */
+(function(){
+  const c=document.getElementById('ds-cons'), b=document.getElementById('ds-recbtn'), h=document.getElementById('ds-rechint');
+  c.addEventListener('change',()=>{ b.disabled=!c.checked; h.textContent=c.checked?'Armed. Consent will be stored: verbal · English · '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})+'.':'The record button stays off until consent is ticked.'; });
+})();
+
+/* waveforms */
+(function(){
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function bars(svg,n,h){const out=[];for(let i=0;i<n;i++){const r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.setAttribute('x',i*(600/n)+1.2);r.setAttribute('width',(600/n)-2.6);r.setAttribute('rx',1.3);r.setAttribute('fill','#C9DBD5');svg.appendChild(r);out.push(r);}return out;}
+  function set(r,H,h){h=Math.max(2,h);r.setAttribute('y',(H-h)/2);r.setAttribute('height',h);}
+  const live=bars(document.getElementById('ds-wave-live'),72,44);
+  const idle=bars(document.getElementById('ds-wave-idle'),72,30);
+  const flat=bars(document.getElementById('ds-wave-flat'),72,30);
+  idle.forEach((b,i)=>{set(b,30,3+Math.abs(Math.sin(i*.71)*Math.cos(i*.29))*10)});
+  flat.forEach(b=>{set(b,30,2);b.setAttribute('fill','#E3C4BD')});
+  if(reduce){ live.forEach((b,i)=>{set(b,44,4+Math.abs(Math.sin(i*.5)*Math.cos(i*.23))*30);b.setAttribute('fill',i%9===0?'#2F8C7F':'#C9DBD5');}); return; }
+  let t0=null;
+  function loop(ts){ if(t0===null)t0=ts; const el=(ts-t0)/1000;
+    for(let i=0;i<72;i++){ const s=Math.sin(el*7+i*.55)*Math.sin(el*2.3+i*.13)*Math.sin(i*.9+el);
+      set(live[i],44,4+Math.abs(s)*(0.55+0.45*Math.sin(el*1.6+i*.05))*36);
+      live[i].setAttribute('fill', i%9===0?'#2F8C7F':'#C9DBD5'); }
+    requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+})();
+
+/* modal demos */
+(function(){
+  const map={'ds-open-stop':'ov-stop','ds-open-sign':'ov-sign'};
+  let last=null;
+  Object.entries(map).forEach(([b,o])=>{ document.getElementById(b).addEventListener('click',()=>{ last=document.getElementById(b); const ov=document.getElementById(o); ov.classList.add('on'); const f=ov.querySelector('input,button:not([disabled])'); if(f)f.focus(); }); });
+  document.querySelectorAll('.overlay').forEach(ov=>{
+    ov.addEventListener('click',e=>{ if(e.target===ov || e.target.closest('[data-close]')){ ov.classList.remove('on'); if(last)last.focus(); } });
+  });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.querySelectorAll('.overlay.on').forEach(o=>o.classList.remove('on')); if(last)last.focus(); } });
+  const reason=document.getElementById('ov-reason'), ovr=document.getElementById('ov-override');
+  reason.addEventListener('input',()=>{ ovr.disabled=reason.value.trim().length<10; });
+})();
+</script>
+</body>
+</html>

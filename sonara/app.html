@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sonara Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter+Tight:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══ Sonara tokens · see design-system.html ═══ */
+:root{
+  --ink:#0B2422; --petrol:#12514B; --petrol-deep:#0D423D; --sea:#2F8C7F;
+  --mist:#C9DBD5; --paper:#F1F4F1; --chalk:#FFFFFF; --line:#D5DEDA;
+  --muted:#5E736E; --faint:#9AACA7;
+  --soft:#F7FAF8; --panel-head:#FAFCFB; --sea-wash:#EAF3F0; --ok-wash:#E0EDE9;
+  --amber:#B7801E; --amber-deep:#8A6412; --amber-wash:#FBF4E8; --amber-line:#EBDCC0;
+  --signal:#D8452F; --signal-deep:#B23422; --signal-wash:#FBE2DE;
+  --brick:#9E3A2B; --brick-deep:#7E2E22; --brick-wash:#F6E3DF; --brick-line:#E3C4BD;
+  --ink-2:#12312E; --ink-line:#1E4340; --ink-text:#DCE7E4; --ink-muted:#8FA8A3; --ink-faint:#6E8C87;
+  --focus:#2F8C7F; --field-focus:rgba(47,140,127,.14);
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'Inter Tight',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --r-chip:6px; --r-ctl:8px; --r-field:9px; --r-card:13px; --r-sheet:18px;
+  --sh-card:0 1px 2px rgba(11,36,34,.04);
+  --sh-float:0 1px 2px rgba(11,36,34,.05),0 18px 44px -28px rgba(11,36,34,.30);
+  --sh-modal:0 24px 64px -16px rgba(11,36,34,.35);
+  --t-fast:150ms ease;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+button{font:inherit;cursor:pointer;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2.5px solid var(--focus);outline-offset:2px;border-radius:5px}
+.mono{font-family:var(--mono)}
+.lbl{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.wordmark{font-family:var(--display);font-weight:800;letter-spacing:-.045em;line-height:1}
+.hide{display:none!important}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:15px;padding:10px 16px;border-radius:var(--r-ctl);border:1px solid transparent;transition:background var(--t-fast),border-color var(--t-fast);text-decoration:none;white-space:nowrap}
+.btn-primary{background:var(--petrol);color:#fff}
+.btn-primary:hover{background:var(--petrol-deep)}
+.btn-ghost{border-color:var(--line);background:var(--chalk);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--sea)}
+.btn-quiet{background:none;color:var(--petrol)}
+.btn-quiet:hover{background:var(--sea-wash)}
+.btn-danger{border-color:var(--brick-line);background:var(--chalk);color:var(--brick)}
+.btn-danger:hover{background:var(--brick-wash);border-color:var(--brick)}
+.btn-rec{background:var(--signal);color:#fff}
+.btn-rec:hover{background:var(--signal-deep)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{font-size:13.5px;padding:6px 11px;border-radius:7px}
+kbd{font-family:var(--mono);font-size:11px;background:var(--soft);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:var(--muted)}
+
+.input{width:100%;padding:10px 13px;border:1px solid var(--line);border-radius:var(--r-field);background:var(--chalk);font:inherit;font-size:16px;color:var(--ink)}
+.input::placeholder{color:var(--faint)}
+.input:focus{outline:none;border-color:var(--sea);box-shadow:0 0 0 3px var(--field-focus)}
+.f-lbl{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.f-hint{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:6px}
+.f-err{font-size:13.5px;color:var(--brick);margin-top:6px;font-weight:500}
+select.input{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.check input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--petrol);flex:none}
+
+.st{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:var(--r-chip);white-space:nowrap}
+.st .d{width:7px;height:7px;border-radius:50%;flex:none}
+.st-sched{background:#EDF2F0;color:var(--muted)}.st-sched .d{background:var(--faint)}
+.st-arr{background:#EFEADF;color:#7A6B48}.st-arr .d{background:#B7A26A}
+.st-room{background:var(--signal-wash);color:var(--signal-deep)}.st-room .d{background:var(--signal);animation:pulse 1.1s infinite}
+.st-proc{background:var(--amber-wash);color:var(--amber-deep)}.st-proc .d{background:var(--amber);animation:pulse 1.1s infinite}
+.st-draft{background:var(--sea-wash);color:var(--petrol)}.st-draft .d{background:var(--sea)}
+.st-signed{background:var(--ok-wash);color:var(--petrol)}.st-signed .d{background:var(--petrol)}
+.st-ns{background:#EDF2F0;color:var(--faint)}.st-ns .d{background:var(--line)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+.flag{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;padding:4px 9px;border-radius:var(--r-chip);font-weight:500;white-space:nowrap}
+.flag-allergy{background:var(--brick-wash);color:var(--brick)}
+.flag-chronic{background:var(--amber-wash);color:var(--amber-deep)}
+.flag-med{background:var(--sea-wash);color:var(--petrol)}
+.flag-ok{background:var(--ok-wash);color:var(--petrol)}
+
+.tg{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11.5px;background:#E7EEEB;color:var(--petrol);padding:3px 8px;border-radius:var(--r-chip);margin:4px 6px 0 0}
+.tg small{font-size:10px;color:var(--sea)}
+.tg.uncoded{background:var(--soft);border:1px dashed var(--line);color:var(--muted)}
+.spk{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.06em;padding:2.5px 7px;border-radius:5px;flex:none}
+.spk-dr{background:var(--ok-wash);color:var(--petrol)}
+.spk-pt{background:#EDEAE2;color:#6B6250}
+.spk-att{background:#E8E9F0;color:#565C74}
+
+.panel{background:var(--chalk);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;box-shadow:var(--sh-card);margin-bottom:16px}
+.phead{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--panel-head);flex-wrap:wrap}
+.phead h3{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.015em;margin:0}
+.phead .end{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pbody{padding:18px}
+
+.banner{display:flex;gap:11px;padding:12px 15px;border-radius:var(--r-field);font-size:14.5px;line-height:1.5;align-items:flex-start;border:1px solid;margin-bottom:12px}
+.banner svg{flex:none;margin-top:2px}
+.banner b{font-weight:600}
+.banner .act{margin-left:auto;flex:none}
+.bn-info{background:var(--sea-wash);border-color:#CFE3DD}
+.bn-warn{background:var(--amber-wash);border-color:var(--amber-line)}
+.bn-offline{background:var(--ink);border-color:var(--ink);color:var(--ink-text)}
+.bn-error{background:var(--brick-wash);border-color:var(--brick-line)}
+.bn-hold{background:var(--soft);border-color:var(--line)}
+
+/* ── auth ── */
+#auth{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+@media(max-width:900px){#auth{grid-template-columns:1fr}#auth .brandside{display:none}}
+.brandside{background:var(--ink);color:var(--ink-text);padding:44px;display:flex;flex-direction:column;justify-content:space-between;gap:40px}
+.brandside .quiet{font-family:var(--display);font-weight:600;font-size:31px;letter-spacing:-.028em;line-height:1.16;max-width:16ch;color:#fff;margin:0 0 12px}
+.brandside p{color:var(--ink-muted);max-width:36ch;font-size:15px;margin:0}
+.statline{display:flex;gap:10px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--ink-faint);padding:10px 0;border-top:1px solid var(--ink-line)}
+.formside{display:flex;align-items:center;justify-content:center;padding:40px 28px;background:var(--paper)}
+.form{width:100%;max-width:392px}
+.form h1{font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.03em;margin:20px 0 6px}
+.form .sub{color:var(--muted);margin:0 0 24px;font-size:15px}
+.persona{display:flex;gap:10px;width:100%;text-align:left;align-items:center;background:var(--chalk);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:10px;transition:border-color var(--t-fast)}
+.persona:hover{border-color:var(--sea)}
+.persona .who{font-weight:600;font-size:15px}
+.persona .r{font-size:13px;color:var(--muted)}
+.persona .role-b{margin-left:auto}
+.role-b{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:2.5px 8px;border-radius:5px;background:var(--soft);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.1em}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
+.otp{display:flex;gap:8px}
+.otp input{width:46px;height:54px;text-align:center;font-family:var(--mono);font-size:20px;border:1px solid var(--line);border-radius:var(--r-field);background:var(--chalk);padding:0}
+.otp input:focus{outline:none;border-color:var(--sea);box-shadow:0 0 0 3px var(--field-focus)}
+
+/* ── shell ── */
+#app{display:none;grid-template-columns:64px 288px 1fr;height:100vh;height:100dvh}
+#app.on{display:grid}
+#app.aside-on{grid-template-columns:64px 288px 1fr 324px}
+@media(max-width:1280px){#app.aside-on{grid-template-columns:64px 288px 1fr}.aside{display:none!important}}
+@media(max-width:980px){#app.on,#app.aside-on{grid-template-columns:64px 1fr}.queue{display:none!important}#app.qonly{grid-template-columns:64px 1fr}#app.qonly .queue{display:flex!important}#app.qonly .main{display:none}}
+
+.rail{background:var(--ink);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:4px}
+.rail .logo{margin-bottom:14px;color:var(--mist)}
+.rail .ico{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;color:#7C9B96;border:0;background:none;position:relative}
+.rail .ico:hover{background:var(--ink-2);color:#fff}
+.rail .ico[aria-current="true"]{background:var(--petrol);color:#fff}
+.rail .sp{flex:1}
+.rail .ico .tip{position:absolute;left:52px;top:50%;transform:translateY(-50%);background:var(--ink);color:var(--ink-text);font-size:12.5px;font-family:var(--body);padding:5px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity var(--t-fast);z-index:50}
+.rail .ico:hover .tip,.rail .ico:focus-visible .tip{opacity:1}
+
+.queue{background:var(--chalk);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
+.qhead{padding:16px 16px 12px;border-bottom:1px solid var(--line)}
+.qhead h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.02em;margin:4px 0 3px}
+.qhead .meta{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.qsearch{position:relative;margin-top:12px}
+.qsearch .input{padding-left:34px;font-size:14.5px;padding-top:8px;padding-bottom:8px}
+.qsearch svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--faint)}
+.qsearch kbd{position:absolute;right:9px;top:50%;transform:translateY(-50%)}
+.qactions{display:flex;gap:8px;margin-top:10px}
+.qlist{overflow-y:auto;flex:1;padding-bottom:20px}
+.pat{display:flex;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);border-left:3px solid transparent;background:none;width:100%;text-align:left;align-items:flex-start;border-top:0;border-right:0}
+.pat:hover{background:var(--soft)}
+.pat.on{background:var(--soft);border-left-color:var(--sea)}
+.pat .tok{font-family:var(--mono);font-size:11px;color:var(--faint);width:24px;flex:none;padding-top:3px}
+.pat .nm{font-weight:600;font-size:15px}
+.pat .dt{font-size:13px;color:var(--muted)}
+.pat .st{margin-left:auto;flex:none;margin-top:2px}
+
+.main{overflow-y:auto;background:var(--paper);display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid var(--line);background:var(--chalk);position:sticky;top:0;z-index:20;flex-wrap:wrap}
+.topbar .vt{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:-.015em}
+.conn{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.conn .d{width:8px;height:8px;border-radius:50%;background:var(--sea)}
+.conn.off{color:var(--amber-deep)}
+.conn.off .d{background:var(--amber);animation:pulse 1.1s infinite}
+.avatar{width:34px;height:34px;border-radius:9px;background:var(--mist);color:var(--petrol);display:inline-grid;place-items:center;font-weight:600;font-size:12.5px;flex:none}
+.menu{position:relative}
+.menu-list{position:absolute;right:0;top:calc(100% + 8px);background:var(--chalk);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh-float);min-width:250px;padding:6px;display:none;z-index:40}
+.menu-list.on{display:block}
+.menu-list button{display:flex;width:100%;text-align:left;background:none;border:0;padding:9px 11px;border-radius:8px;font-size:14.5px;gap:10px;align-items:center}
+.menu-list button:hover{background:var(--soft)}
+.menu-list .mh{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:8px 11px 4px}
+.menu-list hr{border:0;border-top:1px solid var(--line);margin:6px 0}
+
+.canvas{padding:20px 24px 80px;max-width:980px;width:100%;margin:0 auto}
+
+/* patient header */
+.pathead{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--chalk);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--sh-card);margin-bottom:16px;flex-wrap:wrap;position:sticky;top:64px;z-index:15}
+.pathead .who{font-weight:600;font-size:17px}
+.pathead .sub{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.pathead .flags{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+
+/* record row */
+.recrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.recrow .wave{flex:1;min-width:180px;height:44px}
+.timer{font-family:var(--mono);font-size:20px;letter-spacing:-.02em;min-width:64px}
+
+/* consent */
+.consent-box{background:var(--amber-wash);border:1px solid var(--amber-line);border-radius:11px;padding:14px 16px}
+.consent-box.done{background:var(--sea-wash);border-color:#CFE3DD}
+.ltab{background:transparent;border:1px solid transparent;color:var(--amber-deep);font-weight:600;font-size:13.5px;padding:5px 11px;border-radius:7px}
+.ltab[aria-pressed="true"]{background:var(--chalk);border-color:var(--amber-line);color:var(--ink)}
+
+/* pipeline */
+.steps{display:flex;flex-wrap:wrap}
+.stg{flex:1;min-width:126px;padding:11px 16px;border-right:1px solid var(--line)}
+.stg:last-child{border-right:0}
+.stg .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.stg .v{font-size:14.5px;font-weight:600;margin-top:3px;display:flex;align-items:center;gap:7px}
+.stg .v small{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--muted)}
+.tick{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+.stg.done .tick{background:var(--sea)}
+.stg.run .tick{background:var(--amber);animation:pulse 1s infinite}
+.stg.idle .v{color:var(--faint);font-weight:400}
+
+/* transcript */
+.tr-list{max-height:300px;overflow-y:auto;padding-right:4px}
+.trl{display:flex;gap:11px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.trl:last-child{border-bottom:0}
+.trl .ts{font-family:var(--mono);font-size:11px;color:var(--faint);flex:none;margin-top:3px;width:40px}
+.trl .tx{font-size:15px;line-height:1.5}
+.trl .tx .lowc{border-bottom:2px dotted var(--amber)}
+.trl.hl{background:var(--sea-wash);margin:0 -10px;padding:8px 10px;border-radius:8px}
+.trl .fix{margin-left:auto;flex:none;background:none;border:0;color:var(--faint);font-size:12px;font-family:var(--mono);padding:2px 6px;border-radius:5px;opacity:0}
+.trl:hover .fix{opacity:1}
+.trl .fix:hover{background:var(--soft);color:var(--petrol)}
+.trl .gap{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.08em}
+
+/* note */
+.nf{padding:13px 0;border-bottom:1px dashed var(--line)}
+.nf:last-child{border-bottom:0}
+.nf .k{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;gap:10px}
+.save-st{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.save-st.on{color:var(--sea)}
+.edit{border:1px solid transparent;border-radius:8px;padding:8px 10px;margin:-8px -10px;font-size:16px;line-height:1.55;min-height:24px}
+.edit:hover{border-color:var(--line);background:var(--soft)}
+.edit:focus{outline:none;border-color:var(--sea);background:var(--chalk);box-shadow:0 0 0 3px var(--field-focus)}
+.nf.warnf .edit{border-color:var(--amber-line);background:var(--amber-wash)}
+.nf.locked .edit{border-color:transparent!important;background:none!important;color:var(--ink)}
+
+/* rx */
+.rx-item{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line)}
+.rx-item .n{font-family:var(--mono);font-size:11px;color:var(--faint);width:18px;flex:none;padding-top:3px}
+.rx-item .nm{font-weight:600;font-size:15px}
+.rx-item .gen{font-size:13px;color:var(--muted)}
+.rx-item .dz{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:2px}
+.rx-item .x{margin-left:auto;background:none;border:0;color:var(--muted);font-size:17px;line-height:1;padding:4px 9px;border-radius:6px;flex:none}
+.rx-item .x:hover{background:var(--brick-wash);color:var(--brick)}
+.ovr-b{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:var(--brick-wash);color:var(--brick);padding:2px 6px;border-radius:5px;margin-left:8px}
+.free-b{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:var(--amber-wash);color:var(--amber-deep);padding:2px 6px;border-radius:5px;margin-left:8px}
+.ac{position:relative}
+.ac-list{position:absolute;left:0;right:0;top:calc(100% + 6px);border:1px solid var(--line);border-radius:10px;background:var(--chalk);box-shadow:var(--sh-float);overflow:hidden;z-index:30;display:none}
+.ac-list.on{display:block}
+.ac-row{display:flex;gap:10px;padding:9px 13px;border-bottom:1px dashed var(--line);align-items:baseline;width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left}
+.ac-row:last-of-type{border-bottom:0}
+.ac-row:hover,.ac-row.sel{background:var(--soft)}
+.ac-row .b{font-weight:600;font-size:14.5px}
+.ac-row .s{font-size:12.5px;color:var(--muted)}
+.ac-row .f{font-family:var(--mono);font-size:11px;color:var(--faint);margin-left:auto}
+.ac-free{padding:9px 13px;font-size:13px;color:var(--amber-deep);background:var(--amber-wash);width:100%;text-align:left;border:0}
+.rxgrid{display:grid;grid-template-columns:1fr 130px 110px 1fr auto;gap:10px;align-items:end;margin-top:14px}
+@media(max-width:900px){.rxgrid{grid-template-columns:1fr 1fr}}
+
+/* aside */
+.aside{background:var(--chalk);border-left:1px solid var(--line);overflow-y:auto}
+.ahead{padding:14px 18px;border-bottom:1px solid var(--line);background:var(--panel-head);position:sticky;top:0;z-index:5}
+.ahead h3{font-family:var(--display);font-weight:600;font-size:16px;margin:3px 0 0;letter-spacing:-.015em}
+.asec{padding:14px 18px;border-bottom:1px solid var(--line)}
+.arow{display:flex;gap:11px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.arow:last-child{border-bottom:0}
+.arow .d{font-family:var(--mono);font-size:11px;color:var(--muted);flex:none;width:60px;padding-top:2px}
+.arow .t b{font-weight:600}
+.arow .t p{margin:1px 0 0;color:var(--muted);font-size:12.5px}
+
+/* tables */
+table.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel-head);white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px dashed var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tr.rowbtn{cursor:pointer}
+.tbl tr.rowbtn:hover td{background:var(--soft)}
+.aud{font-family:var(--mono);font-size:12.5px;width:100%;border-collapse:collapse}
+.aud td{padding:8px 14px;border-bottom:1px dashed var(--line);white-space:nowrap;vertical-align:top}
+.aud td:last-child{white-space:normal}
+.aud .t{color:var(--faint)}
+.aud .a{color:var(--petrol);font-weight:500}
+.aud .warn-a{color:var(--brick);font-weight:500}
+.fchip{font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--chalk);color:var(--muted)}
+.fchip[aria-pressed="true"]{background:var(--petrol);border-color:var(--petrol);color:#fff}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(11,36,34,.44);display:none;align-items:flex-start;justify-content:center;padding:4vh 20px;z-index:60;overflow-y:auto}
+.overlay.on{display:flex}
+.modal{background:var(--chalk);border-radius:var(--r-sheet);box-shadow:var(--sh-modal);max-width:520px;width:100%;overflow:hidden;margin:auto 0}
+.modal.stop{border-top:4px solid var(--brick)}
+.modal .mh{padding:20px 24px 0}
+.modal h4{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.02em;margin:0 0 6px}
+.modal .mb{padding:10px 24px 20px;font-size:15px;color:var(--muted)}
+.modal .mf{display:flex;gap:10px;justify-content:flex-end;padding:15px 24px;border-top:1px solid var(--line);background:var(--panel-head);flex-wrap:wrap}
+
+/* toast */
+#toasts{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:80;align-items:center;pointer-events:none}
+.toast{display:inline-flex;align-items:center;gap:9px;background:var(--ink);color:var(--ink-text);font-size:14px;padding:10px 16px;border-radius:10px;box-shadow:var(--sh-float);max-width:min(92vw,560px)}
+.toast svg{color:var(--sea);flex:none}
+
+/* empty */
+.empty{text-align:center;padding:52px 20px}
+.empty h5{font-family:var(--display);font-weight:600;font-size:19px;margin:14px 0 4px;letter-spacing:-.015em}
+.empty p{margin:0 0 16px;color:var(--muted);font-size:14.5px}
+
+/* settings */
+.set-grid{display:grid;grid-template-columns:200px 1fr;gap:6px 24px;padding:4px 0}
+@media(max-width:760px){.set-grid{grid-template-columns:1fr}}
+.set-grid .sk{font-size:14px;color:var(--muted);padding-top:10px}
+.vocab{display:flex;flex-wrap:wrap;gap:6px}
+.vocab .tg{margin:0}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{.rail,.queue,.topbar,.aside,#toasts{display:none!important}#app.on,#app.aside-on{display:block}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<mask id="cut"><rect width="48" height="48" fill="#fff"/><path d="M8 24H17l3-7 4 14 4-11.5 3 6.5 2.5-2H45" stroke="#000" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></mask>
+<symbol id="mk" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="none" stroke="currentColor" stroke-width="3.6" mask="url(#cut)"/><path d="M8 24H17l3-7 4 14 4-11.5 3 6.5 2.5-2H45" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-today" viewBox="0 0 22 22"><rect x="3" y="4.5" width="16" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h16M7.5 2.8v3.4M14.5 2.8v3.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+<symbol id="i-people" viewBox="0 0 22 22"><circle cx="8" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M2.8 18.2c.7-3 2.8-4.6 5.2-4.6s4.5 1.6 5.2 4.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="15.5" cy="9" r="2.4" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M15.2 13.6c2.2.1 3.7 1.5 4.2 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+<symbol id="i-ledger" viewBox="0 0 22 22"><rect x="4" y="3" width="14" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7.5 7.5h7M7.5 11h7M7.5 14.5h4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+<symbol id="i-gear" viewBox="0 0 22 22"><circle cx="11" cy="11" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M11 2.8v2.4M11 16.8v2.4M2.8 11h2.4M16.8 11h2.4M5.2 5.2l1.7 1.7M15.1 15.1l1.7 1.7M16.8 5.2l-1.7 1.7M6.9 15.1l-1.7 1.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+<symbol id="i-search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13.2 13.2 17 17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+<symbol id="i-check" viewBox="0 0 20 20"><path d="M4 10.5 8.2 15 16 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-warn" viewBox="0 0 20 20"><path d="M10 3 18 17H2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 8.2v3.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="10" cy="14.4" r=".9" fill="currentColor"/></symbol>
+<symbol id="i-info" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M10 9v4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="10" cy="6.2" r=".9" fill="currentColor"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 20 20"><path d="M5.5 14.5a3.5 3.5 0 0 1 .4-6.98 4.5 4.5 0 0 1 8.7 1.23A3 3 0 0 1 14 14.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3 17.5 17 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+<symbol id="i-lock" viewBox="0 0 20 20"><rect x="4.5" y="9" width="11" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+<symbol id="i-print" viewBox="0 0 20 20"><path d="M6 7V3.5h8V7" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="7" width="13" height="6.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="6" y="11.5" width="8" height="5" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+<symbol id="i-chat" viewBox="0 0 20 20"><path d="M10 3a7 7 0 0 1 0 14c-1.2 0-2.3-.3-3.3-.8L3 17l.9-3.4A7 7 0 0 1 10 3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+<symbol id="i-mail" viewBox="0 0 20 20"><rect x="2.5" y="4.5" width="15" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m3.5 6 6.5 5 6.5-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+<symbol id="i-plus" viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+<symbol id="i-swap" viewBox="0 0 20 20"><path d="M4 7h11l-3-3M16 13H5l3 3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-doc" viewBox="0 0 20 20"><path d="M5 2.5h7l3.5 3.5v11.5h-10.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M7.8 9h4.4M7.8 12.2h4.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+</defs></svg>
+
+<!-- ════════ SIGN IN ════════ -->
+<div id="auth">
+  <div class="brandside">
+    <span style="display:inline-flex;align-items:center;gap:11px">
+      <svg width="26" height="26" aria-hidden="true"><use href="#mk"/></svg>
+      <span class="wordmark" style="font-size:20px;color:#fff">Sonara</span>
+    </span>
+    <div>
+      <p class="quiet">Eleven people are waiting outside. Let's not make this the slow part.</p>
+      <p>Sign in and today's list is already loaded, with last visit, allergies and running medication on every card.</p>
+    </div>
+    <div>
+      <div class="statline"><span>◷</span><span>A six-minute consult drafts in under 15 seconds</span></div>
+      <div class="statline"><span>◈</span><span>Audio encrypted · deleted on your schedule</span></div>
+      <div class="statline"><span>✎</span><span>No prescription leaves here unsigned</span></div>
+    </div>
+  </div>
+  <div class="formside">
+    <div class="form" id="signStep1">
+      <svg width="34" height="34" style="color:var(--petrol)" aria-hidden="true"><use href="#mk"/></svg>
+      <h1>Sign in</h1>
+      <p class="sub">Prototype build — enter as one of Sunrise Polyclinic's team.</p>
+      <button class="persona" data-user="menon">
+        <span class="avatar dk" style="background:var(--petrol);color:#fff">AM</span>
+        <span><span class="who">Dr. A. Menon</span><br><span class="r">General medicine · registration verified</span></span>
+        <span class="role-b">Owner</span>
+      </button>
+      <button class="persona" data-user="iyer">
+        <span class="avatar">RI</span>
+        <span><span class="who">Dr. R. Iyer</span><br><span class="r">Joined this week · verification pending</span></span>
+        <span class="role-b">Doctor</span>
+      </button>
+      <button class="persona" data-user="sunita">
+        <span class="avatar">SP</span>
+        <span><span class="who">Sunita Pawar</span><br><span class="r">Appointments, queue and check-in</span></span>
+        <span class="role-b">Front desk</span>
+      </button>
+      <div class="divider">or with email</div>
+      <label class="f-lbl" for="em">Email</label>
+      <input class="input" id="em" type="email" value="a.menon@sunrisepolyclinic.in" autocomplete="username" style="margin-bottom:12px">
+      <label class="f-lbl" for="pw">Password</label>
+      <input class="input" id="pw" type="password" value="••••••••••" autocomplete="current-password">
+      <button class="btn btn-primary" style="width:100%;margin-top:16px" id="toOtp">Continue</button>
+      <p style="font-size:12.5px;color:var(--muted);margin-top:20px;line-height:1.5">Sessions last 12 hours and end on sign-out. Your NMC registration is verified once during onboarding — Sonara only drafts, and a verified practitioner has to sign.</p>
+    </div>
+    <div class="form hide" id="signStep2">
+      <svg width="34" height="34" style="color:var(--petrol)" aria-hidden="true"><use href="#mk"/></svg>
+      <h1>Check your email</h1>
+      <p class="sub">A 6-digit code went to <b id="otpMail" style="color:var(--ink)">a.menon@…</b> · valid 10 minutes.</p>
+      <div class="otp" id="otpRow">
+        <input inputmode="numeric" maxlength="1" aria-label="Digit 1"><input inputmode="numeric" maxlength="1" aria-label="Digit 2"><input inputmode="numeric" maxlength="1" aria-label="Digit 3"><input inputmode="numeric" maxlength="1" aria-label="Digit 4"><input inputmode="numeric" maxlength="1" aria-label="Digit 5"><input inputmode="numeric" maxlength="1" aria-label="Digit 6">
+      </div>
+      <div class="f-hint">3 sends per hour, 5 attempts per code. Any digits work in this prototype.</div>
+      <button class="btn btn-primary" style="width:100%;margin-top:16px" id="otpGo">Sign in</button>
+      <button class="btn btn-quiet" style="width:100%;margin-top:8px" id="otpBack">Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ APP ════════ -->
+<div id="app">
+  <nav class="rail" aria-label="Main">
+    <svg class="logo" width="28" height="28" aria-hidden="true"><use href="#mk"/></svg>
+    <button class="ico" data-view="today" aria-current="true"><svg width="21" height="21" aria-hidden="true"><use href="#i-today"/></svg><span class="tip">Today</span></button>
+    <button class="ico" data-view="patients"><svg width="21" height="21" aria-hidden="true"><use href="#i-people"/></svg><span class="tip">Patients</span></button>
+    <button class="ico" data-view="audit" data-need="audit"><svg width="21" height="21" aria-hidden="true"><use href="#i-ledger"/></svg><span class="tip">Audit log</span></button>
+    <span class="sp"></span>
+    <button class="ico" data-view="settings" data-need="owner"><svg width="21" height="21" aria-hidden="true"><use href="#i-gear"/></svg><span class="tip">Settings</span></button>
+  </nav>
+
+  <div class="queue" id="queueCol">
+    <div class="qhead">
+      <span class="lbl" id="qDate">Tuesday · 18 Aug 2026</span>
+      <h2>Today</h2>
+      <div class="meta" id="qMeta"></div>
+      <div class="qsearch">
+        <svg width="17" height="17" aria-hidden="true"><use href="#i-search"/></svg>
+        <input class="input" id="qSearch" placeholder="Search name or phone" aria-label="Search patients">
+        <kbd>/</kbd>
+      </div>
+      <div class="qactions">
+        <button class="btn btn-ghost sm" id="btnWalkin"><svg width="14" height="14" aria-hidden="true"><use href="#i-plus"/></svg>Walk-in</button>
+        <button class="btn btn-ghost sm" id="btnCsv">Import CSV</button>
+      </div>
+    </div>
+    <div class="qlist" id="qList" role="list"></div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="vt" id="viewTitle">Today</span>
+      <span class="conn" id="conn"><span class="d"></span><span id="connLbl">Online</span></span>
+      <span style="margin-left:auto"></span>
+      <div class="menu">
+        <button class="btn btn-ghost sm" id="demoBtn" aria-haspopup="true" aria-expanded="false">Demo scenarios</button>
+        <div class="menu-list" id="demoMenu" role="menu">
+          <div class="mh">Recovery paths · PRD §5.3</div>
+          <button data-demo="offline">Drop the connection for 10s</button>
+          <button data-demo="lowconf">Make this visit's audio unclear</button>
+          <button data-demo="20min">Show the 20-minute warning</button>
+          <button data-demo="withdraw">Patient withdraws consent</button>
+          <hr>
+          <button data-demo="reset">Reset the day</button>
+        </div>
+      </div>
+      <div class="menu">
+        <button class="avatar" id="userBtn" aria-haspopup="true" aria-expanded="false" style="border:0">AM</button>
+        <div class="menu-list" id="userMenu" role="menu">
+          <div class="mh" id="userWho">Dr. A. Menon · owner</div>
+          <button data-switch="menon"><span class="avatar" style="width:26px;height:26px;font-size:11px">AM</span>Dr. A. Menon <span class="role-b" style="margin-left:auto">Owner</span></button>
+          <button data-switch="iyer"><span class="avatar" style="width:26px;height:26px;font-size:11px">RI</span>Dr. R. Iyer <span class="role-b" style="margin-left:auto">Pending</span></button>
+          <button data-switch="sunita"><span class="avatar" style="width:26px;height:26px;font-size:11px">SP</span>Sunita Pawar <span class="role-b" style="margin-left:auto">Front desk</span></button>
+          <hr>
+          <button id="signOut">Sign out</button>
+        </div>
+      </div>
+    </div>
+    <div class="canvas" id="canvas"></div>
+  </div>
+
+  <div class="aside" id="aside"></div>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modalBox" role="dialog" aria-modal="true"></div></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+/* ═══════════════════ data ═══════════════════ */
+const CLINIC={name:'Sunrise Polyclinic',addr:'14 Palm Beach Road, Vashi, Navi Mumbai 400703',retention:90};
+const USERS={
+  menon:{id:'menon',name:'Dr. A. Menon',init:'AM',role:'owner',doctor:true,verified:true,reg:'NMC 4471 22 09',quals:'MBBS, MD (General Medicine)'},
+  iyer:{id:'iyer',name:'Dr. R. Iyer',init:'RI',role:'doctor',doctor:true,verified:false,reg:'MMC 2019 08 114 · under review',quals:'MBBS, DNB (Family Medicine)'},
+  sunita:{id:'sunita',name:'Sunita Pawar',init:'SP',role:'front_desk',doctor:false}
+};
+const DRUGS=[
+  {b:'Crocin Advance 500',g:'paracetamol',s:'500mg',f:'tab',cls:''},
+  {b:'Dolo 650',g:'paracetamol',s:'650mg',f:'tab',cls:''},
+  {b:'Calpol 250 syrup',g:'paracetamol',s:'250mg/5ml',f:'syr',cls:''},
+  {b:'Mox 500',g:'amoxicillin',s:'500mg',f:'cap',cls:'penicillin'},
+  {b:'Augmentin 625 Duo',g:'amoxicillin + clavulanate',s:'625mg',f:'tab',cls:'penicillin'},
+  {b:'Azithral 500',g:'azithromycin',s:'500mg',f:'tab',cls:'macrolide'},
+  {b:'Azee 250',g:'azithromycin',s:'250mg',f:'tab',cls:'macrolide'},
+  {b:'Cetzine 10',g:'cetirizine',s:'10mg',f:'tab',cls:''},
+  {b:'Allegra 120',g:'fexofenadine',s:'120mg',f:'tab',cls:''},
+  {b:'Ascoril LS syrup',g:'levosalbutamol + ambroxol',s:'—',f:'syr',cls:''},
+  {b:'Grilinctus syrup',g:'dextromethorphan',s:'—',f:'syr',cls:''},
+  {b:'Pantop 40',g:'pantoprazole',s:'40mg',f:'tab',cls:''},
+  {b:'Telma 40',g:'telmisartan',s:'40mg',f:'tab',cls:''},
+  {b:'Glycomet 500',g:'metformin',s:'500mg',f:'tab',cls:''},
+  {b:'Thyronorm 50',g:'thyroxine',s:'50mcg',f:'tab',cls:''},
+  {b:'Sinarest',g:'paracetamol + phenylephrine + CPM',s:'—',f:'tab',cls:''}
+];
+const FREQ=['1-0-1','1-1-1','1-0-0','0-0-1','Twice daily','Once daily','SOS'];
+
+const PATIENTS={
+  p1:{id:'p1',ref:'PT-40219',name:'Priya Nair',age:34,sex:'F',phone:'98200 41172',lang:'Marathi',last:'12 Mar 2026',
+    flags:[{k:'ok',t:'No known allergies'},{k:'chronic',t:'Asthma · childhood',d:'No inhaler since 2016'}],
+    allergies:[],chronic:[{t:'Childhood asthma',since:'noted 2019',d:'No inhaler use since 2016'}],meds:[],
+    timeline:[{d:'12 Mar 26',t:'Sinusitis',p:'Azithral 500 · 5d · tolerated well'},{d:'04 Jan 26',t:'Routine check',p:'BP 118/76 · no complaints'},{d:'09 Nov 25',t:'Viral fever',p:'Symptomatic care · resolved'},{d:'2019',t:'Noted',p:'Childhood asthma · no inhaler since 2016'}]},
+  p2:{id:'p2',ref:'PT-38104',name:'Rakesh Bhosale',age:58,sex:'M',phone:'98331 20984',lang:'Hindi',last:'21 Jul 2026',
+    flags:[{k:'allergy',t:'Penicillin — rash, severe',d:'Recorded 2021'},{k:'chronic',t:'Hypertension · 2018'},{k:'chronic',t:'Type 2 diabetes · 2019'},{k:'med',t:'Telma 40 · ongoing'},{k:'med',t:'Glycomet 500 · ongoing'}],
+    allergies:[{sub:'Penicillin',rx:'Generalised rash',sev:'Severe',d:'Mar 2021'}],
+    chronic:[{t:'Hypertension',since:'2018'},{t:'Type 2 diabetes',since:'2019'}],
+    meds:[{t:'Telma 40 · telmisartan 40mg',d:'1-0-0 · ongoing'},{t:'Glycomet 500 · metformin 500mg',d:'1-0-1 · ongoing'}],
+    timeline:[{d:'21 Jul 26',t:'BP review',p:'BP 138/90 · Telma continued'},{d:'03 May 26',t:'Fever',p:'Symptomatic care · resolved'},{d:'Mar 21',t:'Allergy recorded',p:'Penicillin — generalised rash, severe'}]},
+  p3:{id:'p3',ref:'PT-41866',name:'Fatima Shaikh',age:27,sex:'F',phone:'99677 33241',lang:'Hindi',last:'First visit',
+    flags:[{k:'ok',t:'No known allergies'}],allergies:[],chronic:[],meds:[],timeline:[]},
+  p4:{id:'p4',ref:'PT-41203',name:'Arjun Kulkarni',age:6,sex:'M',phone:'98209 55110 (mother)',lang:'Marathi',last:'02 Feb 2026',
+    flags:[{k:'ok',t:'No known allergies'}],allergies:[],chronic:[],meds:[],
+    timeline:[{d:'02 Feb 26',t:'Upper respiratory infection',p:'Calpol · resolved in 4 days'}]},
+  p5:{id:'p5',ref:'PT-29847',name:'Meera Joshi',age:41,sex:'F',phone:'98192 77410',lang:'Marathi',last:'Today',
+    flags:[{k:'ok',t:'No known allergies'},{k:'chronic',t:'Hypothyroid · 2022'},{k:'med',t:'Thyronorm 50 · ongoing'}],
+    allergies:[],chronic:[{t:'Hypothyroidism',since:'2022'}],meds:[{t:'Thyronorm 50 · thyroxine 50mcg',d:'1-0-0 empty stomach · ongoing'}],
+    timeline:[{d:'Today',t:'Thyroid review',p:'TSH 4.1 · dose unchanged'},{d:'11 Feb 26',t:'Thyroid review',p:'TSH 6.8 · dose raised to 50'}]},
+  p6:{id:'p6',ref:'PT-18332',name:'S. Ramanathan',age:66,sex:'M',phone:'98670 11893',lang:'Tamil · Hindi',last:'Today',
+    flags:[{k:'ok',t:'No known allergies'},{k:'chronic',t:'Type 2 diabetes · 2015'},{k:'med',t:'Glycomet 850 · ongoing'},{k:'med',t:'Ecosprin 75 · ongoing'}],
+    allergies:[],chronic:[{t:'Type 2 diabetes',since:'2015'}],meds:[{t:'Glycomet 850 · metformin 850mg',d:'1-0-1 · ongoing'},{t:'Ecosprin 75 · aspirin 75mg',d:'0-1-0 · ongoing'}],
+    timeline:[{d:'Today',t:'Diabetes review',p:'FBS 118 · HbA1c 6.9 · continue'},{d:'19 May 26',t:'Diabetes review',p:'HbA1c 7.2'}]},
+  p7:{id:'p7',ref:'PT-31450',name:'Deepa Verma',age:45,sex:'F',phone:'98450 12345',lang:'Hindi',last:'30 Jun 2026',
+    flags:[{k:'ok',t:'No known allergies'}],allergies:[],chronic:[],meds:[],
+    timeline:[{d:'30 Jun 26',t:'Migraine',p:'Advised trigger diary'}]},
+  p8:{id:'p8',ref:'PT-27016',name:'Vikram Rao',age:52,sex:'M',phone:'99301 48822',lang:'Hindi',last:'14 Apr 2026',
+    flags:[{k:'ok',t:'No known allergies'}],allergies:[],chronic:[],meds:[],
+    timeline:[{d:'14 Apr 26',t:'Back pain',p:'Advised physiotherapy'}]}
+};
+
+const SCRIPTS={
+  p1:[["dr","00:04","Haan Priya, batao — kya taqleef ho rahi hai?"],
+      ["pt","00:07","Do din se bukhar hai, and throat is paining a lot."],
+      ["dr","00:14","Cough? Sardi?"],
+      ["pt","00:17","Dry cough hai. Raat ko zyada hota hai."],
+      ["dr","00:26","Throat dekhte hain… haan, erythema present, tonsils mildly enlarged."],
+      ["dr","00:34","Temp le lete hain — 100.8 hai."],
+      ["pt","00:39","Khaana nigalne mein dard hota hai."],
+      ["dr","00:45","Chest clear hai, breathing theek hai."],
+      ["dr","00:52","Pichhli baar azithromycin diya tha na — suit hua tha?"],
+      ["pt","00:56","Haan, theek tha."],
+      ["dr","01:02","Abhi antibiotic ki zaroorat nahin lagti. Teen din dawa lo, phir dekhte hain."]],
+  p2:[["dr","00:04","Rakesh ji, BP ki dawa time pe le rahe hain?"],
+      ["pt","00:07","Haan doctor, roz subah. Par kabhi kabhi sar bhaari lagta hai."],
+      ["dr","00:16","Aaj dekhte hain… 142 over 92. Thoda upar hai."],
+      ["pt","00:23","Namak kam kar diya hai, walking bhi shuru ki hai."],
+      ["dr","00:30","Bahut accha. Dawa wahi continue rakhenge, dose same."],
+      ["dr","00:38","Sugar ki fasting report agli baar le aaiyega."]],
+  p4:[["dr","00:03","Arjun, kasa aahes? Aai, kay hot aahe?"],
+      ["att","00:06","Doctor, kal raatri pasun khup khokla aahe, ani thoda taap pan hota."],
+      ["dr","00:15","Shala madhye ajun kuni aajari aahe ka?"],
+      ["att","00:18","Ho, vargatli don mula aajari aahet."],
+      ["pt","00:24","Ghasa dukhtoy."],
+      ["dr","00:28","Baghto… throat thoda red aahe. Chest clear. Temp 99.6."],
+      ["dr","00:40","Kahi ghabarnyasarkhe nahi. Teen divas symptomatic treatment deto."]],
+  p3:[["dr","00:03","Fatima, boliye — kya problem hai?"],
+      ["pt","00:06","Pet mein jalan hoti hai, especially raat ko khaane ke baad."],
+      ["dr","00:14","Kitne din se? Chai coffee zyada hoti hai?"],
+      ["pt","00:18","Ek mahina ho gaya. Office mein coffee zyada ho jaati hai."],
+      ["dr","00:26","Abdomen soft hai, tenderness nahin hai. Weight stable?"],
+      ["pt","00:30","Haan, same hai."],
+      ["dr","00:36","Khaane ke baad turant letna band kariye. Do hafte mein wapas dikhaiye."]]
+};
+SCRIPTS.p7=SCRIPTS.p3; SCRIPTS.p8=SCRIPTS.p3;
+
+const NOTES={
+  p1:{complaint:{t:'Fever ×2 days with sore throat; dry cough, worse at night. Pain on swallowing.',segs:[1,3,6]},
+      history:{t:'Symptoms began about two days ago. Reports odynophagia. Tolerated azithromycin in Mar 2026 (sinusitis). Childhood asthma on record; no inhaler use since 2016.',segs:[1,8,9]},
+      exam:{t:'Pharyngeal erythema; tonsils mildly enlarged. Temp 100.8°F. Chest clear.',segs:[4,5,7]},
+      assess:{t:'Acute pharyngitis, likely viral (draft).',segs:[4,10]},
+      plan:{t:'Symptomatic treatment for 3 days. Review if fever persists or breathing worsens. Antibiotic deferred.',segs:[10]},
+      tags:[{t:'fever',c:'R50.9'},{t:'sore throat',c:'R07.0'},{t:'dry cough',c:'R05'},{t:'acute pharyngitis',c:'J02.9'},{t:'"raat ko zyada" · nocturnal',c:null}]},
+  p2:{complaint:{t:'Hypertension follow-up. Occasional heaviness of the head; otherwise well.',segs:[1]},
+      history:{t:'On telmisartan, adherent daily. Salt reduced and walking started since last visit. Diabetic on metformin.',segs:[1,3]},
+      exam:{t:'BP 142/92 seated.',segs:[2]},
+      assess:{t:'Hypertension, control suboptimal today (draft).',segs:[2,4]},
+      plan:{t:'Continue current antihypertensive at same dose. Reinforce lifestyle measures. Fasting sugar report before next review; review in 4 weeks.',segs:[4,5]},
+      tags:[{t:'hypertension',c:'I10'},{t:'type 2 diabetes',c:'E11.9'},{t:'"sar bhaari" · heaviness',c:null}]},
+  p4:{complaint:{t:'Cough since last night with mild fever, reported by mother. Sore throat.',segs:[1,4]},
+      history:{t:'Two classmates unwell with similar symptoms. Previous URI in Feb 2026, resolved.',segs:[2,3]},
+      exam:{t:'Throat mildly erythematous. Chest clear. Temp 99.6°F.',segs:[5]},
+      assess:{t:'Viral upper respiratory infection, likely (draft).',segs:[5,6]},
+      plan:{t:'Symptomatic treatment for 3 days. Return if fever rises or breathing is laboured.',segs:[6]},
+      tags:[{t:'cough',c:'R05'},{t:'fever',c:'R50.9'},{t:'URI',c:'J06.9'}]},
+  p3:{complaint:{t:'Burning epigastric discomfort ×1 month, worse at night after meals.',segs:[1,3]},
+      history:{t:'Increased coffee intake at work. No weight loss.',segs:[3,5]},
+      exam:{t:'Abdomen soft, non-tender.',segs:[4]},
+      assess:{t:'Gastritis / reflux pattern (draft).',segs:[1,4]},
+      plan:{t:'Avoid lying down immediately after meals; reduce caffeine. Review in 2 weeks; sooner if pain worsens or black stools.',segs:[6]},
+      tags:[{t:'epigastric burning',c:'R12'},{t:'GERD pattern',c:'K21.9'},{t:'"pet mein jalan"',c:null}]}
+};
+NOTES.p7=NOTES.p3; NOTES.p8=NOTES.p3;
+
+function freshDay(){return [
+  {id:'a4',tok:'04',pid:'p8',time:'10:35',type:'follow-up',status:'no_show'},
+  {id:'a5',tok:'05',pid:'p6',time:'10:50',type:'diabetes review',status:'signed',pre:true},
+  {id:'a6',tok:'06',pid:'p5',time:'11:05',type:'thyroid review',status:'signed',pre:true},
+  {id:'a7',tok:'07',pid:'p1',time:'11:20',type:'follow-up',status:'arrived'},
+  {id:'a8',tok:'08',pid:'p2',time:'11:35',type:'BP review',status:'arrived'},
+  {id:'a9',tok:'09',pid:'p3',time:'11:50',type:'new patient',status:'scheduled'},
+  {id:'a10',tok:'10',pid:'p4',time:'12:05',type:'with parent',status:'scheduled'}
+];}
+
+/* pre-signed visit content for Meera & Ramanathan */
+const PRESIGNED={
+  p5:{note:{complaint:{t:'Hypothyroid review; no new complaints.',segs:[]},history:{t:'On thyroxine 50mcg daily, taken on empty stomach.',segs:[]},exam:{t:'Pulse 76, no tremor. Weight stable.',segs:[]},assess:{t:'Hypothyroidism, controlled (draft confirmed at review).',segs:[]},plan:{t:'Continue current dose. Repeat TSH in 3 months.',segs:[]},tags:[{t:'hypothyroidism',c:'E03.9'}]},
+    rx:[{b:'Thyronorm 50',g:'thyroxine',s:'50mcg',f:'tab',freq:'1-0-0',dur:'90 days',ins:'Empty stomach, 30 min before breakfast',src:'db'}],
+    signedAt:'11:16',deliveries:[{ch:'print',to:'Front desk printer',st:'Printed 11:17'},{ch:'whatsapp',to:'98192 774xx',st:'Delivered 11:17 ✓✓'}]},
+  p6:{note:{complaint:{t:'Diabetes review; no hypoglycaemic episodes.',segs:[]},history:{t:'On metformin 850 twice daily and aspirin 75. Diet adherent.',segs:[]},exam:{t:'FBS 118 (report). Feet: no lesions.',segs:[]},assess:{t:'Type 2 diabetes, acceptable control (draft confirmed at review).',segs:[]},plan:{t:'Continue current medication. HbA1c repeated in 3 months. Annual eye check due.',segs:[]},tags:[{t:'type 2 diabetes',c:'E11.9'}]},
+    rx:[{b:'Glycomet 850',g:'metformin',s:'850mg',f:'tab',freq:'1-0-1',dur:'90 days',ins:'With meals',src:'db'},{b:'Ecosprin 75',g:'aspirin',s:'75mg',f:'tab',freq:'0-1-0',dur:'90 days',ins:'After lunch',src:'db'}],
+    signedAt:'11:02',deliveries:[{ch:'print',to:'Front desk printer',st:'Printed 11:03'}]}
+};
+
+/* ═══════════════════ state ═══════════════════ */
+let user=null, view='today', selAppt=null, appts=[], visits={}, auditLog=[], online=true;
+let recTimer=null, recRaf=null, feedTimers=[], patFilter='', patientsQuery='', auditFilter='all', selPatient=null;
+
+function nowStr(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');}
+function hm(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function $(id){return document.getElementById(id);}
+
+function audit(action,detail,warn){auditLog.unshift({t:nowStr(),a:action,who:user?user.name:'system',d:detail,warn:!!warn});if(view==='audit')render();}
+function seedAudit(){auditLog=[
+  {t:'11:17:22',a:'rx.delivered',who:'system',d:'Meera Joshi · whatsapp · delivered'},
+  {t:'11:16:40',a:'note.signed',who:'Dr. A. Menon',d:'Meera Joshi · V-8839 · hash 4c19…e2'},
+  {t:'11:09:11',a:'note.generated',who:'system',d:'Meera Joshi · prompt v14 · 7.4s'},
+  {t:'11:03:05',a:'rx.delivered',who:'system',d:'S. Ramanathan · print · printed'},
+  {t:'11:02:31',a:'note.signed',who:'Dr. A. Menon',d:'S. Ramanathan · V-8838 · hash 88af…09'},
+  {t:'10:58:47',a:'record.read',who:'Sunita Pawar',d:'S. Ramanathan · clinical note — 403 blocked at query layer',warn:true},
+  {t:'10:52:19',a:'consent.captured',who:'Dr. A. Menon',d:'S. Ramanathan · verbal · Hindi'},
+  {t:'09:00:02',a:'retention.purge',who:'system',d:'3 recordings past 90 days purged'}
+];}
+
+function getVisit(a){
+  if(!visits[a.id]){
+    visits[a.id]={state:'idle',consent:null,consentLang:'en',method:'verbal',segs:[],sec:0,note:null,rx:[],signed:false,signedAt:null,lowConf:false,discarded:false,addenda:[],deliveries:[],warn20:false,withdrawn:false,corrections:0,paused:false};
+    if(a.pre){const v=visits[a.id],pack=PRESIGNED[a.pid];v.state='signed';v.signed=true;v.signedAt=pack.signedAt;v.note=JSON.parse(JSON.stringify(pack.note));v.rx=JSON.parse(JSON.stringify(pack.rx));v.deliveries=pack.deliveries.slice();v.consent={lang:'Hindi',method:'verbal',at:pack.signedAt};}
+  }
+  return visits[a.id];
+}
+
+/* ═══════════════════ toast + modal ═══════════════════ */
+function toast(msg){const t=document.createElement('div');t.className='toast';t.innerHTML='<svg width="16" height="16" aria-hidden="true"><use href="#i-check"/></svg><span>'+msg+'</span>';$('toasts').appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),450);},3400);}
+let modalReturn=null;
+function openModal(html,cls){modalReturn=document.activeElement;const m=$('modalBox');m.className='modal'+(cls?' '+cls:'');m.innerHTML=html;$('overlay').classList.add('on');const f=m.querySelector('input,select,textarea,button:not([disabled])');if(f)f.focus();}
+function closeModal(){$('overlay').classList.remove('on');if(modalReturn&&modalReturn.focus)modalReturn.focus();}
+$('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeMenus();}});
+
+function closeMenus(){document.querySelectorAll('.menu-list.on').forEach(m=>m.classList.remove('on'));$('demoBtn').setAttribute('aria-expanded','false');$('userBtn').setAttribute('aria-expanded','false');}
+
+/* ═══════════════════ auth ═══════════════════ */
+document.querySelectorAll('.persona').forEach(b=>b.addEventListener('click',()=>enter(b.dataset.user)));
+$('toOtp').addEventListener('click',()=>{$('otpMail').textContent=$('em').value||'a.menon@…';$('signStep1').classList.add('hide');$('signStep2').classList.remove('hide');$('otpRow').querySelector('input').focus();});
+$('otpBack').addEventListener('click',()=>{$('signStep2').classList.add('hide');$('signStep1').classList.remove('hide');});
+$('otpRow').addEventListener('input',e=>{const t=e.target;if(t.value&&t.nextElementSibling)t.nextElementSibling.focus();});
+$('otpGo').addEventListener('click',()=>enter('menon'));
+$('signOut')?.addEventListener('click',()=>location.reload());
+
+function enter(uid){
+  user=USERS[uid];
+  if(!appts.length){appts=freshDay();seedAudit();}
+  audit('session.signin',user.name+' · '+user.role);
+  $('auth').style.display='none';
+  $('userBtn').textContent=user.init;
+  $('userWho').textContent=user.name+' · '+user.role.replace('_',' ');
+  document.querySelectorAll('[data-need]').forEach(b=>{
+    const need=b.dataset.need;
+    const ok=(need==='owner')?user.role==='owner':(need==='audit')?(user.role==='owner'||user.doctor):true;
+    b.classList.toggle('hide',!ok);
+  });
+  view='today';selAppt=user.doctor?null:null;selPatient=null;
+  setView('today');
+  $('app').classList.add('on');
+}
+document.querySelectorAll('[data-switch]').forEach(b=>b.addEventListener('click',()=>{closeMenus();stopRecordingHard();enter(b.dataset.switch);toast('Now working as '+USERS[b.dataset.switch].name);}));
+
+/* ═══════════════════ menus ═══════════════════ */
+[['demoBtn','demoMenu'],['userBtn','userMenu']].forEach(([b,m])=>{
+  $(b).addEventListener('click',e=>{e.stopPropagation();const was=$(m).classList.contains('on');closeMenus();if(!was){$(m).classList.add('on');$(b).setAttribute('aria-expanded','true');}});
+});
+document.addEventListener('click',e=>{if(!e.target.closest('.menu'))closeMenus();});
+
+/* ═══════════════════ router ═══════════════════ */
+document.querySelectorAll('.rail .ico').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+function setView(v){
+  if(recActive()){toast('Recording — end the visit first.');return;}
+  view=v;
+  document.querySelectorAll('.rail .ico').forEach(b=>b.setAttribute('aria-current',String(b.dataset.view===v)));
+  $('viewTitle').textContent={today:'Today',patients:'Patients',audit:'Audit log',settings:'Settings'}[v];
+  $('queueCol').style.display=(v==='today')?'flex':'none';
+  render();
+}
+
+/* ═══════════════════ queue ═══════════════════ */
+const ST_LBL={scheduled:['st-sched','Scheduled'],arrived:['st-arr','Arrived'],in_room:['st-room','In room'],processing:['st-proc','Processing'],drafted:['st-draft','Drafted'],signed:['st-signed','Signed'],no_show:['st-ns','No show']};
+function fuzzy(q,s){q=q.toLowerCase().trim();s=s.toLowerCase();if(!q)return true;if(s.includes(q))return true;
+  return q.split(/\s+/).every(tok=>{let i=0;for(const ch of s){if(ch===tok[i])i++;if(i===tok.length)return true;}return tok.length===0;});}
+function renderQueue(){
+  const counts={signed:0,in_room:0,wait:0};
+  appts.forEach(a=>{const v=visits[a.id];const st=liveStatus(a);if(st==='signed')counts.signed++;else if(st==='in_room'||st==='processing'||st==='drafted')counts.in_room++;else if(st==='arrived'||st==='scheduled')counts.wait++;});
+  $('qMeta').textContent=counts.signed+' signed · '+counts.in_room+' with doctor · '+counts.wait+' waiting';
+  const list=$('qList');list.innerHTML='';
+  appts.filter(a=>{const p=PATIENTS[a.pid];return fuzzy(patFilter,p.name)||fuzzy(patFilter,p.phone);}).forEach(a=>{
+    const p=PATIENTS[a.pid];const st=liveStatus(a);const [cls,lb]=ST_LBL[st];
+    const b=document.createElement('button');b.className='pat'+(selAppt===a.id?' on':'');b.setAttribute('role','listitem');
+    b.innerHTML='<span class="tok">'+a.tok+'</span><span><span class="nm">'+esc(p.name)+'</span><br><span class="dt">'+p.age+p.sex+' · '+esc(a.type)+' · '+a.time+'</span></span><span class="st '+cls+'"><span class="d"></span>'+lb+'</span>';
+    b.addEventListener('click',()=>{if(recActive()&&selAppt!==a.id){toast('Recording — end the visit first.');return;}selAppt=a.id;selPatient=null;if(view!=='today')setView('today');else render();});
+    list.appendChild(b);
+  });
+}
+function liveStatus(a){const v=visits[a.id];if(!v)return a.status;
+  if(v.signed)return'signed';
+  if(v.state==='recording')return'in_room';
+  if(v.state==='processing')return'processing';
+  if(v.state==='drafted'||v.state==='manual')return'drafted';
+  return a.status;}
+$('qSearch').addEventListener('input',e=>{patFilter=e.target.value;renderQueue();});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!e.target.closest('input,textarea,[contenteditable]')){e.preventDefault();const s=(view==='patients')?$('pSearch'):$('qSearch');if(s)s.focus();}});
+
+/* walk-in + csv */
+$('btnWalkin').addEventListener('click',()=>{
+  openModal(`<div class="mh"><span class="lbl">New walk-in · under 15 seconds</span><h4>Add a patient to today</h4></div>
+  <div class="mb">
+    <div style="display:grid;grid-template-columns:1fr 90px 110px;gap:10px">
+      <div><label class="f-lbl" for="w-nm">Name</label><input class="input" id="w-nm" placeholder="Full name"></div>
+      <div><label class="f-lbl" for="w-age">Age</label><input class="input" id="w-age" inputmode="numeric" placeholder="34"></div>
+      <div><label class="f-lbl" for="w-sex">Sex</label><select class="input" id="w-sex"><option>F</option><option>M</option><option>Other</option></select></div>
+    </div>
+    <div style="margin-top:12px"><label class="f-lbl" for="w-ph">Phone</label><input class="input" id="w-ph" inputmode="numeric" placeholder="10 digits"></div>
+    <div id="w-dup"></div>
+  </div>
+  <div class="mf"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="w-go">Add to queue</button></div>`);
+  $('w-ph').addEventListener('input',()=>{
+    const v=$('w-ph').value.replace(/\D/g,'');
+    const dup=Object.values(PATIENTS).find(p=>p.phone.replace(/\D/g,'')===v&&v.length>=10);
+    $('w-dup').innerHTML=dup?'<div class="banner bn-warn" style="margin-top:12px"><svg width="17" height="17" style="color:var(--amber-deep)"><use href="#i-warn"/></svg><span><b>This phone belongs to '+esc(dup.name)+' · '+dup.ref+'.</b> Open the existing record instead of creating a duplicate? <button class="btn btn-ghost sm" id="w-open" style="margin-left:6px">Open existing</button></span></div>':'';
+    const op=$('w-open');if(op)op.addEventListener('click',()=>{addWalkin(dup);});
+  });
+  $('w-go').addEventListener('click',()=>{
+    const nm=$('w-nm').value.trim();if(!nm){$('w-nm').focus();return;}
+    const p={id:'px'+Date.now(),ref:'PT-'+(41900+Math.floor(Math.random()*90)),name:nm,age:+$('w-age').value||0,sex:$('w-sex').value,phone:$('w-ph').value||'—',lang:'—',last:'First visit',flags:[{k:'ok',t:'No known allergies'}],allergies:[],chronic:[],meds:[],timeline:[]};
+    PATIENTS[p.id]=p;addWalkin(p);
+  });
+  function addWalkin(p){
+    const tok=String(Math.max(...appts.map(a=>+a.tok))+1).padStart(2,'0');
+    appts.push({id:'a'+Date.now(),tok,pid:p.id,time:hm(),type:'walk-in',status:'arrived'});
+    audit('appointment.walkin',p.name+' · token '+tok);
+    closeModal();renderQueue();toast(p.name+' added · token '+tok);
+  }
+});
+$('btnCsv').addEventListener('click',()=>{
+  openModal(`<div class="mh"><span class="lbl">Import · appointment book</span><h4>Import today's list from CSV</h4></div>
+  <div class="mb">
+    <p style="margin:0 0 12px">Map your columns once; Sonara remembers the mapping for this clinic.</p>
+    <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden"><table class="tbl" style="font-size:13.5px">
+      <tr><th>Your column</th><th>Maps to</th></tr>
+      <tr><td class="mono" style="font-size:12px">patient_name</td><td>Name</td></tr>
+      <tr><td class="mono" style="font-size:12px">mobile</td><td>Phone</td></tr>
+      <tr><td class="mono" style="font-size:12px">slot</td><td>Time</td></tr>
+    </table></div>
+    <div class="banner bn-warn" style="margin-top:12px"><svg width="17" height="17" style="color:var(--amber-deep)"><use href="#i-warn"/></svg><span><b>12 rows ready · 2 need attention.</b> Row 7 has a 9-digit phone; row 11 has no time. Failed rows are reported one by one — the rest import anyway.</span></div>
+  </div>
+  <div class="mf"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="closeModal();toast('12 appointments imported · 2 rows skipped, listed in the report')">Import 12 rows</button></div>`);
+});
+
+/* ═══════════════════ render ═══════════════════ */
+function render(){
+  renderQueue();
+  $('app').classList.remove('aside-on');
+  const c=$('canvas');
+  if(view==='today'){
+    if(!selAppt){c.innerHTML=emptyToday();$('aside').innerHTML='';return;}
+    const a=appts.find(x=>x.id===selAppt);
+    if(!user.doctor){c.innerHTML=frontdeskVisit(a);wireFrontdesk(a);$('aside').innerHTML='';return;}
+    $('app').classList.add('aside-on');
+    c.innerHTML=visitView(a);
+    $('aside').innerHTML=asideView(a);
+    wireVisit(a);
+  } else if(view==='patients'){
+    if(selPatient){c.innerHTML=profileView(PATIENTS[selPatient]);wireProfile(PATIENTS[selPatient]);}
+    else{c.innerHTML=patientsView();wirePatients();}
+    $('aside').innerHTML='';
+  } else if(view==='audit'){c.innerHTML=auditView();wireAudit();$('aside').innerHTML='';}
+  else if(view==='settings'){c.innerHTML=settingsView();wireSettings();$('aside').innerHTML='';}
+}
+function emptyToday(){
+  return `<div class="empty" style="padding-top:96px">
+    <svg width="44" height="44" style="color:var(--mist)" aria-hidden="true"><use href="#mk"/></svg>
+    <h5>${user.doctor?'Pick a patient to begin':'Run the day from the queue'}</h5>
+    <p>${user.doctor?'The queue on the left is today\'s clinic. Cards move as visits progress.':'Check patients in as they arrive, add walk-ins, and hand over prescriptions once the doctor signs.'}</p>
+  </div>`;
+}
+
+/* ═══════════════════ visit view (doctor) ═══════════════════ */
+function flagsHtml(p){return p.flags.map(f=>`<span class="flag flag-${f.k}" ${f.d?`title="${esc(f.d)}"`:''}>${f.k==='allergy'?'<svg width="12" height="12" aria-hidden="true"><use href="#i-warn"/></svg>':''}${esc(f.t)}</span>`).join('');}
+
+function visitView(a){
+  const p=PATIENTS[a.pid], v=getVisit(a);
+  let html=`<div class="pathead">
+    <span class="avatar">${p.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</span>
+    <span><span class="who">${esc(p.name)} · ${p.age}${p.sex}</span><br><span class="sub">${p.ref} · last visit ${p.last} · ${esc(p.phone)}</span></span>
+    <span class="flags">${flagsHtml(p)}</span>
+  </div>`;
+  if(a.status==='no_show'){return html+`<div class="empty"><h5>Marked no-show at ${a.time}</h5><p>Re-open if ${esc(p.name.split(' ')[0])} arrives.</p><button class="btn btn-ghost" id="reopenNs">Mark arrived</button></div>`;}
+
+  if(user.doctor&&!user.verified) html+=`<div class="banner bn-hold"><svg width="17" height="17" style="color:var(--muted)" aria-hidden="true"><use href="#i-lock"/></svg><span><b>Registration under review.</b> You can record, draft and edit today; signing unlocks when verification completes — usually within 24 hours.</span></div>`;
+  html+=`<div id="vBanners"></div>`;
+
+  if(v.signed) return html+signedView(a,p,v);
+
+  /* consent */
+  const scripts={en:'"I\'d like to record our conversation so your notes are written properly. The recording stays private and is deleted on a schedule. Is that okay?"',hi:'"मैं हमारी बातचीत रिकॉर्ड करना चाहूँगा ताकि आपकी रिपोर्ट ठीक से लिखी जाए। रिकॉर्डिंग निजी रहती है और तय समय पर हटा दी जाती है। ठीक है?"',mr:'"आपलं संभाषण मी रेकॉर्ड करू इच्छितो म्हणजे तुमच्या नोंदी नीट लिहिल्या जातील. रेकॉर्डिंग खाजगी राहते आणि ठरलेल्या वेळेनंतर काढून टाकली जाते. चालेल का?"'};
+  html+=`<div class="panel"><div class="phead"><h3>Consent</h3><span class="end"><span class="lbl" id="consState">${v.consent?'Captured · '+v.consent.lang+' · '+v.consent.at:'Required before recording'}</span></span></div>
+  <div class="pbody">
+    <div class="consent-box ${v.consent?'done':''}" id="consBox">
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap" role="group" aria-label="Script language">
+        <button class="ltab" data-lang="en" aria-pressed="${v.consentLang==='en'}">English</button>
+        <button class="ltab" data-lang="hi" aria-pressed="${v.consentLang==='hi'}">हिन्दी</button>
+        <button class="ltab" data-lang="mr" aria-pressed="${v.consentLang==='mr'}">मराठी</button>
+        <span style="margin-left:auto"><select class="input" id="consMethod" style="font-size:13.5px;padding:5px 30px 5px 10px;width:auto" aria-label="Consent method"><option value="verbal" ${v.method==='verbal'?'selected':''}>Verbal</option><option value="written" ${v.method==='written'?'selected':''}>Written</option></select></span>
+      </div>
+      <p style="margin:0 0 12px;font-size:16px" id="consScript">${scripts[v.consentLang]}</p>
+      <label class="check" style="font-weight:600"><input type="checkbox" id="consChk" ${v.consent?'checked disabled':''}> <span>Patient agreed — record consent for this visit</span></label>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-ghost sm" id="noConsent">${v.state==='manual'?'Writing without recording':'Patient declined — write the note without recording'}</button>
+      ${v.consent&&v.state==='recording'?'<button class="btn btn-danger sm" id="withdrawBtn">Consent withdrawn — stop and delete</button>':''}
+    </div>
+  </div></div>`;
+
+  /* record */
+  const rerecord=(v.state==='drafted'||v.state==='manual');
+  const recLabel=v.state==='recording'?(v.paused?'▶ Resume':'■ End visit'):(rerecord?'● Record again':'● Start recording');
+  html+=`<div class="panel"><div class="phead"><h3>This visit</h3><span class="end"><span class="lbl" id="visitState" ${v.state==='recording'?'style="color:var(--signal)"':''}>${{idle:'Not started',recording:v.paused?'Paused':'Recording',processing:'Processing',drafted:'Draft ready',manual:'Manual note'}[v.state]||'Not started'}</span></span></div>
+  <div class="pbody">
+    <div class="recrow">
+      <button class="btn ${v.state==='recording'&&!v.paused?'btn-ghost':(rerecord?'btn-ghost':'btn-rec')}" id="recBtn" ${(!v.consent&&v.state!=='recording')?'disabled':''}>${recLabel}</button>
+      ${v.state==='recording'&&!v.paused?'<button class="btn btn-ghost" id="pauseBtn">❚❚ Pause</button>':''}
+      <svg class="wave" id="wave" viewBox="0 0 500 44" preserveAspectRatio="none" aria-hidden="true"></svg>
+      <span class="timer" id="timer">${fmtSec(v.sec)}</span>
+    </div>
+    <div class="f-hint" id="recHint">${rerecord?'Recording again replaces this visit\'s transcript and draft.':(v.consent?'Mic: default — Realtek · auto-stop at 45:00, warning at 20:00':'The record button stays off until consent is captured above.')}</div>
+  </div></div>`;
+
+  /* pipeline */
+  if(v.state==='processing'||v.state==='drafted'){
+    const done=v.state==='drafted';
+    const att=v.segs.some(s=>s[0]==='att');
+    const st=(txt,sub)=>done?`<span class="v"><span class="tick"></span>${txt}${sub?' <small>'+sub+'</small>':''}</span>`:'<span class="v"><span class="tick"></span>—</span>';
+    html+=`<div class="panel"><div class="phead"><h3>Processing</h3></div><div class="steps" id="pipe">
+      <div class="stg ${done?'done':'idle'}" id="stg0"><span class="k">Audio</span>${st('Saved','encrypted')}</div>
+      <div class="stg ${done?'done':'idle'}" id="stg1"><span class="k">Transcript</span>${st('Complete',v.lowConf?'91.2%':'98.4%')}</div>
+      <div class="stg ${done?'done':'idle'}" id="stg2"><span class="k">Speakers</span>${st(att?'3 found':'2 found',att?'DR · PT · ATT':'DR · PT')}</div>
+      <div class="stg ${done?'done':'idle'}" id="stg3"><span class="k">Case sheet</span>${st('Drafted',(v.lowConf?'9.1':'7.8')+'s')}</div>
+    </div></div>`;
+  }
+
+  /* transcript */
+  if(v.segs.length||v.state==='recording'){
+    const hasAtt=v.segs.some(s=>s[0]==='att');
+    html+=`<div class="panel"><div class="phead"><h3>Transcript</h3><span class="end">
+      <span class="lbl">${v.state==='recording'?'Streaming · interim':'Final pass · '+(v.lowConf?'91.2%':'98.4%')}</span>
+      ${v.state!=='recording'?'<button class="btn btn-ghost sm" id="swapSpk" title="Swap DR and PT labels"><svg width="14" height="14" aria-hidden="true"><use href="#i-swap"/></svg>Swap DR ↔ PT</button>':''}
+    </span></div>
+    <div class="pbody"><div class="tr-list" id="trList">${v.segs.map((s,i)=>trLine(s,i,v)).join('')}</div>
+    ${hasAtt?'<div class="f-hint" style="margin-top:8px">ATT = attendant (Arjun\'s mother). Third speakers are labelled, not merged.</div>':''}</div></div>`;
+  }
+
+  /* note */
+  if(v.state==='drafted'&&v.note&&!v.discarded){
+    html+=noteView(v);
+    html+=rxView(a,p,v);
+  } else if(v.state==='manual'||v.discarded){
+    html+=`<div class="panel"><div class="phead"><h3>Case sheet · manual</h3><span class="end"><span class="lbl">${v.discarded?'Draft discarded · transcript kept':'No recording'}</span></span></div>
+    <div class="pbody">
+      <div class="nf"><div class="k"><span class="lbl">Presenting complaint</span><span class="save-st" data-save>—</span></div><div class="edit" contenteditable="true" data-manual="complaint" aria-label="Presenting complaint"></div></div>
+      <div class="nf"><div class="k"><span class="lbl">History</span></div><div class="edit" contenteditable="true" data-manual="history" aria-label="History"></div></div>
+      <div class="nf"><div class="k"><span class="lbl">On examination</span></div><div class="edit" contenteditable="true" data-manual="exam" aria-label="On examination"></div></div>
+      <div class="nf"><div class="k"><span class="lbl">Assessment</span></div><div class="edit" contenteditable="true" data-manual="assess" aria-label="Assessment"></div></div>
+      <div class="nf"><div class="k"><span class="lbl">Plan</span></div><div class="edit" contenteditable="true" data-manual="plan" aria-label="Plan"></div></div>
+    </div></div>`;
+    html+=rxView(a,p,v);
+  }
+
+  /* per-visit audit + move */
+  html+=`<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px">
+    <button class="btn btn-quiet sm" id="moveVisit">Wrong patient? Move this visit</button>
+    <span class="f-hint" style="margin:0">Available until signing — after that, corrections are addenda.</span>
+  </div>`;
+  return html;
+}
+
+function trLine(s,i,v){
+  const tags={dr:'spk-dr',pt:'spk-pt',att:'spk-att'};
+  const names={dr:'DR',pt:'PT',att:'ATT'};
+  if(s[0]==='gap')return `<div class="trl"><span class="ts"></span><span class="gap">— paused ${s[1]} · resumed —</span></div>`;
+  let tx=esc(s[2]);
+  if(v.lowConf&&i===4)tx=tx.replace('erythema present','<span class="lowc" title="Low confidence — click Fix to correct">erythema present</span>');
+  return `<div class="trl" data-seg="${i}"><span class="spk ${tags[s[0]]}">${names[s[0]]}</span><span class="ts">${s[1]}</span><span class="tx">${tx}</span>${v.state!=='recording'?'<button class="fix" data-fix="'+i+'">Fix</button>':''}</div>`;
+}
+
+function noteView(v){
+  const secs=[['complaint','Presenting complaint'],['history','History'],['exam','On examination'],['assess','Assessment — draft'],['plan','Plan']];
+  let h=`<div class="panel"><div class="phead"><h3>Draft case sheet</h3><span class="end"><span class="lbl">Drafted in ${v.lowConf?'9.1':'7.8'}s · prompt v14</span>
+    <button class="btn btn-ghost sm" id="regen">Regenerate</button>
+    <button class="btn btn-danger sm" id="discard">Discard draft</button></span></div>
+  <div class="pbody">`;
+  if(v.lowConf)h+=`<div class="banner bn-warn"><svg width="17" height="17" style="color:var(--amber-deep)" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Audio was unclear from 00:26 to 00:45</b> — the room got loud. Please check the examination section. Recording saved anyway.</span></div>`;
+  secs.forEach(([k,label])=>{
+    const f=v.note[k]; const warn=v.lowConf&&k==='exam';
+    h+=`<div class="nf ${warn?'warnf':''}" data-nf="${k}">
+      <div class="k"><span class="lbl" ${warn?'style="color:var(--amber-deep)"':''}>${label}${warn?' · check this':''}</span><span class="save-st" data-save="${k}">Saved</span></div>
+      <div class="edit" contenteditable="true" spellcheck="false" data-field="${k}" data-segs="${f.segs.join(',')}" aria-label="${label}">${esc(f.t)}</div>
+      ${k==='complaint'?'<div style="margin-top:6px">'+v.note.tags.map(t=>t.c?`<span class="tg">${esc(t.t)} <small>${t.c}</small></span>`:`<span class="tg uncoded">${esc(t.t)} · uncoded</span>`).join('')+'</div>':''}
+    </div>`;
+  });
+  h+=`<div class="f-hint" style="margin-top:10px">Hover any section to see the transcript lines it came from. Every sentence is traceable; nothing is invented.</div>
+  </div></div>`;
+  return h;
+}
+
+function rxView(a,p,v){
+  let h=`<div class="panel"><div class="phead"><h3>Prescription</h3><span class="end"><span class="lbl" style="color:${v.rx.length?'var(--amber-deep)':'var(--muted)'}">${v.rx.length?'Unsigned draft':'Empty'}</span></span></div>
+  <div class="pbody">`;
+  if(p.allergies.length)h+=`<div class="banner bn-error" style="margin-bottom:14px"><svg width="17" height="17" style="color:var(--brick)" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Allergy on record:</b> ${p.allergies.map(x=>esc(x.sub)+' — '+esc(x.rx.toLowerCase())+', '+x.sev.toLowerCase()).join(' · ')}. Matching drugs are blocked at add.</span></div>`;
+  h+=`<div id="rxList">${v.rx.map((r,i)=>rxItem(r,i)).join('')||'<p style="color:var(--muted);font-size:14.5px;margin:0">Nothing added yet. Sonara formats and checks — you compose.</p>'}</div>
+  <div class="rxgrid">
+    <div class="ac" style="grid-column:1/-1">
+      <label class="f-lbl" for="drugIn">Add medicine</label>
+      <input class="input" id="drugIn" placeholder="Type a brand or generic — 'azith', 'pantop'…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="acList">
+      <div class="ac-list" id="acList" role="listbox"></div>
+    </div>
+    <div><label class="f-lbl" for="rxFreq">Frequency</label><select class="input" id="rxFreq">${FREQ.map(f=>'<option>'+f+'</option>').join('')}</select></div>
+    <div><label class="f-lbl" for="rxDur">Days</label><input class="input" id="rxDur" inputmode="numeric" value="3"></div>
+    <div><label class="f-lbl" for="rxIns">Instructions</label><input class="input" id="rxIns" placeholder="After food"></div>
+    <div><button class="btn btn-ghost" id="rxAdd" disabled>Add</button></div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">
+    <button class="btn btn-primary" id="signBtn" ${(!user.verified||!v.rx.length&&!(v.note||v.state==='manual'))?'disabled':''}>Review &amp; sign</button>
+    <span class="f-hint" style="margin:0">${user.verified?user.name+' · '+user.reg+' · signature applied only on your approval':'Signing unlocks when your registration is verified — usually within 24 hours.'}</span>
+  </div>
+  </div></div>`;
+  return h;
+}
+function rxItem(r,i){
+  return `<div class="rx-item"><span class="n">${i+1}</span><span><span class="nm">${esc(r.b)}</span> <span class="gen">${r.g!=='—'&&r.g?'· '+esc(r.g)+(r.s&&r.s!=='—'?' '+r.s:''):''}</span>${r.src==='free'?'<span class="free-b">free text</span>':''}${r.ovr?'<span class="ovr-b">override logged</span>':''}<div class="dz">${esc(r.freq)} · ${esc(r.dur)}${r.ins?' · '+esc(r.ins):''}</div></span><button class="x" data-rmrx="${i}" aria-label="Remove ${esc(r.b)}">×</button></div>`;
+}
+
+function signedView(a,p,v){
+  let h=`<div class="banner bn-info"><svg width="17" height="17" style="color:var(--petrol)" aria-hidden="true"><use href="#i-lock"/></svg><span><b>Signed at ${v.signedAt} by ${v.signedBy||'Dr. A. Menon'}.</b> The note and prescription are locked. Corrections are appended below with their own timestamp.</span></div>`;
+  const secs=[['complaint','Presenting complaint'],['history','History'],['exam','On examination'],['assess','Assessment'],['plan','Plan']];
+  h+=`<div class="panel"><div class="phead"><h3>Case sheet</h3><span class="end"><span class="st st-signed"><span class="d"></span>Signed</span><span class="lbl">hash ${v.hash||'4c19…e2'}</span></span></div><div class="pbody">`;
+  secs.forEach(([k,label])=>{const f=v.note[k];if(!f||!f.t)return;
+    h+=`<div class="nf locked"><div class="k"><span class="lbl">${label}</span></div><div class="edit" aria-readonly="true">${esc(f.t)}</div>${k==='complaint'&&v.note.tags?'<div style="margin-top:6px">'+v.note.tags.map(t=>t.c?`<span class="tg">${esc(t.t)} <small>${t.c}</small></span>`:`<span class="tg uncoded">${esc(t.t)} · uncoded</span>`).join('')+'</div>':''}</div>`;});
+  if(v.addenda.length){h+=`<div style="border-top:1px solid var(--line);margin-top:6px;padding-top:12px">`;
+    v.addenda.forEach(ad=>{h+=`<div class="nf"><div class="k"><span class="lbl" style="color:var(--amber-deep)">Addendum · ${ad.at} · ${esc(ad.by)}</span></div><div style="font-size:15px">${esc(ad.body)}</div><div class="f-hint">Reason: ${esc(ad.reason)}</div></div>`;});
+    h+=`</div>`;}
+  h+=`<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-ghost sm" id="addendumBtn">Append an addendum</button></div>
+  </div></div>`;
+
+  h+=`<div class="panel"><div class="phead"><h3>Prescription</h3><span class="end"><span class="st st-signed"><span class="d"></span>Signed</span></span></div><div class="pbody">
+  ${v.rx.map((r,i)=>`<div class="rx-item"><span class="n">${i+1}</span><span><span class="nm">${esc(r.b)}</span> <span class="gen">${r.g?'· '+esc(r.g)+(r.s&&r.s!=='—'?' '+r.s:''):''}</span>${r.ovr?'<span class="ovr-b">override logged</span>':''}<div class="dz">${esc(r.freq)} · ${esc(r.dur)}${r.ins?' · '+esc(r.ins):''}</div></span></div>`).join('')}
+  <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:10px;padding-top:14px">
+    <div class="f-hint" style="margin:0">A correction is a new prescription referencing this one — the signed original never changes.</div>
+    <div style="text-align:right"><div style="font-family:var(--display);font-weight:600;font-size:15px">${v.signedBy||'Dr. A. Menon'}, ${(USERS.menon.quals||'').split(', ')[1]||'MD'}</div><div class="mono" style="font-size:11px;color:var(--muted)">${USERS.menon.reg} · ${CLINIC.name}, Navi Mumbai</div></div>
+  </div>
+  </div></div>`;
+
+  h+=`<div class="panel"><div class="phead"><h3>Delivery</h3><span class="end"><span class="lbl">Each attempt is logged per channel</span></span></div><div class="pbody">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:${v.deliveries.length?'14px':'0'}">
+      <button class="btn btn-ghost sm" data-deliver="print"><svg width="15" height="15" aria-hidden="true"><use href="#i-print"/></svg>Print</button>
+      <button class="btn btn-ghost sm" data-deliver="whatsapp"><svg width="15" height="15" aria-hidden="true"><use href="#i-chat"/></svg>WhatsApp</button>
+      <button class="btn btn-ghost sm" data-deliver="email"><svg width="15" height="15" aria-hidden="true"><use href="#i-mail"/></svg>Email</button>
+    </div>
+    ${v.deliveries.length?'<table class="aud">'+v.deliveries.map(d=>`<tr><td class="t">${d.ch}</td><td>${esc(d.to)}</td><td class="a">${esc(d.st)}</td></tr>`).join('')+'</table>':''}
+  </div></div>`;
+  return h;
+}
+
+/* aside */
+function asideView(a){
+  const p=PATIENTS[a.pid];
+  return `<div class="ahead"><span class="lbl">The record</span><h3>${esc(p.name.split(' ')[0])}'s history</h3></div>
+  ${p.allergies.length?`<div class="asec"><span class="lbl">Allergies · structured</span>${p.allergies.map(x=>`<div class="arow"><span class="d">${x.d}</span><span class="t"><b style="color:var(--brick)">${esc(x.sub)}</b><p>${esc(x.rx)} · ${x.sev}</p></span></div>`).join('')}</div>`:''}
+  ${p.meds.length?`<div class="asec"><span class="lbl">Running medication</span>${p.meds.map(m=>`<div class="arow"><span class="d"></span><span class="t"><b>${esc(m.t)}</b><p>${esc(m.d)}</p></span></div>`).join('')}</div>`:''}
+  <div class="asec"><span class="lbl">Visit timeline</span>
+  ${p.timeline.length?p.timeline.map(t=>`<div class="arow"><span class="d">${t.d}</span><span class="t"><b>${esc(t.t)}</b><p>${esc(t.p)}</p></span></div>`).join(''):'<p style="font-size:13.5px;color:var(--muted);margin:8px 0 0">First visit — no history yet.</p>'}
+  ${p.timeline.length>=4?'<div class="f-hint" style="margin-top:8px">Newest first · 20 per page</div>':''}
+  </div>`;
+}
+
+/* front desk visit card */
+function frontdeskVisit(a){
+  const p=PATIENTS[a.pid];const st=liveStatus(a);
+  return `<div class="pathead"><span class="avatar">${p.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</span>
+    <span><span class="who">${esc(p.name)} · ${p.age}${p.sex}</span><br><span class="sub">${p.ref} · ${esc(p.phone)} · token ${a.tok} · ${a.time}</span></span>
+    <span class="flags"><span class="st ${ST_LBL[st][0]}"><span class="d"></span>${ST_LBL[st][1]}</span></span></div>
+  <div class="panel"><div class="phead"><h3>Check-in</h3></div><div class="pbody" style="display:flex;gap:10px;flex-wrap:wrap">
+    ${st==='scheduled'?'<button class="btn btn-primary" data-fd="arrived">Mark arrived</button><button class="btn btn-ghost" data-fd="no_show">No show</button>':''}
+    ${st==='arrived'?'<span class="f-hint" style="margin:0;align-self:center">Checked in — waiting for the doctor.</span>':''}
+    ${st==='signed'?'<button class="btn btn-primary" data-fd="handover">Hand over prescription</button><span class="f-hint" style="margin:0;align-self:center">Signed — collect from the printer or confirm WhatsApp delivery.</span>':''}
+    ${st==='no_show'?'<button class="btn btn-ghost" data-fd="arrived">Re-open · mark arrived</button>':''}
+  </div></div>
+  <div class="panel"><div class="phead"><h3>Clinical record</h3></div><div class="pbody">
+    <div class="empty" style="padding:26px 20px">
+      <svg width="34" height="34" style="color:var(--mist)" aria-hidden="true"><use href="#i-lock"/></svg>
+      <h5>Not part of your role</h5>
+      <p>Notes, transcripts and audio are only visible to the treating doctor.<br>Access attempts are recorded in the audit log.</p>
+      <button class="btn btn-ghost sm" id="probeBtn">Try anyway (demo the 403)</button>
+    </div>
+  </div></div>`;
+}
+function wireFrontdesk(a){
+  document.querySelectorAll('[data-fd]').forEach(b=>b.addEventListener('click',()=>{
+    const act=b.dataset.fd;
+    if(act==='handover'){toast('Handover noted · logged');audit('rx.handover',PATIENTS[a.pid].name);return;}
+    a.status=act;audit('appointment.'+act,PATIENTS[a.pid].name+' · token '+a.tok);render();
+  }));
+  const pb=$('probeBtn');if(pb)pb.addEventListener('click',()=>{
+    audit('record.read',PATIENTS[a.pid].name+' · clinical note — 403 blocked at query layer',true);
+    toast('403 — blocked at the query layer, and logged');
+  });
+}
+
+/* ═══════════════════ visit wiring ═══════════════════ */
+function recActive(){if(!selAppt)return false;const v=visits[selAppt];return v&&v.state==='recording';}
+function stopRecordingHard(){if(recTimer){clearInterval(recTimer);recTimer=null;}if(recRaf){cancelAnimationFrame(recRaf);recRaf=null;}feedTimers.forEach(clearTimeout);feedTimers=[];}
+
+function wireVisit(a){
+  const p=PATIENTS[a.pid], v=getVisit(a);
+  const reopen=$('reopenNs');if(reopen){reopen.addEventListener('click',()=>{a.status='arrived';audit('appointment.arrived',p.name+' · re-opened');render();});return;}
+  if(v.signed){wireSigned(a,p,v);return;}
+
+  /* consent */
+  document.querySelectorAll('.ltab').forEach(b=>b.addEventListener('click',()=>{v.consentLang=b.dataset.lang;render();}));
+  const cm=$('consMethod');if(cm)cm.addEventListener('change',()=>{v.method=cm.value;});
+  const chk=$('consChk');
+  if(chk&&!v.consent)chk.addEventListener('change',()=>{
+    if(chk.checked){
+      const langName={en:'English',hi:'Hindi',mr:'Marathi'}[v.consentLang];
+      v.consent={lang:langName,method:v.method,at:hm()};
+      audit('consent.captured',p.name+' · '+v.method+' · '+langName);
+      render();
+    }
+  });
+  const noCons=$('noConsent');if(noCons)noCons.addEventListener('click',()=>{
+    if(v.state==='manual')return;
+    v.state='manual';audit('note.manual_path',p.name+' · consent declined or not asked');render();
+  });
+  const wd=$('withdrawBtn');if(wd)wd.addEventListener('click',()=>demoWithdraw());
+
+  /* record */
+  const rb=$('recBtn');
+  if(rb)rb.addEventListener('click',()=>{
+    if(v.state==='recording'&&v.paused){v.paused=false;v.segs.push(['gap',fmtSec(v.sec)]);render();startEngine(a,true);return;}
+    if(v.state==='recording'){endVisit(a);return;}
+    if(!v.consent)return;
+    v.state='recording';v.segs=[];v.sec=0;v.feedIdx=0;
+    audit('recording.started',p.name+' · visit '+a.id.toUpperCase());
+    render();startEngine(a,false);
+  });
+  const pb=$('pauseBtn');if(pb)pb.addEventListener('click',()=>{v.paused=true;stopRecordingHard();audit('recording.paused',p.name);render();drawIdleWave();});
+
+  if(v.state==='recording'&&!v.paused&&!recTimer)startEngine(a,true);
+  if(v.state!=='recording')drawIdleWave();
+
+  /* transcript */
+  const swap=$('swapSpk');if(swap)swap.addEventListener('click',()=>{
+    v.segs=v.segs.map(s=>s[0]==='dr'?['pt',s[1],s[2]]:s[0]==='pt'?['dr',s[1],s[2]]:s);
+    audit('transcript.speakers_swapped',p.name);render();toast('Speaker labels swapped for the whole transcript');
+  });
+  document.querySelectorAll('[data-fix]').forEach(b=>b.addEventListener('click',()=>{
+    const i=+b.dataset.fix;const line=v.segs[i];
+    openModal(`<div class="mh"><span class="lbl">Correct a line · builds your clinic's vocabulary</span><h4>Fix the transcript</h4></div>
+      <div class="mb"><p style="margin:0 0 10px">Original · ${line[1]} · ${line[0].toUpperCase()}</p>
+      <textarea class="input" id="fixTx" rows="3" style="resize:vertical">${esc(line[2])}</textarea>
+      <p style="font-size:13px;margin:10px 0 0">Corrections teach this clinic's vocabulary — drug brands, place names, your patients' phrasing. They never train a shared model.</p></div>
+      <div class="mf"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="fixGo">Save correction</button></div>`);
+    $('fixGo').addEventListener('click',()=>{
+      v.segs[i]=[line[0],line[1],$('fixTx').value];v.corrections++;
+      audit('transcript.corrected',p.name+' · line '+line[1]);
+      closeModal();render();toast('Correction saved to the clinic vocabulary');
+    });
+  }));
+
+  /* note editing + provenance */
+  wireNoteEditing(v,p);
+
+  /* rx */
+  wireRx(a,p,v);
+
+  /* draft actions */
+  const regen=$('regen');if(regen)regen.addEventListener('click',()=>{
+    openModal(`<div class="mh"><h4>Regenerate the draft?</h4></div><div class="mb">Your edits to the current draft are discarded and the note is rewritten from the transcript. The transcript itself is untouched.</div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal()">Keep my edits</button><button class="btn btn-primary" id="regenGo">Regenerate</button></div>`);
+    $('regenGo').addEventListener('click',()=>{v.note=JSON.parse(JSON.stringify(NOTES[p.id]||NOTES.p3));audit('note.regenerated',p.name);closeModal();render();toast('Draft regenerated from the transcript');});
+  });
+  const disc=$('discard');if(disc)disc.addEventListener('click',()=>{
+    openModal(`<div class="mh"><h4>Discard the draft?</h4></div><div class="mb">The draft is deleted; the transcript is kept and you write the note yourself. Discards are tracked — they tell us the drafting isn't good enough.</div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal()">Keep the draft</button><button class="btn btn-danger" id="discGo">Discard draft, keep transcript</button></div>`,'stop');
+    $('discGo').addEventListener('click',()=>{v.discarded=true;audit('note.draft_discarded',p.name+' · counter-metric',true);closeModal();render();});
+  });
+
+  /* move visit */
+  const mv=$('moveVisit');if(mv)mv.addEventListener('click',()=>{
+    const others=Object.values(PATIENTS).filter(x=>x.id!==p.id);
+    openModal(`<div class="mh"><span class="lbl">Recovery · wrong patient</span><h4>Move this visit</h4></div>
+    <div class="mb"><p style="margin:0 0 10px">Everything captured so far — consent, audio, transcript, draft — moves to the patient you pick.</p>
+    <select class="input" id="mvSel">${others.map(x=>`<option value="${x.id}">${esc(x.name)} · ${x.ref}</option>`).join('')}</select></div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="mvGo">Move visit</button></div>`);
+    $('mvGo').addEventListener('click',()=>{
+      const to=$('mvSel').value;audit('visit.moved',p.name+' → '+PATIENTS[to].name,true);
+      a.pid=to;closeModal();render();toast('Visit moved to '+PATIENTS[to].name);
+    });
+  });
+
+  /* banners injected */
+  const vb=$('vBanners');
+  if(v.warn20&&v.state==='recording')vb.innerHTML+=`<div class="banner bn-warn"><svg width="17" height="17" style="color:var(--amber-deep)" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Recording has been running 20 minutes.</b> It stops by itself at 45:00 — nothing is discarded.</span></div>`;
+  if(v.withdrawn)vb.innerHTML+=`<div class="banner bn-error"><svg width="17" height="17" style="color:var(--brick)" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Consent withdrawn at ${v.withdrawn}.</b> Recording stopped. Audio and transcript are scheduled for deletion within 24 hours — the deletion will appear in the audit log. The note can be written manually below.</span></div>`;
+}
+
+function wireNoteEditing(v,p){
+  document.querySelectorAll('.edit[data-field], .edit[data-manual]').forEach(ed=>{
+    let deb=null;
+    ed.addEventListener('input',()=>{
+      const st=ed.closest('.nf').querySelector('[data-save]')||document.querySelector('[data-save]');
+      if(st){st.textContent=online?'Saving…':'Queued — offline';st.classList.remove('on');}
+      clearTimeout(deb);
+      deb=setTimeout(()=>{
+        const k=ed.dataset.field||ed.dataset.manual;
+        if(v.note&&v.note[k])v.note[k].t=ed.textContent;
+        if(st){st.textContent=online?'Saved':'Queued — will sync';st.classList.add('on');}
+      },800);
+    });
+    ed.addEventListener('blur',()=>{const k=ed.dataset.field||ed.dataset.manual;if(v.note&&v.note[k])v.note[k].t=ed.textContent;});
+  });
+  /* provenance */
+  document.querySelectorAll('.nf[data-nf]').forEach(nf=>{
+    const segs=(nf.querySelector('[data-segs]')?.dataset.segs||'').split(',').filter(Boolean).map(Number);
+    nf.addEventListener('mouseenter',()=>{segs.forEach(i=>{const l=document.querySelector('.trl[data-seg="'+i+'"]');if(l)l.classList.add('hl');});});
+    nf.addEventListener('mouseleave',()=>{document.querySelectorAll('.trl.hl').forEach(l=>l.classList.remove('hl'));});
+  });
+}
+
+/* ═══ recording engine ═══ */
+function startEngine(a,resume){
+  const v=getVisit(a);
+  const script=SCRIPTS[a.pid]||SCRIPTS.p3;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!resume)v.feedIdx=0;
+  recTimer=setInterval(()=>{
+    v.sec++;const t=$('timer');if(t)t.textContent=fmtSec(v.sec);
+    if(v.sec===1200&&!v.warn20){v.warn20=true;render();}
+    if(v.sec>=2700){endVisit(a);}
+  },1000);
+  const feed=()=>{
+    if(v.feedIdx>=script.length)return;
+    v.segs.push(script[v.feedIdx]);v.feedIdx++;
+    const list=$('trList');
+    if(list){list.innerHTML=v.segs.map((s,i)=>trLine(s,i,v)).join('');list.scrollTop=1e6;}
+    else render();
+    feedTimers.push(setTimeout(feed,reduce?400:1500));
+  };
+  feedTimers.push(setTimeout(feed,600));
+  drawLiveWave();
+}
+function fmtSec(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function waveBars(){const svg=$('wave');if(!svg)return null;if(svg.childElementCount)return[...svg.children];
+  const out=[];for(let i=0;i<64;i++){const r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.setAttribute('x',i*(500/64)+1);r.setAttribute('width',(500/64)-2.4);r.setAttribute('rx',1.2);r.setAttribute('fill','#DDE6E2');svg.appendChild(r);out.push(r);}return out;}
+function setBar(r,h){h=Math.max(2,h);r.setAttribute('y',(44-h)/2);r.setAttribute('height',h);}
+function drawIdleWave(){const bars=waveBars();if(!bars)return;bars.forEach((b,i)=>{setBar(b,3+Math.abs(Math.sin(i*.7)*Math.cos(i*.3))*14);b.setAttribute('fill','#DDE6E2');});}
+function drawLiveWave(){
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){const bars=waveBars();if(bars)bars.forEach((b,i)=>{setBar(b,4+Math.abs(Math.sin(i*.5))*26);b.setAttribute('fill',i%8===0?'#2F8C7F':'#C9DBD5');});return;}
+  let t0=null;
+  const loop=(ts)=>{
+    const bars=waveBars();if(!bars){recRaf=null;return;}
+    if(t0===null)t0=ts;const el=(ts-t0)/1000;
+    for(let k=0;k<64;k++){const s=Math.sin(el*7+k*.5)*Math.sin(el*2.1+k*.12)*Math.sin(k*.85+el);
+      setBar(bars[k],3+Math.abs(s)*(.55+.45*Math.sin(el*1.5+k*.05))*36);
+      bars[k].setAttribute('fill',k%8===0?'#2F8C7F':'#C9DBD5');}
+    if(recActive()&&!getVisit(appts.find(x=>x.id===selAppt)).paused)recRaf=requestAnimationFrame(loop);else recRaf=null;
+  };
+  recRaf=requestAnimationFrame(loop);
+}
+function endVisit(a){
+  const v=getVisit(a),p=PATIENTS[a.pid];
+  stopRecordingHard();
+  v.state='processing';
+  audit('recording.stopped',p.name+' · '+fmtSec(v.sec));
+  render();
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stage=(id,cls,txt,sub)=>{const e=$(id);if(!e)return;e.className='stg '+cls;e.querySelector('.v').innerHTML='<span class="tick"></span>'+txt+(sub?' <small>'+sub+'</small>':'');};
+  stage('stg0','run','Uploading…');
+  setTimeout(()=>{stage('stg0','done','Saved','encrypted');stage('stg1','run','Final pass…');},600/(reduce?8:1));
+  setTimeout(()=>{stage('stg1','done','Complete',v.lowConf?'91.2%':'98.4%');stage('stg2','run','Separating…');},2000/(reduce?8:1));
+  setTimeout(()=>{const n=v.segs.some(s=>s[0]==='att')?'3 found':'2 found';stage('stg2','done',n,v.segs.some(s=>s[0]==='att')?'DR · PT · ATT':'DR · PT');stage('stg3','run','Drafting…');},3000/(reduce?8:1));
+  setTimeout(()=>{
+    stage('stg3','done','Drafted',(v.lowConf?'9.1':'7.8')+'s');
+    v.note=JSON.parse(JSON.stringify(NOTES[p.id]||NOTES.p3));
+    v.state='drafted';
+    audit('note.generated',p.name+' · prompt v14 · '+(v.lowConf?'9.1':'7.8')+'s');
+    setTimeout(render,reduce?60:450);
+  },4600/(reduce?8:1));
+}
+
+/* ═══ rx wiring ═══ */
+let acSel=null;
+function wireRx(a,p,v){
+  const input=$('drugIn'),list=$('acList'),add=$('rxAdd');
+  if(!input)return;
+  const show=q=>{
+    q=q.trim().toLowerCase();
+    if(!q){list.classList.remove('on');input.setAttribute('aria-expanded','false');acSel=null;add.disabled=true;return;}
+    const hits=DRUGS.filter(d=>d.b.toLowerCase().includes(q)||d.g.toLowerCase().includes(q)).slice(0,6);
+    list.innerHTML=hits.map((d,i)=>`<button class="ac-row" data-aci="${i}" role="option"><span class="b">${esc(d.b)}</span><span class="s">${esc(d.g)} ${d.s!=='—'?d.s:''}</span><span class="f">${d.f}</span></button>`).join('')+
+      `<button class="ac-free" data-free>↵ Add "${esc(input.value)}" as free text — prints exactly as typed, unchecked</button>`;
+    list.classList.add('on');input.setAttribute('aria-expanded','true');
+    list._hits=hits;acSel=hits.length?0:null;paint();
+    add.disabled=false;
+  };
+  const paint=()=>{[...list.querySelectorAll('.ac-row')].forEach((r,i)=>r.classList.toggle('sel',i===acSel));};
+  input.addEventListener('input',()=>show(input.value));
+  input.addEventListener('keydown',e=>{
+    const hits=list._hits||[];
+    if(e.key==='ArrowDown'){e.preventDefault();if(hits.length){acSel=acSel===null?0:Math.min(acSel+1,hits.length-1);paint();}}
+    else if(e.key==='ArrowUp'){e.preventDefault();if(hits.length){acSel=Math.max((acSel??0)-1,0);paint();}}
+    else if(e.key==='Enter'){e.preventDefault();commit();}
+    else if(e.key==='Escape'){list.classList.remove('on');}
+  });
+  list.addEventListener('click',e=>{
+    const row=e.target.closest('.ac-row');const free=e.target.closest('[data-free]');
+    if(row){acSel=+row.dataset.aci;commit();}
+    else if(free){acSel=null;commit(true);}
+  });
+  add.addEventListener('click',()=>commit(acSel===null));
+  function commit(forceFree){
+    const hits=list._hits||[];
+    const q=input.value.trim();if(!q)return;
+    let item;
+    if(!forceFree&&hits.length&&acSel!==null){
+      const d=hits[acSel];
+      /* allergy check — blocking */
+      const hit=p.allergies.find(al=>al.sub.toLowerCase()==='penicillin'&&d.cls==='penicillin');
+      if(hit){hardStop(d,hit,v,p,()=>{pushRx({b:d.b,g:d.g,s:d.s,f:d.f,src:'db',ovr:true});});return;}
+      item={b:d.b,g:d.g,s:d.s,f:d.f,src:'db'};
+    } else {
+      item={b:q,g:'',s:'',f:'',src:'free'};
+    }
+    pushRx(item);
+  }
+  function pushRx(item){
+    item.freq=$('rxFreq').value;item.dur=($('rxDur').value||'3')+' days';item.ins=$('rxIns').value.trim();
+    v.rx.push(item);
+    if(item.src==='free')audit('rx.freetext_added',p.name+' · "'+item.b+'"',true);
+    render();
+    const ni=$('drugIn');if(ni)ni.focus();
+  }
+  document.querySelectorAll('[data-rmrx]').forEach(b=>b.addEventListener('click',()=>{v.rx.splice(+b.dataset.rmrx,1);render();}));
+
+  const sb=$('signBtn');
+  if(sb)sb.addEventListener('click',()=>openSignSheet(a,p,v));
+}
+function hardStop(d,al,v,p,onOverride){
+  openModal(`<div class="mh"><span class="lbl" style="color:var(--brick)">Allergy on record · hard stop</span><h4>${esc(d.b)} conflicts with a recorded allergy</h4></div>
+  <div class="mb">
+    <p style="margin:0 0 12px">${esc(p.name)} has <b style="color:var(--ink)">${esc(al.sub)} — ${esc(al.rx.toLowerCase())}, ${al.sev.toLowerCase()} (${al.d})</b> on file. ${esc(d.g)} is a ${d.cls}-class drug.</p>
+    <div style="background:var(--brick-wash);border:1px solid var(--brick-line);border-radius:9px;padding:10px 12px;font-size:14px;color:var(--ink)">${esc(d.b)} · ${esc(d.g)} ${d.s}</div>
+    <label class="f-lbl" for="ovReason" style="margin-top:16px">To prescribe anyway, state your reason — it is recorded in the audit log with your name</label>
+    <input class="input" id="ovReason" placeholder="Minimum 10 characters" autocomplete="off">
+  </div>
+  <div class="mf"><button class="btn btn-ghost" onclick="closeModal()">Remove the drug</button><button class="btn btn-danger" id="ovGo" disabled>Prescribe with reason</button></div>`,'stop');
+  const r=$('ovReason'),go=$('ovGo');
+  r.addEventListener('input',()=>{go.disabled=r.value.trim().length<10;});
+  go.addEventListener('click',()=>{
+    audit('allergy.override',p.name+' · '+d.b+' · "'+r.value.trim()+'"',true);
+    closeModal();onOverride();toast('Override recorded in the audit log');
+  });
+}
+
+function openSignSheet(a,p,v){
+  const note=v.note;
+  openModal(`<div class="mh"><span class="lbl">Review &amp; sign · exactly what will be signed and sent</span><h4>${esc(p.name)} · ${p.age}${p.sex} · ${p.ref}</h4></div>
+  <div class="mb" style="color:var(--ink)">
+    ${note?`<div style="border:1px solid var(--line);border-radius:11px;padding:14px 16px;background:var(--soft);margin-bottom:12px;font-size:14px">
+      <div class="lbl" style="margin-bottom:8px">Case sheet</div>
+      ${['complaint','history','exam','assess','plan'].filter(k=>note[k]&&note[k].t).map(k=>`<p style="margin:0 0 7px"><b style="font-size:12.5px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em">${{complaint:'Complaint',history:'History',exam:'O/E',assess:'Assessment',plan:'Plan'}[k]}</b> · ${esc(note[k].t)}</p>`).join('')}
+    </div>`:''}
+    <div style="border:1px solid var(--line);border-radius:11px;padding:14px 16px;background:var(--chalk)">
+      <div class="lbl" style="margin-bottom:8px">Prescription · Rx</div>
+      ${v.rx.length?v.rx.map((r,i)=>`<div class="rx-item" style="padding:8px 0"><span class="n">${i+1}</span><span><span class="nm">${esc(r.b)}</span> <span class="gen">${r.g?'· '+esc(r.g)+' '+(r.s||''):''}</span><div class="dz">${esc(r.freq)} · ${esc(r.dur)}${r.ins?' · '+esc(r.ins):''}</div></span></div>`).join(''):'<p style="margin:0;color:var(--muted);font-size:14px">No medicines — the case sheet alone is signed.</p>'}
+      <div style="border-top:1px solid var(--line);margin-top:8px;padding-top:12px;display:flex;justify-content:flex-end">
+        <div style="text-align:right"><div style="font-family:var(--display);font-weight:600;font-size:15px">${user.name}, ${(user.quals||'').split(', ').slice(-1)[0]||''}</div><div class="mono" style="font-size:11px;color:var(--muted)">${user.reg} · ${CLINIC.name}, Navi Mumbai</div></div>
+      </div>
+    </div>
+    <p style="font-size:13.5px;color:var(--muted);margin:12px 0 0">Signing locks the note and prescription, stores a content hash, and writes the audit entry. Corrections after this are addenda or a superseding prescription.</p>
+  </div>
+  <div class="mf"><button class="btn btn-ghost" onclick="closeModal()">Back to editing</button><button class="btn btn-primary" id="signGo">Sign — ${user.name}</button></div>`);
+  $('signGo').addEventListener('click',()=>{
+    v.signed=true;v.state='signed';v.signedAt=hm();v.signedBy=user.name;v.hash=(Math.random().toString(16).slice(2,6))+'…'+(Math.random().toString(16).slice(2,4));
+    if(!v.note)v.note={complaint:{t:'',segs:[]},history:{t:'',segs:[]},exam:{t:'',segs:[]},assess:{t:'',segs:[]},plan:{t:'',segs:[]},tags:[]};
+    audit('note.signed',p.name+' · hash '+v.hash);
+    audit('rx.signed',p.name+' · '+v.rx.length+' items');
+    closeModal();render();toast('Signed. The note is locked; delivery is ready below.');
+  });
+}
+function wireSigned(a,p,v){
+  document.querySelectorAll('[data-deliver]').forEach(b=>b.addEventListener('click',()=>{
+    const ch=b.dataset.deliver;
+    const to={print:'Front desk printer',whatsapp:p.phone.replace(/\d{4}$/,'xxxx'),email:'patient inbox'}[ch];
+    v.deliveries.push({ch,to,st:{print:'Printed '+hm(),whatsapp:'Delivered '+hm()+' ✓✓',email:'Sent '+hm()+' via Resend'}[ch]});
+    audit('rx.delivered',p.name+' · '+ch);
+    render();
+  }));
+  const ab=$('addendumBtn');if(ab)ab.addEventListener('click',()=>{
+    openModal(`<div class="mh"><span class="lbl">The only way to change a signed note</span><h4>Append an addendum</h4></div>
+    <div class="mb">
+      <label class="f-lbl" for="adBody">Addendum</label>
+      <textarea class="input" id="adBody" rows="3" style="resize:vertical" placeholder="e.g. Patient called at 6pm — fever settled."></textarea>
+      <label class="f-lbl" for="adWhy" style="margin-top:12px">Reason</label>
+      <input class="input" id="adWhy" placeholder="Why this addendum is needed">
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="adGo">Append — timestamped</button></div>`);
+    $('adGo').addEventListener('click',()=>{
+      const body=$('adBody').value.trim();if(!body){$('adBody').focus();return;}
+      v.addenda.push({body,reason:$('adWhy').value.trim()||'—',at:hm(),by:user.name});
+      audit('note.addendum',p.name);closeModal();render();
+    });
+  });
+}
+
+/* ═══════════════════ patients view ═══════════════════ */
+function patientsView(){
+  const q=patientsQuery.trim();
+  const rows=Object.values(PATIENTS).filter(p=>fuzzy(q,p.name)||fuzzy(q,p.phone));
+  return `<div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+    <div class="qsearch" style="flex:1;min-width:240px;margin:0">
+      <svg width="17" height="17" aria-hidden="true"><use href="#i-search"/></svg>
+      <input class="input" id="pSearch" placeholder="Search 'priya nai' or a phone number" value="${esc(patientsQuery)}" aria-label="Search patients">
+      <kbd>/</kbd>
+    </div>
+    <span class="f-hint" style="margin:0">${rows.length} of ${Object.keys(PATIENTS).length} · fuzzy on names, exact on phone · &lt;300ms at 50k</span>
+  </div>
+  <div class="panel"><div style="overflow-x:auto"><table class="tbl">
+    <tr><th>Patient</th><th>Age</th><th>Phone</th><th>Last visit</th><th>Flags</th></tr>
+    ${rows.map(p=>`<tr class="rowbtn" data-open="${p.id}" tabindex="0"><td><b>${esc(p.name)}</b><br><span class="mono" style="font-size:11px;color:var(--muted)">${p.ref}</span></td><td>${p.age}${p.sex}</td><td class="mono" style="font-size:12.5px">${esc(p.phone)}</td><td>${p.last}</td><td>${user.doctor?flagsHtml(p):'<span class="f-hint" style="margin:0">Clinical flags hidden for your role</span>'}</td></tr>`).join('')}
+  </table></div></div>`;
+}
+function wirePatients(){
+  $('pSearch').addEventListener('input',e=>{patientsQuery=e.target.value;const c=$('canvas');c.innerHTML=patientsView();wirePatients();$('pSearch').focus();const val=$('pSearch').value;$('pSearch').setSelectionRange(val.length,val.length);});
+  document.querySelectorAll('[data-open]').forEach(r=>{
+    const open=()=>{selPatient=r.dataset.open;audit('record.read',PATIENTS[selPatient].name+' · profile opened');render();};
+    r.addEventListener('click',open);
+    r.addEventListener('keydown',e=>{if(e.key==='Enter')open();});
+  });
+}
+function profileView(p){
+  return `<button class="btn btn-quiet sm" id="backPat" style="margin-bottom:14px">← All patients</button>
+  <div class="pathead" style="position:static">
+    <span class="avatar">${p.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</span>
+    <span><span class="who">${esc(p.name)} · ${p.age}${p.sex}</span><br><span class="sub">${p.ref} · ${esc(p.phone)} · prefers ${esc(p.lang)}</span></span>
+    <span class="flags">${user.doctor?flagsHtml(p):''}</span>
+  </div>
+  ${user.doctor?`
+  <div class="panel"><div class="phead"><h3>Allergies · structured</h3></div><div class="pbody" style="padding:0"><div style="overflow-x:auto"><table class="tbl">
+    <tr><th>Substance</th><th>Reaction</th><th>Severity</th><th>Recorded</th></tr>
+    ${p.allergies.length?p.allergies.map(x=>`<tr><td><b style="color:var(--brick)">${esc(x.sub)}</b></td><td>${esc(x.rx)}</td><td>${x.sev}</td><td>${x.d}</td></tr>`).join(''):'<tr><td colspan="4" style="color:var(--muted)">None recorded. "No known allergies" is itself a recorded fact, not an absence.</td></tr>'}
+  </table></div></div></div>
+  <div class="panel"><div class="phead"><h3>Visit timeline</h3><span class="end"><span class="lbl">Newest first · 20 per page</span></span></div><div class="pbody">
+    ${p.timeline.length?p.timeline.map(t=>`<div class="arow"><span class="d" style="width:74px">${t.d}</span><span class="t"><b>${esc(t.t)}</b><p>${esc(t.p)}</p></span></div>`).join(''):'<p style="color:var(--muted);font-size:14.5px;margin:0">First visit — the timeline starts today.</p>'}
+  </div></div>`:`
+  <div class="panel"><div class="phead"><h3>Clinical record</h3></div><div class="pbody"><div class="empty" style="padding:22px">
+    <svg width="30" height="30" style="color:var(--mist)" aria-hidden="true"><use href="#i-lock"/></svg>
+    <h5>Not part of your role</h5><p>Demographics and appointments only. Reads of clinical data are blocked and logged.</p>
+  </div></div></div>`}
+  <div class="panel"><div class="phead"><h3>Data &amp; portability</h3><span class="end"><span class="lbl">DPDP Act 2023</span></span></div><div class="pbody" style="display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn btn-ghost sm" id="expJson"><svg width="15" height="15" aria-hidden="true"><use href="#i-doc"/></svg>Export JSON</button>
+    <button class="btn btn-ghost sm" id="expPdf"><svg width="15" height="15" aria-hidden="true"><use href="#i-doc"/></svg>Export PDF</button>
+    ${user.role==='owner'?'<button class="btn btn-danger sm" id="delPat" style="margin-left:auto">Delete patient</button>':''}
+  </div></div>`;
+}
+function wireProfile(p){
+  $('backPat').addEventListener('click',()=>{selPatient=null;render();});
+  $('expJson').addEventListener('click',()=>{
+    const data=JSON.stringify({patient:{ref:p.ref,name:p.name,age:p.age,sex:p.sex,phone:p.phone},allergies:p.allergies,chronic:p.chronic,running_medication:p.meds,visits:p.timeline},null,2);
+    audit('data.export',p.name+' · JSON');
+    openModal(`<div class="mh"><span class="lbl">Data portability · JSON</span><h4>${esc(p.name)} — export</h4></div>
+    <div class="mb"><pre style="background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:14px;font-family:var(--mono);font-size:12px;overflow-x:auto;max-height:300px;color:var(--ink)">${esc(data)}</pre></div>
+    <div class="mf"><button class="btn btn-primary" onclick="closeModal()">Done</button></div>`);
+  });
+  $('expPdf').addEventListener('click',()=>{audit('data.export',p.name+' · PDF');toast('PDF export queued — arrives by email via Resend');});
+  const del=$('delPat');if(del)del.addEventListener('click',()=>{
+    openModal(`<div class="mh"><h4>Delete ${esc(p.name)}?</h4></div>
+    <div class="mb"><p style="margin:0 0 10px">Erasure cascades: demographics, audio, transcripts and unsigned drafts are deleted. <b style="color:var(--ink)">Signed prescriptions and notes are retained</b> for the medical-records period required by law, then purged.</p><p style="margin:0">The deletion itself is written to the audit log.</p></div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-danger" id="delGo">Delete with cascade</button></div>`,'stop');
+    $('delGo').addEventListener('click',()=>{audit('patient.deleted',p.name+' · cascade honouring retention',true);closeModal();toast('Deletion scheduled — signed records held per retention law');selPatient=null;render();});
+  });
+}
+
+/* ═══════════════════ audit view ═══════════════════ */
+function auditView(){
+  const cats={all:'All',consent:'Consent',recording:'Recording',note:'Notes',rx:'Prescriptions','record.':'Access',allergy:'Overrides'};
+  const rows=auditLog.filter(r=>auditFilter==='all'||r.a.startsWith(auditFilter));
+  return `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+    ${Object.entries(cats).map(([k,l])=>`<button class="fchip" data-af="${k}" aria-pressed="${auditFilter===k}">${l}</button>`).join('')}
+  </div>
+  <div class="panel"><div class="phead"><h3>Audit ledger</h3><span class="end"><span class="lbl">Append-only · reads are logged too</span></span></div>
+  <div style="overflow-x:auto"><table class="aud">
+    ${rows.map(r=>`<tr><td class="t">${r.t}</td><td class="${r.warn?'warn-a':'a'}">${r.a}</td><td>${esc(r.who)}</td><td>${esc(r.d)}</td></tr>`).join('')||'<tr><td style="color:var(--muted)">Nothing in this category yet today.</td></tr>'}
+  </table></div>
+  <div class="pbody" style="border-top:1px solid var(--line)"><span class="f-hint" style="margin:0">This table has no edit and no delete — at the database, the audit role can only INSERT. Retention purges themselves write entries.</span></div>
+  </div>`;
+}
+function wireAudit(){document.querySelectorAll('[data-af]').forEach(b=>b.addEventListener('click',()=>{auditFilter=b.dataset.af;render();}));}
+
+/* ═══════════════════ settings ═══════════════════ */
+function settingsView(){
+  return `<div class="panel"><div class="phead"><h3>Clinic</h3></div><div class="pbody"><div class="set-grid">
+    <span class="sk">Name</span><input class="input" style="max-width:380px" value="${esc(CLINIC.name)}">
+    <span class="sk">Address</span><input class="input" style="max-width:380px" value="${esc(CLINIC.addr)}">
+  </div></div></div>
+
+  <div class="panel"><div class="phead"><h3>Recording &amp; retention</h3></div><div class="pbody"><div class="set-grid">
+    <span class="sk">Audio retention</span><div><select class="input" id="retSel" style="max-width:220px"><option ${CLINIC.retention===30?'selected':''}>30 days</option><option ${CLINIC.retention===60?'selected':''}>60 days</option><option ${CLINIC.retention===90?'selected':''}>90 days</option><option ${CLINIC.retention===180?'selected':''}>180 days</option></select>
+    <div class="f-hint">The purge job runs daily and writes an audit entry each time. Audio is not the medical record — the signed note is, and it is kept per medical-records law.</div></div>
+    <span class="sk">Consent scripts</span><div><div class="f-hint" style="margin:10px 0 0">Shown beside the consent checkbox in English, Hindi and Marathi. Edit with care — the script is what the patient actually hears.</div></div>
+  </div></div></div>
+
+  <div class="panel"><div class="phead"><h3>Team &amp; verification</h3></div><div class="pbody" style="padding:0"><div style="overflow-x:auto"><table class="tbl">
+    <tr><th>Person</th><th>Role</th><th>Registration</th><th>Signing</th></tr>
+    <tr><td><b>Dr. A. Menon</b></td><td>Owner · doctor</td><td class="mono" style="font-size:12px">NMC 4471 22 09</td><td><span class="st st-signed"><span class="d"></span>Verified 02 Jun 2026</span></td></tr>
+    <tr><td><b>Dr. R. Iyer</b></td><td>Doctor</td><td class="mono" style="font-size:12px">MMC 2019 08 114</td><td><span class="st st-proc"><span class="d"></span>Under review · certificate received</span></td></tr>
+    <tr><td><b>Sunita Pawar</b></td><td>Front desk</td><td class="mono" style="font-size:12px">—</td><td><span class="st st-ns"><span class="d"></span>Cannot sign</span></td></tr>
+  </table></div>
+  <div class="pbody" style="border-top:1px solid var(--line)"><span class="f-hint" style="margin:0">Verification is a human review of the uploaded council certificate, within 24 hours. While pending, a doctor can record, draft and edit — signing stays locked. This gate lives in the database, not the UI.</span></div>
+  </div></div>
+
+  <div class="panel"><div class="phead"><h3>Clinic vocabulary</h3><span class="end"><span class="lbl">${3}+ terms · grows from corrections</span></span></div><div class="pbody">
+    <div class="vocab">
+      <span class="tg">Azithral</span><span class="tg">Vashi</span><span class="tg">Ghansoli</span><span class="tg">Pantop</span><span class="tg">Ecosprin</span><span class="tg uncoded">+ every correction you save</span>
+    </div>
+    <div class="f-hint" style="margin-top:10px">Seeded with the ~500 most-prescribed Indian brand names. Yours alone — corrections never train a shared model.</div>
+  </div></div>
+
+  <div class="panel"><div class="phead"><h3>Data protection</h3><span class="end"><span class="lbl">DPDP Act 2023</span></span></div><div class="pbody">
+    <div class="set-grid">
+      <span class="sk">Data protection officer</span><div style="padding-top:8px">Dr. A. Menon <span class="f-hint">· named contact for erasure and breach notices</span></div>
+      <span class="sk">Processors</span><div style="padding-top:8px" class="f-hint">Signed DPAs: Neon (DB) · ASR provider · Anthropic (drafting) · Resend (email) · R2 (audio). None train on patient data.</div>
+    </div>
+  </div></div>`;
+}
+function wireSettings(){const r=$('retSel');if(r)r.addEventListener('change',()=>{CLINIC.retention=parseInt(r.value);audit('settings.retention',r.value);toast('Audio retention set to '+r.value+' — applies from tonight\'s purge');});}
+
+/* ═══════════════════ demo scenarios ═══════════════════ */
+document.querySelectorAll('[data-demo]').forEach(b=>b.addEventListener('click',()=>{
+  closeMenus();const kind=b.dataset.demo;
+  if(kind==='offline'){
+    online=false;$('conn').classList.add('off');$('connLbl').textContent='Saving locally';
+    const vb=$('vBanners');if(vb)vb.innerHTML+=`<div class="banner bn-offline" id="offBanner"><svg width="17" height="17" style="color:var(--ink-muted)" aria-hidden="true"><use href="#i-cloud"/></svg><span><b style="color:#fff">Connection lost — saving locally.</b> Recording and edits continue on this computer and upload when the clinic is back online.</span></div>`;
+    toast('Connection dropped — nothing stops, nothing is lost');
+    setTimeout(()=>{online=true;$('conn').classList.remove('off');$('connLbl').textContent='Online';const ob=$('offBanner');if(ob)ob.remove();toast('Back online — buffered audio and queued edits uploaded');},10000);
+  }
+  if(kind==='lowconf'){
+    if(!selAppt){toast('Open a visit first — pick a patient in Today');return;}
+    const v=getVisit(appts.find(x=>x.id===selAppt));v.lowConf=true;render();
+    toast('This visit now renders the low-confidence path');
+  }
+  if(kind==='20min'){
+    if(!selAppt){toast('Open a visit first — pick a patient in Today');return;}
+    const v=getVisit(appts.find(x=>x.id===selAppt));v.warn20=true;
+    if(v.state!=='recording'){const vb=$('vBanners');if(vb)vb.innerHTML+=`<div class="banner bn-warn"><svg width="17" height="17" style="color:var(--amber-deep)" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Recording has been running 20 minutes.</b> It stops by itself at 45:00 — nothing is discarded.</span></div>`;}
+    else render();
+  }
+  if(kind==='withdraw')demoWithdraw();
+  if(kind==='reset'){stopRecordingHard();appts=freshDay();visits={};seedAudit();selAppt=null;selPatient=null;setView('today');toast('The day is reset');}
+}));
+function demoWithdraw(){
+  if(!selAppt){toast('Open a visit first — pick a patient in Today');return;}
+  const a=appts.find(x=>x.id===selAppt);const v=getVisit(a);const p=PATIENTS[a.pid];
+  if(v.state!=='recording'){toast('Start a recording first — withdrawal happens mid-visit');return;}
+  stopRecordingHard();
+  v.state='manual';v.withdrawn=hm();v.segs=[];v.consent=null;
+  audit('consent.withdrawn',p.name+' · recording stopped',true);
+  audit('data.deletion_scheduled',p.name+' · audio + transcript · within 24h',true);
+  render();
+}
+
+/* keyboard: Esc handled above; focus search with / handled above */
+</script>
+</body>
+</html>
