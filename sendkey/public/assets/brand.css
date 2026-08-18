@@ -12,6 +12,11 @@
 :root {
   --paper: #f2efe9;
   --paper-2: #e7e3d8;
+  /* boxed landing: the desk sits behind, the surface is a window on it.
+     Kept as its own pair because the raised side is the lighter colour in
+     light mode and the darker one in dark, so neither maps to a fixed token. */
+  --desk: #e7e3d8;
+  --surface: #f2efe9;
   --field: #faf8f3;
   --ink: #141412;
   --ink-2: #45453f;
@@ -39,6 +44,8 @@
 :root[data-theme="dark"] {
   --paper: #121210;
   --paper-2: #1a1a17;
+  --desk: #121210;
+  --surface: #1a1a17;
   --field: #191916;
   --ink: #f2efe9;
   --ink-2: #c9c5b9;
@@ -50,6 +57,8 @@
   :root:not([data-theme="light"]) {
     --paper: #121210;
     --paper-2: #1a1a17;
+    --desk: #121210;
+    --surface: #1a1a17;
     --field: #191916;
     --ink: #f2efe9;
     --ink-2: #c9c5b9;

@@ -118,8 +118,22 @@ allowed to be playful; the sentences are not.
 
 ## Surfaces
 
-- The landing page leads with the working composer inside a window titled
-  NEW SECRET, tagged "encrypts locally" with the blinking square.
+- The landing page is a desk with windows resting on it. The page paints
+  `--desk`, every section is a `--surface` window carrying the same striped
+  title bar and hard shadow the composer uses, and the section name lives in
+  that bar rather than in a separate eyebrow above it. The desk and surface
+  tokens are their own pair because the raised side is the lighter colour in
+  light mode and the darker one in dark, so neither maps to a fixed token.
+- One frame per box. Anything that carried its own border and shadow before
+  gives them up inside a window: the ruled grids run flush to the frame so
+  their cell rules meet it, and the FAQ and anatomy card drop their outlines
+  entirely. Two hard shadows nested inside each other read as clutter.
+- The hero is the masthead, not a window, since it already holds one: the
+  composer, in a window titled NEW SECRET, tagged "encrypts locally" with the
+  blinking square. It closes on the same gap that separates two boxes.
+- Every claim on the landing page is made twice, in a fixed order: a plain
+  sentence, then a `.spec` line carrying the same fact in the terms a
+  developer would check it against.
 - The receive page is a dialog titled ENCRYPTED MESSAGE. Revealing burns;
   the page says so before the click, in bold, on paper.
 - The ask page is a dialog titled SECRET REQUEST, one page for both roles:

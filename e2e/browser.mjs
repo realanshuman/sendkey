@@ -173,9 +173,12 @@ for (const [w, h, name] of [[1440, 900, 'desktop'], [920, 800, 'stack edge'], [3
     const R = (s) => { const b = document.querySelector(s).getBoundingClientRect();
       return { top: b.top + scrollY, bottom: b.bottom + scrollY }; };
     const hero = R('.hero'), composer = R('.composer'), proof = R('.hero-proof');
-    const feat = R('#features'), head = R('#features .section-head');
+    // boxed layout: the next section opens with a window, so the comparable
+    // gap is to that box's outer edge. Measuring to .section-head instead
+    // would fold in the window bar and its padding.
+    const feat = R('#features'), box = R('#features .section-win');
     return { trailing: Math.round(hero.bottom - Math.max(composer.bottom, proof.bottom)),
-             next: Math.round(head.top - feat.top),
+             next: Math.round(box.top - feat.top),
              ragged: Math.round(Math.abs(composer.bottom - proof.bottom)) };
   });
   check(`${name}: hero trailing space matches the next section`,

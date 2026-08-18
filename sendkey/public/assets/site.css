@@ -965,3 +965,98 @@ body > section { padding: 88px 0; }
   .api-lede { font-size: 12.5px; }
   .api-code .install { font-size: 11.5px; }
 }
+
+/* ---- boxed landing ----------------------------------------------------------
+   The page is a desk and every section is a window resting on it. The chrome
+   is the same .win the composer already uses, so the landing page and the
+   product speak one language instead of two.
+
+   The rule that keeps it clean is one frame per box. Anything that carried its
+   own border and shadow before (the ruled grids, the FAQ, the anatomy card)
+   gives them up inside a window and leans on the window's frame instead;
+   nesting two hard shadows reads as clutter at any size. */
+
+body.boxed { background: var(--desk); }
+body.boxed > section { padding: 30px 0; }
+/* the hero is the masthead on the desk rather than a window, so it closes on
+   the same gap that separates two boxes: its own padding plus the next
+   section's. The full-bleed rule under it is redundant once the boxes below
+   carry the structure. */
+body.boxed .hero { padding-bottom: 30px; border-bottom: 0; }
+/* the alternating full-bleed bands were the old rhythm; the boxes are the
+   rhythm now, and a band behind a window just muddies its edge */
+body.boxed .band {
+  background: none;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+.section-win { background: var(--surface); }
+.section-win > .win-bar { background: var(--surface); }
+.section-win > .win-bar .win-title { background: var(--surface); }
+
+/* padded regions inside a window; the ruled grids below sit flush instead */
+.win-pad { padding: 40px 32px 34px; }
+.win-pad > .section-head { margin-bottom: 0; }
+
+/* a ruled grid inside a window runs edge to edge, so its cell rules meet the
+   window frame and it reads as one object rather than a card inside a card */
+.section-win .hgrid {
+  border: 0;
+  border-top: 2px solid var(--ink);
+  box-shadow: none;
+}
+.section-win .hgrid > div { background: var(--surface); }
+
+.section-win .faq {
+  max-width: none;
+  margin: 0;
+  border: 0;
+  border-top: 2px solid var(--ink);
+  box-shadow: none;
+  background: none;
+}
+
+/* the anatomy card is already inside the how-it-works window */
+.section-win .anatomy { max-width: none; margin: 0; }
+.section-win .anatomy-card {
+  border: 0;
+  box-shadow: none;
+  background: none;
+  padding: 0;
+}
+.section-win .anatomy-cap { margin-bottom: 0; }
+
+/* the developer band keeps its two columns, just inside the frame */
+.section-win .dev-grid { margin: 0; }
+
+/* the closing call to action is the one inverted window on the desk */
+.cta-win {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+  text-align: center;
+}
+.cta-win .win-bar { background: var(--ink); border-bottom-color: var(--paper); }
+.cta-win .win-bar::before {
+  background: repeating-linear-gradient(to bottom, var(--paper) 0 2px, transparent 2px 5px);
+}
+/* .section-win > .win-bar .win-title above scores (0,3,0); addressed with two
+   classes this plate came out paper-on-surface, which is to say invisible */
+.cta-win > .win-bar .win-title { background: var(--ink); color: var(--paper); }
+.cta-win h2 { color: var(--paper); }
+.cta-win p { color: var(--ink-dim); max-width: 520px; margin: 16px auto 0; }
+.cta-win .cta-actions { margin-top: 26px; }
+
+@media (max-width: 920px) {
+  body.boxed > section { padding: 22px 0; }
+  body.boxed .hero { padding-bottom: 22px; }
+  .win-pad { padding: 30px 22px 26px; }
+}
+@media (max-width: 560px) {
+  body.boxed > section { padding: 16px 0; }
+  body.boxed .hero { padding-bottom: 16px; }
+  .win-pad { padding: 24px 16px 20px; }
+  /* the desk gutter costs width the cells need more than the frame does */
+  body.boxed .wrap { padding: 0 12px; }
+}
