@@ -4,7 +4,7 @@
   "type": "module",
   "description": "End to end suites driving the built binary through a real browser",
   "scripts": {
-    "test": "node browser.mjs && node ask-e2e.mjs && node file-e2e.mjs && node pages-e2e.mjs && node receipt-e2e.mjs && node api-e2e.mjs"
+    "test": "node browser.mjs && node ask-e2e.mjs && node file-e2e.mjs && node pages-e2e.mjs && node receipt-e2e.mjs && node api-e2e.mjs && node numbers-e2e.mjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

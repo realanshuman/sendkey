@@ -28,7 +28,7 @@
 
   <main class="view-main">
     <h1>HTTP API</h1>
-    <p class="view-tag">Four endpoints, no keys to register, no accounts. This is
+    <p class="view-tag">Five endpoints, no keys to register, no accounts. This is
        the same API the pages on this site use.</p>
 
     <div class="api-note">
@@ -87,6 +87,15 @@
            ciphertext: it keeps answering for the original lifetime, so a
            sender can still learn that a burned link was read.</p>
         <p class="api-io">&rarr; <code>{opens: [RFC3339, ...]}</code></p>
+        <p class="api-flag api-flag-safe">Does not burn.</p>
+      </article>
+
+      <article class="api-ep">
+        <p class="api-sig"><span class="api-verb">GET</span><code>/api/stats</code></p>
+        <p>The aggregate counters behind <a href="/numbers">/numbers</a>:
+           totals only, nothing per-secret and nothing per-person. Public so
+           anyone can watch the same numbers we do.</p>
+        <p class="api-io">&rarr; <code>{created, opened, burned, answered, sealed, ...}</code></p>
         <p class="api-flag api-flag-safe">Does not burn.</p>
       </article>
 
@@ -158,6 +167,7 @@
           <a href="/drop">Drop</a>
           <a href="/ask">Ask</a>
           <a href="/api">API</a>
+          <a href="/numbers">Numbers</a>
           <a href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
         </div>
       </div>

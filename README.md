@@ -175,6 +175,18 @@ Both sides render the same 8 x 8 pixel fingerprint of the requester's
 public key, so you can compare patterns out of band before trusting a link.
 The server's role is unchanged: it stores one opaque blob it cannot read.
 
+## Numbers
+
+[`/numbers`](https://sendkey.xyz/numbers) shows what has moved through a
+deployment: links created, opened and burned, ciphertext accepted, and how
+senders set the expiry and view dials. Totals only. There is nothing
+per-secret and nothing per-person to show, because the server keeps no such
+records; the page says exactly that, and `GET /api/stats` serves the same
+numbers as JSON so nobody has to take the page's word for it. Counters ride
+inside the store's existing atomic operations (the same Lua script as the
+burn, on Redis), so they cost no extra round trips and cannot disagree with
+the events they count.
+
 ## The passphrase layer
 
 `-passphrase` nests a second, independently keyed envelope inside the first:
@@ -303,6 +315,7 @@ version:
 | `GET` | `/api/secret/{id}/meta` | Expiry and remaining views. **Does not burn.** |
 | `GET` | `/api/secret/{id}` | Return ciphertext and decrement. **Burns.** |
 | `GET` | `/api/secret/{id}/receipt` | Open timestamps. Outlives the burn. **Does not burn.** |
+| `GET` | `/api/stats` | The aggregate counters behind `/numbers`, totals only |
 | `GET` | `/healthz` | Liveness, and the deployment's size ceiling |
 
 `ct` and `iv` are base64url (unpadded). The server validates lengths and

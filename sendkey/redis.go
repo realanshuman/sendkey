@@ -38,6 +38,28 @@ import (
 //
 // KEEPTTL preserves the original expiry so a multi-view secret cannot have
 // its lifetime silently extended by being read.
+// putScript stores a secret and bumps the aggregate counters in the same
+// atomic step, because the Upstash REST transport pays one round trip per
+// command and a create would otherwise cost seven. The counters live in one
+// small hash with no TTL; HSETNX pins 'since' on the first write so /stats
+// can say when its window started. ARGV[7] marks an ask answer landing.
+//
+// The SET happens first: if NX loses the race nothing is counted, so the
+// totals only describe secrets that were actually accepted.
+const putScript = `
+local ok = redis.call('SET', KEYS[1], ARGV[1], 'EX', ARGV[2], 'NX')
+if not ok then return nil end
+redis.call('HSETNX', KEYS[2], 'since', ARGV[6])
+redis.call('HINCRBY', KEYS[2], 'created', 1)
+redis.call('HINCRBY', KEYS[2], 'sealed', ARGV[3])
+redis.call('HINCRBY', KEYS[2], ARGV[4], 1)
+redis.call('HINCRBY', KEYS[2], ARGV[5], 1)
+if ARGV[7] == '1' then
+  redis.call('HINCRBY', KEYS[2], 'answered', 1)
+end
+return 1
+`
+
 const burnScript = `
 local v = redis.call('GET', KEYS[1])
 if not v then return nil end
@@ -46,9 +68,11 @@ if d.views <= 0 then return nil end
 d.opens = d.opens or {}
 table.insert(d.opens, tonumber(ARGV[1]))
 d.views = d.views - 1
+redis.call('HINCRBY', KEYS[2], 'opened', 1)
 if d.views <= 0 then
   d.ct = ''
   d.iv = ''
+  redis.call('HINCRBY', KEYS[2], 'burned', 1)
 end
 redis.call('SET', KEYS[1], cjson.encode(d), 'KEEPTTL')
 return {v, tostring(d.views)}
@@ -156,11 +180,7 @@ func (r *RedisStore) Put(ctx context.Context, ct, iv []byte, ttl time.Duration, 
 
 	// NX means a (vanishingly unlikely) id collision fails loudly rather than
 	// overwriting somebody else's secret.
-	secs := int(ttl.Seconds())
-	if secs < 1 {
-		secs = 1
-	}
-	res, err := r.do(ctx, "SET", r.prefix+id, string(payload), "EX", strconv.Itoa(secs), "NX")
+	res, err := r.putCounted(ctx, id, payload, ttl, len(ct), views, false)
 	if err != nil {
 		return "", err
 	}
@@ -168,6 +188,22 @@ func (r *RedisStore) Put(ctx context.Context, ct, iv []byte, ttl time.Duration, 
 		return "", errors.New("redis: id collision")
 	}
 	return id, nil
+}
+
+// putCounted runs putScript: the SET NX plus the stats counters, one round
+// trip, nothing counted unless the SET wins.
+func (r *RedisStore) putCounted(ctx context.Context, id string, payload []byte, ttl time.Duration, ctLen, views int, answered bool) (json.RawMessage, error) {
+	secs := int(ttl.Seconds())
+	if secs < 1 {
+		secs = 1
+	}
+	ans := "0"
+	if answered {
+		ans = "1"
+	}
+	return r.do(ctx, "EVAL", putScript, "2", r.prefix+id, r.prefix+"stats",
+		string(payload), strconv.Itoa(secs), strconv.Itoa(ctLen),
+		ttlBucket(ttl), viewsBucket(views), strconv.FormatInt(time.Now().UnixMilli(), 10), ans)
 }
 
 // PutAt stores under a caller-chosen id. SET NX gives first-write-wins on
@@ -184,11 +220,7 @@ func (r *RedisStore) PutAt(ctx context.Context, id string, ct, iv []byte, ttl ti
 	if err != nil {
 		return err
 	}
-	secs := int(ttl.Seconds())
-	if secs < 1 {
-		secs = 1
-	}
-	res, err := r.do(ctx, "SET", r.prefix+id, string(payload), "EX", strconv.Itoa(secs), "NX")
+	res, err := r.putCounted(ctx, id, payload, ttl, len(ct), views, true)
 	if err != nil {
 		return err
 	}
@@ -239,7 +271,7 @@ func (r *RedisStore) Consume(ctx context.Context, id string) (*Secret, error) {
 	key := r.prefix + id
 
 	now := strconv.FormatInt(time.Now().UnixMilli(), 10)
-	raw, err := r.do(ctx, "EVAL", burnScript, "1", key, now)
+	raw, err := r.do(ctx, "EVAL", burnScript, "2", key, r.prefix+"stats", now)
 	if err != nil {
 		return nil, err
 	}
@@ -291,6 +323,51 @@ func (r *RedisStore) Receipts(ctx context.Context, id string) ([]time.Time, erro
 }
 
 // Ping verifies credentials and reachability at startup.
+// Stats reads the aggregate counter hash. An absent hash is a valid zero
+// window that simply has not started yet.
+func (r *RedisStore) Stats(ctx context.Context) (Stats, error) {
+	raw, err := r.do(ctx, "HGETALL", r.prefix+"stats")
+	if err != nil {
+		return Stats{}, err
+	}
+	// Upstash returns the hash flattened: [field, value, field, value, ...]
+	var flat []string
+	if err := json.Unmarshal(raw, &flat); err != nil {
+		return Stats{}, fmt.Errorf("redis: bad stats shape: %w", err)
+	}
+	var st Stats
+	for i := 0; i+1 < len(flat); i += 2 {
+		n, _ := strconv.ParseInt(flat[i+1], 10, 64)
+		switch flat[i] {
+		case "created":
+			st.Created = n
+		case "opened":
+			st.Opened = n
+		case "burned":
+			st.Burned = n
+		case "answered":
+			st.Answered = n
+		case "sealed":
+			st.Sealed = n
+		case "ttlHour":
+			st.TTLHour = n
+		case "ttlDay":
+			st.TTLDay = n
+		case "ttlWeek":
+			st.TTLWeek = n
+		case "views1":
+			st.Views1 = n
+		case "views2":
+			st.Views2 = n
+		case "views5":
+			st.Views5 = n
+		case "since":
+			st.Since = time.UnixMilli(n).UTC()
+		}
+	}
+	return st, nil
+}
+
 func (r *RedisStore) Ping(ctx context.Context) error {
 	_, err := r.do(ctx, "PING")
 	return err

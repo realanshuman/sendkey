@@ -179,3 +179,211 @@ body::before {
 
 .ans-row { margin: 14px 0 16px; }
 #owner .linkbox { margin-top: 14px; }
+
+/* ---- the numbers page -------------------------------------------------------
+   One wall of totals, two dial bars, one honesty panel. Set in the same
+   ruled-grid language as the landing sections; the count-up happens in JS,
+   sixteen discrete frames, nothing glides. */
+
+.num-wrap { max-width: 880px; }
+
+/* every figure is stated twice: the plain sentence above, and this line
+   carrying the same fact in the terms a developer would check it against */
+.num-wrap .spec {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 2px dotted var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--ink-3);
+  overflow-wrap: break-word;
+}
+.num-wrap .spec span { padding: 0 5px; }
+
+.num-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 18px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+}
+.num-status .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--ink);
+  animation: blink 1.1s steps(1) infinite;
+}
+.num-status.arrived .dot { animation: none; }
+
+.num-wall {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  background: var(--ink);
+  border: 2px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  margin-top: 26px;
+}
+.num-cell {
+  background: var(--paper);
+  padding: 22px 22px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* .view-main centers; a stat cell reads as a ledger entry, ragged right */
+  text-align: left;
+}
+.num-big {
+  font-family: var(--font-px);
+  font-size: clamp(22px, 14px + 2.4vw, 34px);
+  line-height: 1.2;
+  color: var(--ink);
+  /* tabular by construction (the pixel face is monospaced), so the count-up
+     does not make the cell breathe */
+  min-height: 1.2em;
+  overflow-wrap: anywhere;
+}
+.num-cell strong {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+}
+.num-cell :where(p) {
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--ink-2);
+  flex: 1;
+}
+.num-cell .spec { width: 100%; flex: none; }
+
+/* dial bars: the brand has no accent colors, so the three shares are ink at
+   three dither densities, darkest first. The bar is one bordered track. */
+.num-dials {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin-top: 26px;
+}
+.num-dial {
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 16px 18px 15px;
+}
+.num-dial-head {
+  /* stacked rather than side by side: with side-by-side wrap the two cards
+     broke differently depending on title width and read as a mistake */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  text-align: left;
+}
+.num-dial-head strong {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.spec-inline {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-3);
+}
+.num-bar {
+  display: flex;
+  height: 22px;
+  margin-top: 12px;
+  border: 2px solid var(--ink);
+  background: var(--field);
+  overflow: hidden;
+}
+.num-bar span {
+  height: 100%;
+  transition: width 0.3s steps(6);
+}
+.num-bar [data-seg="ttlHour"], .num-bar [data-seg="views1"] { background: var(--ink); }
+.num-bar [data-seg="ttlDay"], .num-bar [data-seg="views2"] {
+  background: url("/assets/px/d25.png") 0 0 / 8px 8px, var(--paper);
+  image-rendering: pixelated;
+  border-left: 2px solid var(--ink);
+}
+.num-bar [data-seg="ttlWeek"], .num-bar [data-seg="views5"] {
+  background: url("/assets/px/d06.png") 0 0 / 8px 8px, var(--paper);
+  image-rendering: pixelated;
+  border-left: 2px solid var(--ink);
+}
+/* a zero-width segment should not show its divider as a stray tick */
+.num-bar span[style*="width: 0%"] { border-left: 0; }
+
+.num-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-top: 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ink-2);
+}
+.num-legend b { color: var(--ink); }
+.num-legend .sw {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ink);
+  margin-right: 6px;
+  vertical-align: -1px;
+}
+.num-legend .sw-1 { background: var(--ink); }
+.num-legend .sw-2 { background: url("/assets/px/d25.png") 0 0 / 8px 8px, var(--paper); image-rendering: pixelated; }
+.num-legend .sw-3 { background: url("/assets/px/d06.png") 0 0 / 8px 8px, var(--paper); image-rendering: pixelated; }
+
+.num-asks {
+  margin-top: 22px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+.num-asks b { color: var(--ink); }
+
+/* the counterweight panel is the one inverted block on the page */
+.num-cant {
+  text-align: left;
+  margin-top: 26px;
+  background: var(--ink);
+  color: var(--paper);
+  border: 2px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  padding: 20px 22px;
+}
+.num-cant strong {
+  display: block;
+  font-family: var(--font-px);
+  font-size: 11px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.num-cant p { font-size: 13px; line-height: 1.75; color: var(--ink-dim); }
+.num-cant p + p { margin-top: 10px; }
+.num-cant .spec { border-top-color: var(--ink-dim); color: var(--ink-dim); }
+
+.num-wrap .view-foot { margin-top: 30px; }
+
+@media (max-width: 700px) {
+  .num-dials { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .num-wall { grid-template-columns: 1fr; }
+  .num-cell { padding: 18px 16px 14px; }
+}

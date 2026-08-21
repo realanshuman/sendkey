@@ -21,13 +21,14 @@ type fakeRedis struct {
 	mu     sync.Mutex
 	vals   map[string]string
 	ttls   map[string]int64
+	hashes map[string]map[string]string // the stats hash
 	calls  int
 	server *httptest.Server
 }
 
 func newFakeRedis(t *testing.T) *fakeRedis {
 	t.Helper()
-	f := &fakeRedis{vals: map[string]string{}, ttls: map[string]int64{}}
+	f := &fakeRedis{vals: map[string]string{}, ttls: map[string]int64{}, hashes: map[string]map[string]string{}}
 	f.server = httptest.NewServer(http.HandlerFunc(f.handle))
 	t.Cleanup(f.server.Close)
 	return f
@@ -84,11 +85,54 @@ func (f *fakeRedis) handle(w http.ResponseWriter, r *http.Request) {
 		}
 		writeJSON(w, http.StatusOK, map[string]any{"result": f.ttls[str(1)]})
 
+	case "HGETALL":
+		key := str(1)
+		flat := []string{}
+		for k, v := range f.hashes[key] {
+			flat = append(flat, k, v)
+		}
+		writeJSON(w, http.StatusOK, map[string]any{"result": flat})
+
 	case "EVAL":
+		script := str(1)
+		if strings.Contains(script, "HSETNX") { // putScript
+			key, statsKey := str(3), str(4)
+			payload, secsStr := str(5), str(6)
+			ctLen, ttlB, viewsB, sinceMS, ans := str(7), str(8), str(9), str(10), str(11)
+			if cur, ok := f.vals[key]; ok && cur != "" { // NX loses: count nothing
+				writeJSON(w, http.StatusOK, map[string]any{"result": nil})
+				return
+			}
+			f.vals[key] = payload
+			secs, _ := strconv.ParseInt(secsStr, 10, 64)
+			f.ttls[key] = secs
+			h := f.hashes[statsKey]
+			if h == nil {
+				h = map[string]string{}
+				f.hashes[statsKey] = h
+			}
+			if _, ok := h["since"]; !ok {
+				h["since"] = sinceMS
+			}
+			inc := func(field string, by int64) {
+				n, _ := strconv.ParseInt(h[field], 10, 64)
+				h[field] = strconv.FormatInt(n+by, 10)
+			}
+			inc("created", 1)
+			n, _ := strconv.ParseInt(ctLen, 10, 64)
+			inc("sealed", n)
+			inc(ttlB, 1)
+			inc(viewsB, 1)
+			if ans == "1" {
+				inc("answered", 1)
+			}
+			writeJSON(w, http.StatusOK, map[string]any{"result": 1})
+			return
+		}
 		// Emulate burnScript. The whole handler holds f.mu, which is exactly
 		// the atomicity Redis gives a Lua script.
-		key := str(2 + 1)   // EVAL script numkeys key argv
-		nowMS := str(2 + 2) // ARGV[1]: open time in unix millis
+		key := str(2 + 1)   // EVAL script numkeys key statskey argv
+		nowMS := str(2 + 3) // ARGV[1]: open time in unix millis
 		raw, ok := f.vals[key]
 		if !ok {
 			writeJSON(w, http.StatusOK, map[string]any{"result": nil})
@@ -104,8 +148,20 @@ func (f *fakeRedis) handle(w http.ResponseWriter, r *http.Request) {
 		ms, _ := strconv.ParseInt(nowMS, 10, 64)
 		stored.Opens = append(stored.Opens, ms)
 		stored.Views--
+		statsKey := str(2 + 2) // KEYS[2]
+		h := f.hashes[statsKey]
+		if h == nil {
+			h = map[string]string{}
+			f.hashes[statsKey] = h
+		}
+		bump := func(field string) {
+			n, _ := strconv.ParseInt(h[field], 10, 64)
+			h[field] = strconv.FormatInt(n+1, 10)
+		}
+		bump("opened")
 		if stored.Views <= 0 {
 			stored.CT, stored.IV = "", "" // tombstone: receipts survive, payload does not
+			bump("burned")
 		}
 		b, _ := json.Marshal(stored) // KEEPTTL: f.ttls[key] untouched
 		f.vals[key] = string(b)

@@ -15,6 +15,10 @@ second visitor, a file surviving a chunked round trip.
   file-first arrangement and round trips from each.
 - `receipt-e2e.mjs`: live burn receipts, proving the sender's tab learns the
   open time across browser contexts without a reload.
+- `api-e2e.mjs`: the API reference page, its copy buttons, CORS from a
+  foreign origin, and the contrast of the endpoint flags in both themes.
+- `numbers-e2e.mjs`: the numbers page, proving the counters advance with
+  real traffic, the page renders them, and the honesty panel is present.
 - `api-e2e.mjs`: the API reference page, the API link in every footer, and
   the CORS contract: a page on a foreign origin drives the whole
   store-and-burn cycle with plain fetch.

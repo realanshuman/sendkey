@@ -59,8 +59,10 @@ func NewServer(store Backend, cfg Config) *Server {
 	mux.HandleFunc("GET /ask", s.handleAskPage)
 	mux.HandleFunc("GET /a/{id}", s.handleAskPage)
 	mux.HandleFunc("GET /api", s.handleAPIPage)
+	mux.HandleFunc("GET /numbers", s.handleNumbersPage)
 	mux.HandleFunc("GET /assets/{path...}", s.handleAssets)
 	mux.HandleFunc("GET /healthz", s.handleHealth)
+	mux.HandleFunc("GET /api/stats", s.handleStats)
 	mux.HandleFunc("POST /api/secret", s.handleCreate)
 	mux.HandleFunc("GET /api/secret/{id}/meta", s.handleMeta)
 	mux.HandleFunc("GET /api/secret/{id}/receipt", s.handleReceipt)
@@ -131,6 +133,10 @@ func (s *Server) handleAskPage(w http.ResponseWriter, r *http.Request) {
 // privileged API surface.
 func (s *Server) handleAPIPage(w http.ResponseWriter, r *http.Request) {
 	s.serveAsset(w, "api.html")
+}
+
+func (s *Server) handleNumbersPage(w http.ResponseWriter, r *http.Request) {
+	s.serveAsset(w, "numbers.html")
 }
 
 func (s *Server) handleViewPage(w http.ResponseWriter, r *http.Request) {
@@ -265,6 +271,20 @@ func (s *Server) handleReceipt(w http.ResponseWriter, r *http.Request) {
 		stamps = append(stamps, t.UTC().Format(time.RFC3339))
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"opens": stamps})
+}
+
+// handleStats serves the aggregate counters behind /numbers. Totals only,
+// nothing per-secret and nothing per-person; the Stats type documents what
+// is deliberately absent. Unlimited like the other reads, and public on
+// purpose: a product whose pitch is "you do not have to trust us" should
+// let anyone watch the same numbers we do.
+func (s *Server) handleStats(w http.ResponseWriter, r *http.Request) {
+	st, err := s.store.Stats(r.Context())
+	if err != nil {
+		writeJSONError(w, http.StatusServiceUnavailable, "stats are unavailable right now")
+		return
+	}
+	writeJSON(w, http.StatusOK, st)
 }
 
 // handleMailboxProbe reports whether an ask mailbox holds an answer yet.

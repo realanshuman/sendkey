@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Numbers · SendKey</title>
+<meta name="description" content="How many secrets moved through SendKey, live from the same counters the server keeps. Totals only: nothing here describes one secret or one person.">
+<meta name="theme-color" content="#f2efe9">
+<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/press-start-2p-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script src="/assets/theme.js"></script>
+<link rel="stylesheet" href="/assets/brand.css">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/view.css">
+</head>
+<body>
+<div class="view-wrap num-wrap">
+
+  <header class="view-head">
+    <a class="logo" href="/" aria-label="SendKey home">
+      <svg class="logo-mark" viewBox="0 0 12 13" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h12v1h-12zM0 1h12v1h-12zM0 2h4v1h-4zM8 2h4v1h-4zM0 3h3v1h-3zM9 3h3v1h-3zM0 4h3v1h-3zM9 4h3v1h-3zM0 5h3v1h-3zM9 5h3v1h-3zM0 6h4v1h-4zM8 6h4v1h-4zM0 7h5v1h-5zM7 7h5v1h-5zM0 8h5v1h-5zM7 8h5v1h-5zM0 9h4v1h-4zM8 9h4v1h-4zM0 10h4v1h-4zM8 10h4v1h-4zM0 11h12v1h-12zM0 12h12v1h-12z"/></svg>
+      <span class="wordmark">sendkey</span>
+    </a>
+    <button id="themeBtn" class="btn btn-ghost btn-sm theme-btn" aria-label="Switch between light and dark mode" aria-pressed="false">
+      <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M1 1h14v14H1zM3 3h10v10H3z"/><path d="M3 3h5v10H3z"/></svg>
+    </button>
+  </header>
+
+  <main class="view-main">
+    <h1>Numbers</h1>
+    <p class="view-tag">What has moved through this deployment, live from the
+       same counters the server keeps. <span id="sinceLine">Counting.</span></p>
+
+    <p class="num-status" id="numStatus" aria-live="polite">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="numStatusText">Fetching the counters.</span>
+    </p>
+
+    <!-- the wall: four totals anyone can read at a glance -->
+    <div class="num-wall" id="numWall">
+      <div class="num-cell">
+        <span class="num-big" id="nCreated" data-n="created">·</span>
+        <strong>Links created</strong>
+        <p>Secrets sealed in a browser or terminal and handed to this server
+           as ciphertext.</p>
+        <p class="spec">POST /api/secret<span>·</span>total accepted</p>
+      </div>
+      <div class="num-cell">
+        <span class="num-big" id="nOpened" data-n="opened">·</span>
+        <strong>Times opened</strong>
+        <p>Reads that handed ciphertext back. Decryption happens on the
+           reader's device, so this is where our knowledge ends.</p>
+        <p class="spec">GET /api/secret/{id}<span>·</span>views spent</p>
+      </div>
+      <div class="num-cell">
+        <span class="num-big" id="nBurned" data-n="burned">·</span>
+        <strong>Links burned</strong>
+        <p>Secrets that spent their final view. The ciphertext is dropped in
+           the same step, so there is nothing left to steal.</p>
+        <p class="spec">atomic consume<span>·</span>final view spent</p>
+      </div>
+      <div class="num-cell">
+        <span class="num-big" id="nSealed" data-n="sealed">·</span>
+        <strong>Ciphertext stored</strong>
+        <p>Everything ever accepted, measured after encryption. We can weigh
+           it, but we cannot read a byte of it.</p>
+        <p class="spec">sealed client-side<span>·</span>running total</p>
+      </div>
+    </div>
+
+    <!-- how people set the dials: two bars, each summing to created -->
+    <div class="num-dials">
+      <div class="num-dial">
+        <div class="num-dial-head">
+          <strong>How long senders let a link live</strong>
+          <span class="spec-inline">ttl chosen at create</span>
+        </div>
+        <div class="num-bar" id="barTTL" role="img" aria-label="Share of links by chosen lifetime">
+          <span data-seg="ttlHour" title="1 hour"></span>
+          <span data-seg="ttlDay" title="1 day"></span>
+          <span data-seg="ttlWeek" title="7 days"></span>
+        </div>
+        <div class="num-legend">
+          <span><i class="sw sw-1"></i>1 hour <b data-pct="ttlHour">·</b></span>
+          <span><i class="sw sw-2"></i>1 day <b data-pct="ttlDay">·</b></span>
+          <span><i class="sw sw-3"></i>7 days <b data-pct="ttlWeek">·</b></span>
+        </div>
+      </div>
+      <div class="num-dial">
+        <div class="num-dial-head">
+          <strong>How many opens they allow</strong>
+          <span class="spec-inline">views chosen at create</span>
+        </div>
+        <div class="num-bar" id="barViews" role="img" aria-label="Share of links by allowed views">
+          <span data-seg="views1" title="1 view"></span>
+          <span data-seg="views2" title="2 views"></span>
+          <span data-seg="views5" title="up to 5"></span>
+        </div>
+        <div class="num-legend">
+          <span><i class="sw sw-1"></i>1 view <b data-pct="views1">·</b></span>
+          <span><i class="sw sw-2"></i>2 views <b data-pct="views2">·</b></span>
+          <span><i class="sw sw-3"></i>up to 5 <b data-pct="views5">·</b></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- asks get one quiet line rather than a fourth giant number -->
+    <p class="num-asks">Of everything created, <b id="nAnswered">·</b> were
+       answers to an ask link, sealed to a keypair the asking browser made.</p>
+
+    <!-- the counterweight: what these counters cannot contain -->
+    <div class="num-cant">
+      <strong>What we cannot count</strong>
+      <p>Who sent anything, who opened it, what any of it said, or which
+         secret was a file rather than text. The server stores ciphertext it
+         cannot read and keeps no per-secret records beyond the burn receipt
+         each sender can already see. These totals are the whole dataset:
+         there is no second, more detailed one.</p>
+      <p class="spec">no accounts<span>·</span>no cookies<span>·</span>no per-secret logs<span>·</span>curl /api/stats and check</p>
+    </div>
+
+    <div class="view-foot">
+      <a class="btn btn-sm" href="/send">Send a secret</a>
+      <a class="btn btn-ghost btn-sm" href="/api">Read the API docs</a>
+    </div>
+  </main>
+
+</div>
+
+<div class="dither-fade" aria-hidden="true"></div>
+<div class="tail">
+  <footer class="footer page-footer">
+    <div class="wrap">
+      <div class="footer-in">
+        <div class="footer-brand">
+          <a class="logo" href="/" aria-label="SendKey home">
+            <svg class="logo-mark" viewBox="0 0 12 13" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h12v1h-12zM0 1h12v1h-12zM0 2h4v1h-4zM8 2h4v1h-4zM0 3h3v1h-3zM9 3h3v1h-3zM0 4h3v1h-3zM9 4h3v1h-3zM0 5h3v1h-3zM9 5h3v1h-3zM0 6h4v1h-4zM8 6h4v1h-4zM0 7h5v1h-5zM7 7h5v1h-5zM0 8h5v1h-5zM7 8h5v1h-5zM0 9h4v1h-4zM8 9h4v1h-4zM0 10h4v1h-4zM8 10h4v1h-4zM0 11h12v1h-12zM0 12h12v1h-12z"/></svg>
+            <span class="wordmark">sendkey</span>
+          </a>
+        </div>
+        <div class="footer-links">
+          <a href="/">Home</a>
+          <a href="/send">Send</a>
+          <a href="/drop">Drop</a>
+          <a href="/ask">Ask</a>
+          <a href="/api">API</a>
+          <a href="/numbers">Numbers</a>
+          <a href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
+        </div>
+      </div>
+      <div class="footer-fine">
+        <span>MIT licensed · No cookies · No analytics</span>
+        <span>Built by <a href="https://realanshuman.com" rel="noopener">ansh</a> · Built with Go</span>
+      </div>
+    </div>
+  </footer>
+</div>
+<script type="module" src="/assets/numbers.js"></script>
+</body>
+</html>

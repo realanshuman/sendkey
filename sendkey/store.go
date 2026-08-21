@@ -48,6 +48,9 @@ type Backend interface {
 	// sender their secret was read; a burned record survives as a
 	// ciphertext-stripped tombstone until its original TTL passes.
 	Receipts(ctx context.Context, id string) ([]time.Time, error)
+	// Stats returns the aggregate counters behind /stats. Totals only; see
+	// the Stats type for what is deliberately not counted.
+	Stats(ctx context.Context) (Stats, error)
 }
 
 // MemStore is an in-memory, TTL-bounded backend with atomic burn-on-read.
@@ -62,6 +65,9 @@ type MemStore struct {
 	items    map[string]*Secret
 	maxItems int
 	now      func() time.Time // injectable clock for tests
+	// counters guarded by the same mutex as items, so a burn and the count
+	// of that burn cannot be observed out of step
+	stats Stats
 }
 
 var _ Backend = (*MemStore)(nil)
@@ -71,11 +77,13 @@ func NewMemStore(maxItems int) *MemStore {
 	if maxItems <= 0 {
 		maxItems = 100_000
 	}
-	return &MemStore{
+	m := &MemStore{
 		items:    make(map[string]*Secret),
 		maxItems: maxItems,
 		now:      time.Now,
 	}
+	m.stats.Since = m.now()
+	return m
 }
 
 // Put stores a sealed secret and returns its random, unguessable id.
@@ -106,6 +114,7 @@ func (s *MemStore) Put(_ context.Context, ct, iv []byte, ttl time.Duration, view
 		}
 	}
 
+	s.bumpCreateLocked(len(ct), ttl, views)
 	s.items[id] = &Secret{
 		CT:        ct,
 		IV:        iv,
@@ -133,6 +142,8 @@ func (s *MemStore) PutAt(_ context.Context, id string, ct, iv []byte, ttl time.D
 	if cur, ok := s.items[id]; ok && cur.ExpiresAt.After(s.now()) {
 		return ErrExists
 	}
+	s.stats.Answered++
+	s.bumpCreateLocked(len(ct), ttl, views)
 	s.items[id] = &Secret{
 		CT:        ct,
 		IV:        iv,
@@ -191,14 +202,45 @@ func (s *MemStore) Consume(_ context.Context, id string) (*Secret, error) {
 	// a receipt can never disagree with the burn that produced it.
 	sec.Opens = append(sec.Opens, s.now())
 	sec.Views--
+	s.stats.Opened++
 	out := &Secret{CT: sec.CT, IV: sec.IV, ExpiresAt: sec.ExpiresAt, Views: sec.Views}
 	if sec.Views <= 0 {
+		s.stats.Burned++
 		// Keep the record as a tombstone so the sender can still collect a
 		// receipt, but drop the payload: a burned secret must be
 		// unrecoverable, and nothing may read ciphertext from here again.
 		sec.CT, sec.IV = nil, nil
 	}
 	return out, nil
+}
+
+// bumpCreateLocked records one accepted secret. Callers hold s.mu.
+func (s *MemStore) bumpCreateLocked(ctBytes int, ttl time.Duration, views int) {
+	s.stats.Created++
+	s.stats.Sealed += int64(ctBytes)
+	switch ttlBucket(ttl) {
+	case "ttlHour":
+		s.stats.TTLHour++
+	case "ttlDay":
+		s.stats.TTLDay++
+	default:
+		s.stats.TTLWeek++
+	}
+	switch viewsBucket(views) {
+	case "views1":
+		s.stats.Views1++
+	case "views2":
+		s.stats.Views2++
+	default:
+		s.stats.Views5++
+	}
+}
+
+// Stats returns a copy of the counters.
+func (s *MemStore) Stats(_ context.Context) (Stats, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.stats, nil
 }
 
 // Len reports the current number of stored secrets.
