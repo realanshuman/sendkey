@@ -118,6 +118,22 @@ await p6.waitForSelector('.burn-pane[data-state="idle"].is-on', { timeout: 10000
 check('demo resets to idle',
   await p6.$eval('#burn', (el) => !el.classList.contains('is-dead')));
 
+// The why band is the conversion beat: the before/after chat vignette that
+// grounds the product in the habit it replaces. It must keep both windows,
+// keep its path to the composer, and stack cleanly on phones.
+console.log('\n--- why band (the story) ---');
+const wp = await ctx.newPage();
+await wp.goto(BASE + '/');
+check('why band present', await wp.$('#why') !== null);
+check('both chat windows present', (await wp.$$('#why .chat')).length === 2);
+check('story routes to the composer',
+  await wp.$eval('#why .chat-status a', (a) => a.getAttribute('href')) === '#compose');
+await wp.setViewportSize({ width: 390, height: 844 });
+const stacked = await wp.$eval('.why-grid', (g) =>
+  getComputedStyle(g).gridTemplateColumns.split(' ').length === 1);
+check('chat windows stack on phones', stacked);
+await wp.close();
+
 // The hero exists to put the composer in front of people. Stacked under a
 // full-height poster its submit button sat at y=927, below the fold on every
 // laptop we measured, so the two-column layout is load-bearing rather than
@@ -173,7 +189,11 @@ for (const [w, h, name] of [[1440, 900, 'desktop'], [920, 800, 'stack edge'], [3
     const R = (s) => { const b = document.querySelector(s).getBoundingClientRect();
       return { top: b.top + scrollY, bottom: b.bottom + scrollY }; };
     const hero = R('.hero'), composer = R('.composer'), proof = R('.hero-proof');
-    const feat = R('#features'), head = R('#features .section-head');
+    // measure whichever section actually follows the hero, so inserting a
+    // new first section does not silently invalidate this guard
+    const nextSec = document.querySelector('.hero').nextElementSibling;
+    const feat = nextSec.getBoundingClientRect();
+    const head = nextSec.querySelector('.section-head').getBoundingClientRect();
     return { trailing: Math.round(hero.bottom - Math.max(composer.bottom, proof.bottom)),
              next: Math.round(head.top - feat.top),
              ragged: Math.round(Math.abs(composer.bottom - proof.bottom)) };
