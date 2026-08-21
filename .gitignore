@@ -6,3 +6,6 @@
 *.out
 node_modules
 .vercel
+
+# scratch harness scripts, never suite files
+e2e/.*.mjs
