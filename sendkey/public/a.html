@@ -30,6 +30,21 @@
       <button id="themeBtn" class="btn btn-ghost btn-sm btn-icon" aria-label="Switch between light and dark mode" aria-pressed="false">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path class="fill" d="M12 3.5a8.5 8.5 0 0 1 0 17z"/></svg>
       </button>
+      <details class="nav-menu">
+        <summary class="btn btn-ghost btn-sm btn-icon" aria-label="Menu">
+          <svg class="i i-menu" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg>
+          <svg class="i i-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </summary>
+        <div class="nav-menu-panel">
+          <a href="/">Home</a>
+          <a href="/send">Send a secret</a>
+          <a href="/drop">Send a file</a>
+          <a href="/ask" aria-current="page">Ask for a secret</a>
+          <a href="/api">API</a>
+          <a href="/numbers">Numbers</a>
+          <a href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
+        </div>
+      </details>
       <a class="btn btn-ghost btn-sm nav-gh" href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
     </div>
   </div>
@@ -87,6 +102,7 @@
             <div class="linkbox">
               <input id="askLink" readonly spellcheck="false" aria-label="Ask link">
               <button id="askCopy" class="btn">Copy</button>
+              <button id="askShare" class="btn btn-ghost hidden" type="button">Share</button>
             </div>
             <div class="fingerprint">
               <span id="ownerIcon" class="identicon" role="img" aria-label="Key fingerprint pattern"></span>
@@ -120,7 +136,7 @@
             </div>
             <div>
               <label class="lbl" for="ansSecret">Your answer</label>
-              <textarea id="ansSecret" rows="4" spellcheck="false" autocomplete="off"
+              <textarea id="ansSecret" rows="4" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off"
                 placeholder="Paste the password or key they asked for"></textarea>
             </div>
             <div class="ans-row">
@@ -204,5 +220,6 @@
 
 <script type="module" src="/assets/ask.js"></script>
 <script type="module" src="/assets/buddy.js"></script>
+<script type="module" src="/assets/menu.js"></script>
 </body>
 </html>

@@ -115,6 +115,14 @@ async function ownerView(record) {
   });
 
   wireCopy('askCopy', () => $('askLink').value);
+
+  // Same as the composer: where there is a share sheet, offer it beside Copy.
+  if (navigator.share) {
+    show('askShare');
+    $('askShare').addEventListener('click', () => {
+      navigator.share({ url: $('askLink').value }).catch(() => {});
+    });
+  }
 }
 
 // ---- responder role ---------------------------------------------------------

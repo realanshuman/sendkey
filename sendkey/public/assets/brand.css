@@ -358,6 +358,41 @@ code {
   margin-left: auto;
 }
 
+/* The phone menu stands in for the nav links below 920px. It is a
+   <details>, so it works without script; menu.js closes it after a choice.
+   The panel drops from the bottom of the sticky nav, full width. */
+.nav-menu { display: none; }
+.nav-menu > summary { list-style: none; }
+.nav-menu > summary::-webkit-details-marker { display: none; }
+.nav-menu .i-close,
+.nav-menu[open] .i-menu { display: none; }
+.nav-menu[open] .i-close { display: block; }
+.nav-menu[open] > summary { box-shadow: inset 0 0 0 1.5px var(--text-3); }
+.nav-menu-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: grid;
+  padding: 6px 24px 14px;
+  border-bottom: 1.5px solid var(--line);
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+.nav-menu-panel a {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  border-bottom: 1.5px solid var(--line);
+  font: 700 17px/1.2 var(--round);
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-menu-panel a:last-child { border-bottom: 0; }
+.nav-menu-panel a[aria-current="page"],
+.nav-menu-panel a:active { color: var(--coral-ink); }
+
 /* ---- buttons ------------------------------------------------------------------ */
 
 .btn {
@@ -396,6 +431,17 @@ code {
 .btn-sm { height: 38px; padding: 0 16px; font-size: 14px; }
 .btn-lg { width: 100%; height: 52px; font-size: 16px; }
 .btn-icon { width: 38px; padding: 0; }
+
+/* Touch screens: every control gets the 44px a fingertip needs, at any
+   width, and taps skip the browser's grey flash because buttons already
+   answer with their own pressed state. */
+.btn, summary { -webkit-tap-highlight-color: transparent; }
+a, button, summary, label, select { touch-action: manipulation; }
+@media (pointer: coarse) {
+  .btn-sm { height: 44px; }
+  .btn-icon { width: 44px; }
+  .logo { min-height: 44px; }
+}
 
 /* ---- cards ------------------------------------------------------------------ */
 
@@ -499,6 +545,10 @@ textarea:focus, input:focus, select:focus {
   appearance: none;
   cursor: pointer;
 }
+@media (pointer: coarse) {
+  .check { min-height: 44px; }
+  .check input { width: 23px; height: 23px; }
+}
 .check input:checked { background: var(--coral); border-color: var(--coral); }
 .check input:checked::after {
   content: "";
@@ -509,11 +559,16 @@ textarea:focus, input:focus, select:focus {
   transform: translateY(-1px) rotate(-45deg);
 }
 
+/* the byte count sits on the label's line, not under the field: one line
+   shorter, which on a phone is the difference for the submit button */
+#secretWrap { position: relative; }
 .meter {
-  margin-top: 6px;
+  position: absolute;
+  top: 0;
+  right: 0;
   font-size: 12.5px;
+  line-height: 1.75;
   color: var(--text-3);
-  text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
@@ -723,6 +778,31 @@ textarea:focus, input:focus, select:focus {
   cursor: pointer;
 }
 
+/* A phone cannot drag a file anywhere, so on touch screens the strip says
+   what it does there instead: tap to attach. The whole strip opens the
+   picker (app.js); this button gives that tap a name for screen readers. */
+.dz-touch { display: none; }
+@media (pointer: coarse) {
+  .dropzone { padding-top: 4px; padding-bottom: 4px; }
+  .dropzone .dz-label { display: none; }
+  .dz-touch {
+    display: inline-block;
+    flex: 1;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--text);
+    font: inherit;
+    font-weight: 650;
+    text-align: left;
+    cursor: pointer;
+  }
+  .dz-primary .dz-touch { flex: none; text-align: center; font-size: 15px; }
+  .dz-primary .dz-or { display: none; }
+  .dz-primary .dz-touch::first-letter { text-transform: uppercase; }
+}
+
 /* /drop promotes the drop strip above the textarea, as a lilac panel with
    the file drawing from the landing page */
 .dz-primary {
@@ -850,6 +930,9 @@ textarea:focus, input:focus, select:focus {
 @media (hover: hover) {
   .footer-col a:hover { color: var(--coral-ink); }
 }
+@media (pointer: coarse) {
+  .footer-col a { min-height: 44px; }
+}
 .footer-fine {
   display: flex;
   flex-wrap: wrap;
@@ -866,6 +949,9 @@ textarea:focus, input:focus, select:focus {
 
 @media (max-width: 920px) {
   .nav-links { display: none; }
+  /* the menu takes over the links, GitHub included */
+  .nav-menu { display: block; }
+  .nav-gh { display: none; }
 }
 
 @media (max-width: 560px) {
@@ -879,11 +965,29 @@ textarea:focus, input:focus, select:focus {
   .card-body { padding: 18px; }
   .composer { padding-top: 60px; }
   .composer > .buddy { right: 24px; width: 90px; height: 99px; }
-  .linkbox { flex-direction: column; }
+  .nav-menu-panel { padding: 4px 16px 12px; }
+  /* the link takes the full width; Copy and Share split the row under it */
+  .linkbox { flex-wrap: wrap; }
+  .linkbox input { flex: 1 1 100%; height: 48px; }
+  .linkbox .btn { flex: 1 1 0; height: 48px; }
   .install-row { flex-direction: column; align-items: stretch; }
+  /* a command that wraps can be read whole; one that scrolls sideways cannot */
+  .install { white-space: normal; overflow-wrap: anywhere; }
   .dz-cap { display: none; }
   .dz-primary .dz-cap { display: block; }
-  .footer-cols { gap: 24px 40px; }
+  .footer { padding: 44px 0 28px; }
+  .footer-in { gap: 28px; }
+  .footer-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; width: 100%; }
+  .footer-fine { margin-top: 32px; }
+}
+
+/* the narrowest phones: the composer's title and its encryption tag no
+   longer fit side by side, so the tag takes its own line under the title
+   instead of both wrapping into a cramped block */
+@media (max-width: 374px) {
+  .card-head { flex-wrap: wrap; row-gap: 2px; }
+  .card-title { white-space: nowrap; }
+  .card-tag { flex-basis: 100%; margin-left: 0; }
 }
 
 @media (max-width: 400px) {

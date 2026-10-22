@@ -37,8 +37,23 @@
       <button id="themeBtn" class="btn btn-ghost btn-sm btn-icon" aria-label="Switch between light and dark mode" aria-pressed="false">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path class="fill" d="M12 3.5a8.5 8.5 0 0 1 0 17z"/></svg>
       </button>
+      <details class="nav-menu">
+        <summary class="btn btn-ghost btn-sm btn-icon" aria-label="Menu">
+          <svg class="i i-menu" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg>
+          <svg class="i i-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </summary>
+        <div class="nav-menu-panel">
+          <a href="#features">Features</a>
+          <a href="#how">How it works</a>
+          <a href="/ask">Ask for a secret</a>
+          <a href="#cli">Command line</a>
+          <a href="/api">API</a>
+          <a href="#faq">FAQ</a>
+          <a href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
+        </div>
+      </details>
       <a class="btn btn-ghost btn-sm nav-gh" href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
-      <a class="btn btn-sm" href="#compose">Send a secret</a>
+      <a class="btn btn-sm nav-send" href="#compose">Send a secret</a>
     </div>
   </div>
 </nav>
@@ -88,7 +103,7 @@
         <section id="compose-form">
           <div id="secretWrap">
             <label class="lbl" for="secret">Secret</label>
-            <textarea id="secret" rows="4" spellcheck="false" autocomplete="off"
+            <textarea id="secret" rows="4" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off"
               placeholder="Paste a password, API key, or private note"></textarea>
             <div class="meter"><span id="count">0</span> bytes</div>
           </div>
@@ -97,6 +112,7 @@
             <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
             <span class="dz-art" aria-hidden="true"><svg class="ill" viewBox="30 4 110 100"><g transform="rotate(-6 70 55)"><path class="paper" d="M46 12h44l20 20v66H46z"/><path class="line" d="M90 12v20h20"/><path class="line" d="M58 46h40M58 58h40M58 70h28"/></g><rect class="coral" x="96" y="58" width="36" height="30" rx="7"/><path class="line" d="M104 58v-8a10 10 0 0 1 20 0v8"/><circle class="white" cx="114" cy="72" r="4"/></svg></span>
             <span class="dz-label">or drop a file<span class="dz-sep"> · </span><button id="pickBtn" type="button" class="linklike">browse</button></span>
+            <button type="button" class="dz-touch"><span class="dz-or">or </span>attach a file</button>
             <span class="dz-cap">up to 8 MB, encrypted first</span>
             <input type="file" id="fileInput" class="hidden" aria-label="Choose a file to send">
           </div>
@@ -156,6 +172,7 @@
           <div class="linkbox">
             <input id="link" readonly spellcheck="false" aria-label="One time secret link">
             <button id="copy" class="btn">Copy</button>
+            <button id="share" class="btn btn-ghost hidden" type="button">Share</button>
           </div>
           <p class="note">
             The part after <code>#</code> is the decryption key. Browsers never
@@ -573,5 +590,6 @@ https://sendkey.xyz/s/Qm93kd0Xw1Tz<span class="t-key">#R6cdQpWvZ2xNb4Ml…</span
 <script type="module" src="/assets/app.js"></script>
 <script type="module" src="/assets/burn.js"></script>
 <script type="module" src="/assets/buddy.js"></script>
+<script type="module" src="/assets/menu.js"></script>
 </body>
 </html>

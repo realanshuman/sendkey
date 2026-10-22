@@ -244,6 +244,18 @@ $('copy').addEventListener('click', async () => {
   setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
 });
 
+// Phones have a share sheet: offer it beside Copy so the link can go
+// straight into a chat app without a trip through the clipboard. Hidden
+// wherever the browser has no share sheet. A dismissed sheet rejects, which
+// is not an error worth showing.
+if (navigator.share) {
+  const shareBtn = $('share');
+  shareBtn.classList.remove('hidden');
+  shareBtn.addEventListener('click', () => {
+    navigator.share({ url: $('link').value }).catch(() => {});
+  });
+}
+
 // The CLI section's install one-liner. The prompt span stays out of the
 // copied text, so what lands in the clipboard is directly runnable.
 const cmdBtn = $('copyCmd');

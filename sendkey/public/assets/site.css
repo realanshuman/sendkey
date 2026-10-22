@@ -107,6 +107,9 @@ body > section { padding: 96px 0; }
   font-weight: 650;
   text-decoration: none;
 }
+@media (pointer: coarse) {
+  .mode-link { min-height: 44px; }
+}
 .mode-link .i { width: 17px; height: 17px; transition: transform 0.15s; }
 @media (hover: hover) {
   .mode-link:hover .i { transform: translateX(3px); }
@@ -394,17 +397,27 @@ body > section.cta-band { padding-top: 0; }
 
 @media (max-width: 560px) {
   body > section { padding: 56px 0; }
-  .hero { padding: 28px 0 56px; }
+  .hero { padding: 20px 0 56px; }
   .hero h1 { font-size: clamp(34px, 10vw, 44px); }
   .hero-sub { margin-top: 14px; font-size: 16px; }
   .hero-in > .composer { margin-top: 16px; }
   .hero-proof { margin-top: 28px; }
   .section-head { margin-bottom: 32px; }
   .section-head p { font-size: 16px; }
-  .mode { display: flex; padding: 12px 12px 20px; }
-  .art { height: 150px; min-height: 0; }
-  .art .ill { width: 150px; }
-  .mode h3 { margin-top: 18px; }
+  /* compact rows: the drawing becomes a tile beside the text instead of a
+     banner above it, which takes three screens of scrolling down to one */
+  .mode {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    column-gap: 16px;
+    padding: 14px 16px 8px 14px;
+  }
+  .art { grid-row: 1 / span 3; align-self: start; height: 92px; min-height: 0; border-radius: 14px; }
+  .art .ill { width: 80px; }
+  .mode h3 { margin: 2px 0 0; font-size: 18px; }
+  .mode p { margin: 6px 0 0; font-size: 14.5px; }
+  .mode-link { margin: 2px 0 0; padding-top: 0; min-height: 44px; }
   .demo-peek { padding-top: 46px; }
   .demo-peek > .buddy { right: 28px; width: 68px; height: 75px; }
   .demo-main, .demo-side { padding: 20px; }
@@ -417,7 +430,8 @@ body > section.cta-band { padding-top: 0; }
   }
   .point .tile { grid-row: 1 / span 2; }
   .point h3 { margin-top: 2px; }
-  .terminal pre { padding: 16px 18px; font-size: 12px; }
+  /* long lines wrap rather than hide off the right edge */
+  .terminal pre { padding: 16px 18px; font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
   .faq summary { padding: 14px 14px 14px 18px; font-size: 16px; }
   .faq-body { padding: 0 18px 18px; }
   .cta {
@@ -431,4 +445,14 @@ body > section.cta-band { padding-top: 0; }
   .cta-actions { justify-content: center; }
   .cta-actions .btn { width: 100%; }
   .cta-buddy { justify-self: center; width: 110px; height: 121px; margin-top: 20px; }
+}
+
+/* the narrowest phones: the composer is right under the nav anyway, so its
+   button gives way to the menu, and the mode tiles shrink to keep the text
+   column readable */
+@media (max-width: 374px) {
+  .nav-send { display: none; }
+  .mode { grid-template-columns: 70px minmax(0, 1fr); column-gap: 14px; }
+  .art { height: 70px; border-radius: 12px; }
+  .art .ill { width: 60px; }
 }
