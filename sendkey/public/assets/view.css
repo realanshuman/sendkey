@@ -1,389 +1,337 @@
-/* SendKey view page (the receiving end), 1-bit edition. */
+/* The dedicated pages: send and drop, the receive page, ask, the API
+   reference and the numbers. One narrow column under the shared nav. On
+   receive and ask the buddy peeks over a single card that holds the title
+   and every state; send and drop keep the title above the composer.
+   Shared pieces live in brand.css. */
 
-body {
-  background: var(--paper);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-}
-.view-wrap { flex: 1; }
-/* a restrained dither strip along the top edge only */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0 0 auto 0;
-  /* the tile is 64px and repeat-x does not tile vertically, so a taller box
-     leaves a strip unpainted that scaleY(-1) then puts at the very top */
-  height: 64px;
-  background: url("/assets/px/fade.png") repeat-x top / 8px 64px;
-  image-rendering: pixelated;
-  transform: scaleY(-1);
-  opacity: 0.5;
-  pointer-events: none;
-  z-index: -1;
-}
+.view-wrap { max-width: 600px; margin: 0 auto; padding: 0 24px; }
 
-.view-wrap {
-  max-width: 580px;
-  margin: 0 auto;
-  padding: 26px 20px 72px;
-}
-
-.view-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* dark theme swaps the ink-pixel fade for the paper-pixel one */
-:root[data-theme="dark"] body::before {
-  background-image: url("/assets/px/fade-inv.png");
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) body::before {
-    background-image: url("/assets/px/fade-inv.png");
-  }
-}
-
-.view-main {
-  margin-top: 64px;
+.view-main { padding: 48px 0 80px; }
+.view-main > h1 {
+  font-size: clamp(32px, 1.2vw + 24px, 42px);
+  letter-spacing: -0.03em;
   text-align: center;
 }
-.view-main h1 {
-  font-size: clamp(16px, 10px + 2.6vw, 24px);
-  line-height: 1.55;
-}
 .view-tag {
-  margin-top: 14px;
-  color: var(--ink-2);
-  font-size: 14px;
+  margin-top: 10px;
+  font-size: 16.5px;
+  color: var(--text-2);
+  text-align: center;
 }
-
-.view-main .win {
-  margin-top: 36px;
-  text-align: left;
-}
-.view-main .win-body { padding: 24px; background: var(--paper); }
-
-.banner {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--ink-2);
-}
-.banner strong { color: var(--ink); }
-
-.meta-line {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--ink-3);
-  margin: 14px 0 20px;
-}
-
-.pass-field { margin: 18px 0 16px; }
-
-.secret-out {
-  margin: 16px 0;
-  padding: 16px 18px;
-  background: var(--field);
-  border: 2px solid var(--ink);
-  font-family: var(--font-mono);
-  font-size: 13.5px;
-  font-weight: 700;
-  line-height: 1.65;
-  color: var(--ink);
-  white-space: pre-wrap;
-  word-break: break-all;
-  overflow-wrap: anywhere;
-  text-align: left;
-  user-select: all;
-}
-
-#gone .note { margin-top: 12px; }
+.view-main > .composer { margin-top: 18px; }
 
 .view-foot {
-  margin-top: 32px;
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+  font-size: 15px;
 }
-/* the only way across to the other mode from these pages, and a link alone
-   in its paragraph rather than inside a sentence, so it owes the 24px
-   minimum target size that inline links in prose are exempt from */
-.view-foot a {
+.view-foot > a:not(.btn) {
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
+  gap: 6px;
+  min-height: 30px;
+  color: var(--coral-ink);
+  font-weight: 650;
+  text-decoration: none;
+}
+.view-foot .i { width: 17px; height: 17px; transition: transform 0.15s; }
+@media (hover: hover) {
+  .view-foot > a:not(.btn):hover .i { transform: translateX(3px); }
 }
 
-@media (max-width: 480px) {
-  .view-wrap { padding: 20px 16px 56px; }
-  .view-main { margin-top: 40px; }
-  .view-main .win-body { padding: 18px 16px; }
-}
-
-/* ---- ask page ------------------------------------------------------------- */
-
-.ask-list {
-  margin: 16px 0 20px;
-  padding-left: 20px;
+.compose-note {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+  margin-top: 16px;
   font-size: 13.5px;
-  color: var(--ink-2);
-  line-height: 1.9;
+  color: var(--text-3);
+}
+.compose-note > span { display: inline-flex; align-items: center; gap: 8px; }
+.compose-note .pdot { width: 11px; height: 11px; border-width: 1.5px; }
+
+/* ---- receive and ask: one card under the buddy ---------------------------------- */
+
+.view-peek { padding-top: 64px; }
+.view-peek > .buddy {
+  left: 50%;
+  width: 96px;
+  height: 106px;
+  margin-left: -48px;
+}
+.view-card .card-body { padding: 30px 30px 30px; }
+
+.view-head { margin-bottom: 22px; text-align: center; }
+.view-head h1 { font-size: clamp(26px, 1vw + 20px, 32px); letter-spacing: -0.025em; }
+.view-head .view-tag { margin-top: 6px; font-size: 16px; }
+
+.center { text-align: center; }
+.stack > * + * { margin-top: 16px; }
+#fileOut > * + * { margin-top: 12px; }
+
+.meta-line { font-size: 14px; color: var(--text-3); }
+
+.secret-out {
+  max-height: 320px;
+  padding: 16px;
+  overflow: auto;
+  border-radius: var(--radius);
+  background: var(--subtle);
+  font: 14.5px/1.6 var(--font-mono);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+#out .btn-sm,
+#opened .btn-sm { margin-top: 10px; }
+
+.pass-field .lbl { margin-bottom: 7px; }
+
+.dl-note { margin-top: 12px; }
+
+/* ---- ask ------------------------------------------------------------------------------ */
+
+.ask-list { display: grid; gap: 12px; padding: 0; list-style: none; }
+.ask-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  color: var(--text-2);
 }
 
 .fingerprint {
   display: flex;
-  gap: 14px;
   align-items: center;
-  margin: 18px 0;
+  gap: 14px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--subtle);
 }
 .identicon {
+  display: block;
   flex: none;
-  width: 56px;
-  height: 56px;
-  border: 2px solid var(--ink);
-  background: var(--field);
-  padding: 6px;
-  display: block;
+  width: 62px;
+  height: 62px;
+  padding: 8px;
+  border-radius: 14px;
+  background: var(--lilac);
+  color: var(--art-ink);
 }
-.identicon svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  fill: var(--ink);
-  image-rendering: pixelated;
-}
-.fingerprint .note { text-align: left; }
+.identicon svg { display: block; width: 100%; height: 100%; fill: currentColor; }
 
-.ask-status {
+.ans-row { max-width: 240px; }
+.ans-row .lbl { margin-top: 0; }
+
+/* ---- API reference ------------------------------------------------------------------- */
+
+.api-wrap { max-width: 800px; }
+.api-wrap .view-main > h1,
+.api-wrap .view-tag { text-align: left; }
+
+.api-note {
   display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 28px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: var(--yellow-soft);
+}
+
+.api-h { margin: 52px 0 14px; font-size: 24px; letter-spacing: -0.02em; }
+.api-lede { margin-top: 12px; font-size: 15.5px; color: var(--text-2); }
+.api-code .install-row + .api-out { margin-top: 6px; }
+.api-code .api-out + .install-row { margin-top: 16px; }
+.api-out {
+  padding-left: 14px;
+  font: 13px/1.6 var(--font-mono);
+  color: var(--text-3);
+  overflow-wrap: anywhere;
+}
+
+.api-list { display: grid; gap: 12px; }
+.api-ep {
+  padding: 20px 22px;
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  font-size: 15px;
+  color: var(--text-2);
+}
+.api-ep p + p,
+.api-ep p + ul,
+.api-ep ul + p { margin-top: 8px; }
+.api-sig {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 9px;
-  margin: 16px 0;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--ink-2);
+  gap: 10px;
+  color: var(--text);
 }
-.ask-status .dot {
-  width: 7px;
-  height: 7px;
-  background: var(--ink);
-  animation: blink 1.1s steps(1) infinite;
+.api-sig code { padding: 0; background: none; font-size: 15px; font-weight: 600; }
+.api-verb {
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: var(--mint);
+  color: var(--art-ink);
+  font: 700 11.5px/1.5 var(--font-mono);
 }
-.ask-status.arrived .dot { animation: none; }
+.api-verb-post { background: var(--coral); }
+.api-verb-get { background: var(--mint); }
+.api-io { font-size: 14.5px; }
+.api-fields { display: grid; gap: 4px; padding-left: 18px; font-size: 14.5px; }
 
-.ans-row { margin: 14px 0 16px; }
-#owner .linkbox { margin-top: 14px; }
-
-/* ---- the numbers page -------------------------------------------------------
-   One wall of totals, two dial bars, one honesty panel. Set in the same
-   ruled-grid language as the landing sections; the count-up happens in JS,
-   sixteen discrete frames, nothing glides. */
-
-.num-wrap { max-width: 880px; }
-
-/* every figure is stated twice: the plain sentence above, and this line
-   carrying the same fact in the terms a developer would check it against */
-.num-wrap .spec {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 2px dotted var(--ink-3);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 1.6;
-  color: var(--ink-3);
-  overflow-wrap: break-word;
-}
-.num-wrap .spec span { padding: 0 5px; }
-
-.num-status {
+/* Flags are small badges. Scoped under .api-ep so no element rule can ever
+   outrank them; the e2e suite measures their contrast in both themes. */
+.api-ep .api-flag {
   display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  margin-top: 18px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--ink-2);
+  margin-top: 14px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
 }
-.num-status .dot {
-  width: 8px;
-  height: 8px;
-  background: var(--ink);
-  animation: blink 1.1s steps(1) infinite;
-}
-.num-status.arrived .dot { animation: none; }
+.api-ep .api-flag-safe { background: var(--ok-soft); color: var(--ok); }
+.api-ep .api-flag-burn { background: var(--err-soft); color: var(--err); }
+.api-ep .api-flag-limit { background: var(--subtle); color: var(--text-2); }
+
+.api-wrap .view-foot { justify-content: flex-start; margin-top: 44px; }
+
+/* ---- numbers ------------------------------------------------------------------------- */
+
+.num-wrap { max-width: 1000px; }
+
+.num-wrap .status { justify-content: center; margin-top: 18px; }
 
 .num-wall {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2px;
-  background: var(--ink);
-  border: 2px solid var(--ink);
-  box-shadow: 6px 6px 0 var(--ink);
-  margin-top: 26px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 36px;
 }
 .num-cell {
-  background: var(--paper);
-  padding: 22px 22px 18px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  /* .view-main centers; a stat cell reads as a ledger entry, ragged right */
-  text-align: left;
+  padding: 18px 20px 20px;
+  border: 1.5px solid var(--line);
+  border-radius: 22px;
+  background: var(--surface);
 }
+.num-cell .tile { width: 48px; height: 48px; border-radius: 15px; }
+.num-cell .tile .ill { width: 32px; height: 32px; }
 .num-big {
-  font-family: var(--font-px);
-  font-size: clamp(22px, 14px + 2.4vw, 34px);
-  line-height: 1.2;
-  color: var(--ink);
-  /* tabular by construction (the pixel face is monospaced), so the count-up
-     does not make the cell breathe */
-  min-height: 1.2em;
-  overflow-wrap: anywhere;
+  margin-top: 16px;
+  font: 700 44px/1.05 var(--round);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
 }
-.num-cell strong {
-  margin-top: 10px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--ink);
-}
-.num-cell :where(p) {
-  margin-top: 8px;
-  font-size: 12.5px;
-  line-height: 1.65;
-  color: var(--ink-2);
-  flex: 1;
-}
-.num-cell .spec { width: 100%; flex: none; }
+.num-cell strong { margin-top: 6px; font: 700 16px/1.35 var(--round); }
+.num-cell p { margin-top: 8px; font-size: 14px; color: var(--text-2); }
+.num-cell .spec { margin-top: auto; padding-top: 14px; }
+/* two short lines in a narrow cell rather than one that wraps mid phrase */
+.num-cell .spec span { display: block; height: 0; overflow: hidden; }
 
-/* dial bars: the brand has no accent colors, so the three shares are ink at
-   three dither densities, darkest first. The bar is one bordered track. */
+.spec { font: 12px/1.6 var(--font-mono); color: var(--text-3); }
+.spec span { margin: 0 6px; }
+
 .num-dials {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
-  margin-top: 26px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
 }
 .num-dial {
-  border: 2px solid var(--ink);
-  background: var(--paper);
-  box-shadow: 4px 4px 0 var(--ink);
-  padding: 16px 18px 15px;
+  padding: 20px 22px;
+  border: 1.5px solid var(--line);
+  border-radius: 22px;
+  background: var(--surface);
 }
 .num-dial-head {
-  /* stacked rather than side by side: with side-by-side wrap the two cards
-     broke differently depending on title width and read as a mistake */
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 3px;
-  text-align: left;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
 }
-.num-dial-head strong {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.spec-inline {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--ink-3);
-}
+.num-dial-head strong { font: 700 16px/1.35 var(--round); }
+.spec-inline { font: 12px var(--font-mono); color: var(--text-3); }
+
 .num-bar {
   display: flex;
-  height: 22px;
-  margin-top: 12px;
-  border: 2px solid var(--ink);
-  background: var(--field);
+  gap: 3px;
+  height: 14px;
+  margin-top: 16px;
   overflow: hidden;
+  border-radius: 99px;
+  background: var(--subtle);
 }
-.num-bar span {
-  height: 100%;
-  transition: width 0.3s steps(6);
-}
-.num-bar [data-seg="ttlHour"], .num-bar [data-seg="views1"] { background: var(--ink); }
-.num-bar [data-seg="ttlDay"], .num-bar [data-seg="views2"] {
-  background: url("/assets/px/d25.png") 0 0 / 8px 8px, var(--paper);
-  image-rendering: pixelated;
-  border-left: 2px solid var(--ink);
-}
-.num-bar [data-seg="ttlWeek"], .num-bar [data-seg="views5"] {
-  background: url("/assets/px/d06.png") 0 0 / 8px 8px, var(--paper);
-  image-rendering: pixelated;
-  border-left: 2px solid var(--ink);
-}
-/* a zero-width segment should not show its divider as a stray tick */
-.num-bar span[style*="width: 0%"] { border-left: 0; }
+.num-bar span { width: 0; height: 100%; border-radius: 99px; transition: width 0.5s; }
+.num-bar span:nth-child(1), .num-legend .sw-1 { background: var(--coral); }
+.num-bar span:nth-child(2), .num-legend .sw-2 { background: var(--yellow); }
+.num-bar span:nth-child(3), .num-legend .sw-3 { background: var(--lilac); }
 
 .num-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 16px;
-  margin-top: 10px;
-  font-size: 11.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--ink-2);
+  gap: 6px 18px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: var(--text-2);
 }
-.num-legend b { color: var(--ink); }
-.num-legend .sw {
+.num-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.num-legend b { font-weight: 650; color: var(--text); font-variant-numeric: tabular-nums; }
+.sw {
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  border: 2px solid var(--ink);
-  margin-right: 6px;
-  vertical-align: -1px;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--art-ink);
+  border-radius: 50%;
 }
-.num-legend .sw-1 { background: var(--ink); }
-.num-legend .sw-2 { background: url("/assets/px/d25.png") 0 0 / 8px 8px, var(--paper); image-rendering: pixelated; }
-.num-legend .sw-3 { background: url("/assets/px/d06.png") 0 0 / 8px 8px, var(--paper); image-rendering: pixelated; }
 
-.num-asks {
-  margin-top: 22px;
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--ink-2);
-}
-.num-asks b { color: var(--ink); }
+.num-asks { margin-top: 30px; font-size: 15.5px; color: var(--text-2); text-align: center; }
+.num-asks b { color: var(--text); }
 
-/* the counterweight panel is the one inverted block on the page */
-.num-cant {
-  text-align: left;
-  margin-top: 26px;
-  background: var(--ink);
-  color: var(--paper);
-  border: 2px solid var(--ink);
-  box-shadow: 6px 6px 0 var(--ink);
-  padding: 20px 22px;
-}
-.num-cant strong {
-  display: block;
-  font-family: var(--font-px);
-  font-size: 11px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-.num-cant p { font-size: 13px; line-height: 1.75; color: var(--ink-dim); }
-.num-cant p + p { margin-top: 10px; }
-.num-cant .spec { border-top-color: var(--ink-dim); color: var(--ink-dim); }
+/* the shut-eyed buddy peeks over the panel of things nobody can count */
+.cant-peek { margin-top: 30px; padding-top: 56px; }
+.cant-peek > .buddy { left: 36px; width: 84px; height: 92px; }
+.cant-peek > .num-cant { position: relative; z-index: 1; }
+.num-cant { padding: 22px 24px; border-radius: 22px; }
+.num-cant strong { display: block; font: 700 18px/1.35 var(--round); }
+.num-cant p { margin-top: 8px; }
+.num-cant .spec { margin-top: 12px; }
 
-.num-wrap .view-foot { margin-top: 30px; }
+/* ---- small screens ------------------------------------------------------------------ */
 
-@media (max-width: 700px) {
-  .num-dials { grid-template-columns: 1fr; }
+@media (max-width: 860px) {
+  .num-wall { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .num-dials { grid-template-columns: minmax(0, 1fr); }
 }
+
 @media (max-width: 560px) {
-  .num-wall { grid-template-columns: 1fr; }
-  .num-cell { padding: 18px 16px 14px; }
+  .view-wrap { padding: 0 16px; }
+  .view-main { padding: 32px 0 56px; }
+  .view-tag { font-size: 15.5px; }
+  .view-peek { padding-top: 56px; }
+  .view-peek > .buddy { width: 84px; height: 92px; margin-left: -42px; }
+  .view-card .card-body { padding: 24px 18px 20px; }
+  .num-wall { grid-template-columns: minmax(0, 1fr); }
+  .num-cell {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    align-items: center;
+    column-gap: 14px;
+  }
+  .num-cell > :not(.tile, .num-big) { grid-column: 1 / -1; }
+  .num-cell .num-big { margin-top: 0; }
+  .num-cell strong { margin-top: 12px; }
+  .num-big { font-size: 40px; }
+  .cant-peek > .buddy { left: 22px; }
+  .num-cant { padding: 20px; }
+  .api-h { margin-top: 44px; font-size: 22px; }
+  .api-code .install { white-space: pre-wrap; overflow-wrap: anywhere; }
 }

@@ -1,909 +1,434 @@
-/* SendKey landing page layout, 1-bit edition. Depends on brand.css. */
+/* Landing page. Shared pieces (tokens, the buddy, nav, buttons, fields,
+   composer, footer) live in brand.css; this file is the page's own
+   sections. */
 
-section[id] { scroll-margin-top: 76px; }
-#compose { scroll-margin-top: 86px; }
+/* ---- section rhythm ------------------------------------------------------------ */
 
-body > section { padding: 88px 0; }
+/* Every section boundary uses the same spacing, the hero's trailing space
+   included, so the page reads as one rhythm. Sections carry no borders:
+   a top border would add a pixel to one side of that equation. */
+body > section { padding: 96px 0; }
 
-/* ---- nav ---------------------------------------------------------------- */
+.section-head { max-width: 640px; margin-bottom: 48px; }
+.section-head h2 { font-size: clamp(30px, 1.2vw + 22px, 42px); letter-spacing: -0.03em; }
+.section-head p { margin-top: 12px; font-size: 17.5px; color: var(--text-2); }
 
-.nav {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: var(--paper);
-  border-bottom: 2px solid var(--ink);
-}
-.nav-in {
-  display: flex;
-  align-items: center;
-  gap: 26px;
-  height: 58px;
-}
-.nav-links { display: flex; gap: 20px; margin-left: auto; }
-.nav-links a {
-  font-size: 12.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  text-decoration: none;
-  padding: 2px 4px;
-}
-@media (hover: hover) {
-  .nav-links a:hover { background: var(--ink); color: var(--paper); }
-}
-.nav-cta { display: flex; align-items: center; gap: 12px; }
+.band { background: var(--surface); }
 
-/* ---- hero ---------------------------------------------------------------- */
+/* ---- hero ------------------------------------------------------------------------ */
 
-.hero {
-  position: relative;
-  padding: 72px 0 88px;
-  border-bottom: 2px solid var(--ink);
-}
-/* texture lives in a restrained strip at the very top, not behind the text */
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  /* exactly the tile height: repeat-x tiles horizontally only, so a box
-     taller than 64px leaves the remainder unpainted, and scaleY(-1) then
-     lands that empty band at the top as a gap under the nav */
-  height: 64px;
-  background: url("/assets/px/fade.png") repeat-x top / 8px 64px;
-  image-rendering: pixelated;
-  transform: scaleY(-1);
-  opacity: 0.5;
-  pointer-events: none;
-}
-/* Two columns from 921px up: the composer is the product, and stacked under
-   a full-height poster it started 508px down the page, which put its submit
-   button below the fold on every laptop we measured. Beside the copy it
-   starts at the top of the hero instead. Below 920px this whole block is
-   overridden back to the original centered stack. */
+.hero { padding: 40px 0 96px; }
+
+/* Two columns on wide screens: copy and the proof list on the left, the
+   working composer (with the buddy on top) on the right. The proof list
+   pins to the bottom so both columns end level. Below 920px it stacks:
+   copy, composer, then proof. */
 .hero-in {
-  position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
-  /* the composer spans both rows, so the proof list sits directly under the
-     copy while the second row absorbs whatever height the composer has */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 470px);
   grid-template-areas:
-    "copy  composer"
+    "copy composer"
     "proof composer";
   grid-template-rows: auto 1fr;
-  column-gap: 48px;
-  row-gap: 26px;
-  align-items: start;
+  column-gap: 72px;
 }
-.hero-copy { grid-area: copy; min-width: 0; }
+.hero-copy { grid-area: copy; min-width: 0; padding-top: 118px; }
 .hero-in > .composer { grid-area: composer; }
-/* pinned to the bottom of its row so the copy column ends level with the
-   composer: left-aligned to the top only, it stopped 188px short and the
-   hero's trailing padding read as a ragged void rather than section rhythm */
 .hero-proof { grid-area: proof; align-self: end; }
 
 .hero h1 {
-  margin: 26px 0 0;
-  /* tuned to the 408px copy column, not the full wrap: Press Start 2P is
-     near-monospace, so "Send a secret." is ~14 advances wide and overflows
-     the column above roughly 28px */
-  font-size: clamp(17px, 6px + 1.7vw, 26px);
-  line-height: 1.5;
+  font-size: clamp(42px, 2.8vw + 22px, 64px);
+  line-height: 1.03;
+  letter-spacing: -0.035em;
 }
-.hero h1 .hl {
-  display: inline-block;
-  background: var(--ink);
-  color: var(--paper);
-  padding: 6px 12px 5px;
-  margin-top: 14px;
-}
-.hero-sub {
-  max-width: 600px;
-  margin-top: 22px;
-  font-size: 14.5px;
-  line-height: 1.75;
-  color: var(--ink-2);
-}
-.hero-sub strong { color: var(--ink); }
+.hero h1 .hl { color: var(--coral-display); }
 
-/* three claims the rest of the page then proves, filling the copy column
-   against the taller composer instead of leaving it short */
+.hero-sub {
+  max-width: 30em;
+  margin-top: 22px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+.hero-sub strong { color: var(--text); font-weight: 600; }
+
 .hero-proof {
-  /* the UA gives <ul> a 40px padding-left that would indent these off the
-     headline's left edge, and the grid row-gap already provides the space
-     a margin-top would duplicate */
-  margin: 0;
-  padding-left: 0;
-  list-style: none;
   display: grid;
-  gap: 11px;
+  gap: 12px;
+  margin-top: 32px;
+  padding: 0;
+  list-style: none;
 }
 .hero-proof li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+/* ---- three modes: white cards with a colored illustration panel ---------------- */
+
+.modes {
   display: grid;
-  grid-template-columns: 18px minmax(0, 1fr);
-  gap: 11px;
-  align-items: start;
-  font-size: 12.5px;
-  line-height: 1.55;
-  color: var(--ink-2);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
 }
-.hero-proof svg {
-  width: 14px;
-  height: 14px;
-  margin-top: 2px;
-  fill: var(--ink);
-  image-rendering: pixelated;
+.mode {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 14px 22px;
 }
-
-/* ---- composer ------------------------------------------------------------ */
-
-.composer {
-  position: relative;
-  width: 100%;
-  max-width: 600px;
-  margin-top: 44px;
-  text-align: left;
+.art {
+  display: grid;
+  place-items: center;
+  height: 172px;
+  border-radius: 16px;
 }
-/* in the hero grid the composer is a column, not something stacked under
-   the copy, so it starts level with the headline. Scoped to .hero-in so
-   the standalone composer on /send and /drop keeps its own spacing. */
-.hero-in > .composer { margin-top: 0; }
-.win-tag {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  translate: 0 -50%;
-  background: var(--paper);
-  padding: 0 8px;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--ink-2);
+.art .ill { width: 172px; height: auto; transition: transform 0.25s ease; }
+.art-yellow { background: var(--yellow); }
+.art-lilac { background: var(--lilac); }
+.art-mint { background: var(--mint); }
+@media (hover: hover) {
+  .mode:hover .art .ill { transform: rotate(-3deg) scale(1.03); }
+}
+.mode h3 { margin: 20px 10px 0; font-size: 21px; letter-spacing: -0.02em; }
+.mode p { margin: 8px 10px 0; font-size: 15px; color: var(--text-2); }
+.mode-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  align-self: flex-start;
+  min-height: 30px;
+  margin: auto 10px 0;
+  padding-top: 18px;
+  color: var(--coral-ink);
+  font-size: 15px;
+  font-weight: 650;
+  text-decoration: none;
 }
-.win-tag .dot {
-  width: 6px;
-  height: 6px;
-  background: var(--ink);
-  animation: blink 1.1s steps(1) infinite;
-}
-
-.meter {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  text-align: right;
-  margin-top: 6px;
+.mode-link .i { width: 17px; height: 17px; transition: transform 0.15s; }
+@media (hover: hover) {
+  .mode-link:hover .i { transform: translateX(3px); }
 }
 
-.composer .row {
+.modes-cap { margin-top: 22px; font-size: 14.5px; color: var(--text-3); }
+
+/* ---- how it works: the burn demo, watched by the buddy ------------------------- */
+
+.demo-peek { padding-top: 54px; }
+.demo-peek > .buddy { right: 52px; width: 80px; height: 88px; }
+
+.demo {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin: 16px 0;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  overflow: hidden;
 }
-.composer .check { margin-bottom: 12px; }
-.composer #pass { margin-bottom: 16px; }
-.composer #go { margin-top: 6px; }
-
-.compose-note {
-  margin-top: 16px;
-  text-align: center;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--ink-3);
-}
-.compose-note span { padding: 0 6px; }
-
-#compose-result .note { margin-top: 6px; }
-#compose-result #again { margin-top: 16px; }
-
-/* ---- section scaffolding -------------------------------------------------- */
-
-.section-head {
-  max-width: 620px;
-  margin: 0 auto 52px;
-  text-align: center;
-}
-.section-head h2 {
-  font-size: clamp(13px, 7px + 1.7vw, 21px);
-  line-height: 1.6;
-  margin-bottom: 16px;
-  text-wrap: balance;
-}
-.section-head p { color: var(--ink-2); font-size: 14px; text-wrap: balance; }
-
-.band {
-  background: var(--paper-2);
-  border-top: 2px solid var(--ink);
-  border-bottom: 2px solid var(--ink);
-}
-
-/* thick-ruled grid, like a printed table */
-.hgrid {
+.demo-main { padding: 28px; }
+.demo-side {
   display: grid;
-  gap: 2px;
-  background: var(--ink);
-  border: 2px solid var(--ink);
-  box-shadow: 6px 6px 0 var(--ink);
+  align-content: center;
+  gap: 22px;
+  padding: 28px;
+  border-left: 1.5px solid var(--line);
+  background: var(--subtle);
 }
-.hgrid > div { background: var(--paper); padding: 24px; }
-.hgrid-3 { grid-template-columns: repeat(3, 1fr); }
 
-/* ---- how it works --------------------------------------------------------- */
-
-.step-n {
-  display: inline-block;
-  font-family: var(--font-px);
-  font-size: 11px;
-  background: var(--ink);
-  color: var(--paper);
-  padding: 5px 7px 4px;
-  margin-bottom: 16px;
+.demo-link {
+  padding: 16px 18px;
+  overflow-wrap: anywhere;
+  border-radius: var(--radius);
+  background: var(--subtle);
+  font: 16px/1.5 var(--font-mono);
+  transition: opacity 0.4s;
 }
-.step h3 { font-size: 11px; line-height: 1.7; margin-bottom: 10px; }
-.step p { font-size: 13px; line-height: 1.7; color: var(--ink-2); }
-
-/* link anatomy */
-.anatomy { max-width: 680px; margin: 48px auto 0; }
-.anatomy-card {
-  background: var(--paper);
-  border: 2px solid var(--ink);
-  box-shadow: 6px 6px 0 var(--ink);
-  padding: 22px;
-}
-.anatomy-link {
-  font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 700;
-  background: var(--field);
-  border: 2px solid var(--ink);
-  padding: 12px 14px;
-  white-space: nowrap;
-  overflow-x: auto;
-}
-.al-dim { color: var(--ink-3); font-weight: 400; }
-.al-id { color: var(--ink); }
+.al-dim { color: var(--text-3); }
+.al-id { color: var(--text); }
 .al-key {
-  background: var(--ink);
-  color: var(--paper);
-  padding: 3px 5px;
-  margin-left: 2px;
-}
-.anatomy-legend {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 18px;
-}
-.anatomy-legend > div {
-  font-size: 12.5px;
-  line-height: 1.6;
-  color: var(--ink-2);
-  padding-left: 20px;
-  position: relative;
-}
-.anatomy-legend .swatch {
-  position: absolute;
-  left: 0;
-  top: 4px;
-  width: 10px;
-  height: 10px;
-  border: 2px solid var(--ink);
-}
-.swatch-id { background: var(--checker) 0 0 / 4px 4px, var(--field); }
-.swatch-key { background: var(--ink); }
-.anatomy-legend strong {
-  display: block;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--ink);
-  font-size: 12px;
-}
-.anatomy-cap {
-  margin-top: 20px;
-  font-size: 12.5px;
-  color: var(--ink-3);
-  text-align: center;
+  padding: 2px 4px;
+  border-radius: 6px;
+  background: var(--coral-soft);
+  color: var(--coral-ink);
 }
 
-/* burn demo: the anatomy card, made mortal */
-.burn-linkwrap { position: relative; }
-.burn-noise {
-  display: none;
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  image-rendering: pixelated;
-  pointer-events: none;
-}
-.burn-noise.is-live { display: block; }
+/* the link fades out, swaps to its dead face while hidden, then fades back */
+.burn.is-burning .demo-link { opacity: 0; }
+.burn.is-dead .demo-link { opacity: 0.6; }
+.burn.is-dead .al-id,
+.burn.is-dead .al-key { text-decoration: line-through; text-decoration-thickness: 2px; }
+.burn.is-dead .al-key { background: none; color: var(--text-3); }
 
-.burn-panes { display: grid; margin-top: 16px; }
+/* the three states share one grid cell, so the card never changes height */
+.burn-panes { display: grid; margin-top: 20px; }
 .burn-pane {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
   grid-area: 1 / 1;
   visibility: hidden;
+  font-size: 15px;
+  color: var(--text-2);
 }
 .burn-pane.is-on { visibility: visible; }
-.burn-pane p {
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--ink-2);
-}
-.burn-pane .burn-go { margin-top: 12px; }
+.burn-pane strong { color: var(--text); }
 
 .burn-plain {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--ink);
-  background: var(--field);
-  border: 2px dashed var(--ink);
-  padding: 9px 12px;
-  margin-bottom: 10px;
-  overflow-x: auto;
-  white-space: nowrap;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--mint-soft);
+  font: 14.5px/1.5 var(--font-mono);
+  color: var(--text);
+  overflow-wrap: anywhere;
 }
 .burn-label {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--paper);
-  background: var(--ink);
-  padding: 2px 5px 1px;
   margin-right: 10px;
-  vertical-align: 2px;
+  font: 600 13px var(--font);
+  color: var(--text-2);
 }
 
-/* the link, after: same URL, nothing behind it */
-.burn.is-dead .al-dim,
-.burn.is-dead .al-id {
-  color: var(--ink-3);
-  text-decoration: line-through;
+.legend { display: flex; gap: 12px; }
+.legend strong {
+  display: block;
+  font: 700 15px/1.4 var(--round);
+  color: var(--text);
 }
-.burn.is-dead .al-key {
-  background: transparent;
-  color: var(--ink-3);
-  text-decoration: line-through;
-  padding: 3px 0;
+.legend p { margin-top: 2px; font-size: 14.5px; color: var(--text-2); }
+.swatch {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  min-width: 44px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 7px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1.5px var(--line-2);
+  font: 12.5px/1 var(--font-mono);
+  color: var(--text);
 }
+.swatch-key { background: var(--coral-soft); box-shadow: none; color: var(--coral-ink); }
 
-/* ---- security grid --------------------------------------------------------- */
+.demo-cap { margin-top: 16px; font-size: 14.5px; color: var(--text-3); }
 
-.sec-cell svg {
-  width: 32px;
-  height: 32px;
-  fill: var(--ink);
-  margin-bottom: 16px;
-  image-rendering: pixelated;
+/* ---- how it works: the guarantees ----------------------------------------------- */
+
+.points {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 44px 48px;
+  margin-top: 80px;
 }
-.sec-cell h3 { font-size: 11px; line-height: 1.7; margin-bottom: 9px; }
-.sec-cell p { font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+.point h3 { margin-top: 18px; font-size: 19px; letter-spacing: -0.015em; }
+.point p { margin-top: 6px; font-size: 15px; color: var(--text-2); }
 
-/* ---- CLI ------------------------------------------------------------------- */
+/* ---- command line ------------------------------------------------------------------ */
 
 .dev-grid {
   display: grid;
-  grid-template-columns: 0.92fr 1.08fr;
-  gap: 52px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 64px;
   align-items: center;
 }
-/* grid items default to min-width auto, so the nowrap install command would
-   size the track to its full unwrapped width and push the page sideways on
-   phones; zeroing it lets the code block's own overflow-x take over */
-.dev-grid > * { min-width: 0; }
-.dev-copy h2 {
-  font-size: clamp(14px, 8px + 1.4vw, 19px);
-  line-height: 1.65;
-  margin-bottom: 16px;
-}
-.dev-copy > p { font-size: 14px; color: var(--ink-2); margin-bottom: 22px; }
-.dev-list { display: grid; gap: 12px; margin-bottom: 26px; }
-.dev-list > div {
+.dev-copy .section-head { margin-bottom: 28px; }
+
+.dev-list { display: grid; gap: 12px; padding: 0; list-style: none; }
+.dev-list li {
   display: flex;
+  align-items: center;
   gap: 12px;
-  align-items: flex-start;
-  font-size: 13.5px;
-  color: var(--ink-2);
-}
-.dev-list svg {
-  width: 14px;
-  height: 14px;
-  fill: var(--ink);
-  flex: none;
-  margin-top: 4px;
-}
-.install-row {
-  display: flex;
-  gap: 10px;
-  align-items: stretch;
-}
-.install-row .install { flex: 1; min-width: 0; }
-.install-row .btn { flex: none; }
-.install-prompt { color: var(--ink-3); }
-
-.install {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--ink);
-  background: var(--paper-2);
-  border: 2px solid var(--ink);
-  padding: 11px 14px;
-  white-space: nowrap;
-  overflow-x: auto;
+  font-size: 15px;
+  color: var(--text-2);
 }
 
+.dev-copy .install-row { margin-top: 28px; }
+
+/* a terminal is dark in both themes: warm ink, with the palette as syntax */
 .terminal {
-  /* pinned: a terminal is dark in both themes. Scoping the tokens keeps
-     every descendant rule working unchanged, while the outer edge uses
-     --edge, which resolved at the root and still follows the theme. */
-  --ink: #0d0d0b;
-  --paper: #f2efe9;
-  --ink-dim: #b9b5a9;
-  background: var(--ink);
-  border: 2px solid var(--edge);
-  box-shadow: 6px 6px 0 var(--edge);
   overflow: hidden;
+  border-radius: 20px;
+  background: #221d17;
+  color: #e9dfd2;
+  box-shadow: var(--shadow);
+}
+:root[data-theme="dark"] .terminal { background: #0f0c09; box-shadow: inset 0 0 0 1.5px var(--line); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .terminal { background: #0f0c09; box-shadow: inset 0 0 0 1.5px var(--line); }
 }
 .terminal-bar {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 7px;
-  height: 30px;
-  padding: 0 12px;
-  border-bottom: 2px solid var(--paper);
+  padding: 14px 18px;
+  border-bottom: 1.5px solid #3a322a;
 }
-.tdot { width: 9px; height: 9px; border: 2px solid var(--paper); background: var(--ink); }
-.terminal-title {
-  margin-left: auto;
-  font-family: var(--font-px);
-  font-size: 9px;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-}
+.tdot { width: 12px; height: 12px; border-radius: 50%; }
+.tdot-1 { background: #ff6a4d; }
+.tdot-2 { background: #ffd75e; }
+.tdot-3 { background: #a9e5c8; }
+.terminal-title { margin-left: 10px; font: 12.5px var(--font-mono); color: #a39582; }
 .terminal pre {
-  margin: 0;
-  padding: 18px 20px;
-  font-family: var(--font-mono);
-  font-size: 12.8px;
-  line-height: 1.85;
+  padding: 20px 22px;
   overflow-x: auto;
-  color: var(--paper);
+  font: 13px/1.75 var(--font-mono);
 }
-.t-prompt { font-weight: 700; }
-.t-cmd { color: var(--paper); font-weight: 700; }
-.t-str { color: var(--ink-dim); }
-.t-flag { color: var(--ink-dim); }
-.t-out { color: var(--ink-dim); }
-.t-key { background: var(--paper); color: var(--ink); padding: 1px 4px; font-weight: 700; }
+.t-prompt { color: #8f8377; }
+.t-cmd { color: #fbf6ee; }
+.t-str { color: #ffd75e; }
+.t-flag { color: #cbbcff; }
+.t-out { color: #b3a798; }
+.t-key { color: #ff8a70; }
 
-/* ---- FAQ -------------------------------------------------------------------- */
+/* ---- faq ------------------------------------------------------------------------------ */
 
-.faq { max-width: 660px; margin: 0 auto; border: 2px solid var(--ink); background: var(--paper); box-shadow: 6px 6px 0 var(--ink); }
-.faq details { border-bottom: 2px solid var(--ink); }
-.faq details:last-child { border-bottom: 0; }
+.faq-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+  gap: 64px;
+}
+.faq-grid .section-head { margin-bottom: 0; }
+
+.faq { display: grid; gap: 10px; align-content: start; }
+.faq details {
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+}
 .faq summary {
-  list-style: none;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 15px 18px;
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--ink);
-}
-@media (hover: hover) {
-  .faq summary:hover { background: var(--paper-2); }
+  padding: 16px 18px 16px 22px;
+  font: 700 17px/1.35 var(--round);
+  letter-spacing: -0.01em;
+  list-style: none;
+  cursor: pointer;
 }
 .faq summary::-webkit-details-marker { display: none; }
-.faq summary::after {
-  content: "+";
-  font-family: var(--font-px);
-  font-size: 12px;
+.faq-ico {
+  display: grid;
+  place-items: center;
   flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--subtle);
+  color: var(--text);
+  transition: transform 0.2s, background-color 0.2s;
 }
-.faq details[open] summary { background: var(--ink); color: var(--paper); }
-.faq details[open] summary::after { content: "-"; }
+.faq-ico .i { width: 17px; height: 17px; }
+.faq details[open] .faq-ico { transform: rotate(45deg); background: var(--yellow); color: var(--art-ink); }
 .faq-body {
-  padding: 16px 18px 20px;
-  font-size: 13.5px;
-  line-height: 1.75;
-  color: var(--ink-2);
+  max-width: 62ch;
+  padding: 0 22px 20px;
+  font-size: 15px;
+  color: var(--text-2);
 }
 
-/* ---- inverted tail: CTA + footer --------------------------------------------- */
+/* ---- closing call to action: a yellow panel with the whole buddy ------------------ */
 
-.tail { background: var(--ink); color: var(--ink-dim); }
-
-.cta-band { padding: 88px 0 96px; text-align: center; }
-.cta-band h2 {
-  color: var(--paper);
-  font-size: clamp(14px, 8px + 1.7vw, 22px);
-  line-height: 1.6;
-  margin-bottom: 18px;
-  text-wrap: balance;
+body > section.cta-band { padding-top: 0; }
+.cta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 32px;
+  overflow: hidden;
+  padding: 0 72px 0 56px;
+  border-radius: 28px;
+  background: var(--yellow);
+  color: var(--art-ink);
 }
-.cta-band p {
-  color: var(--ink-dim);
-  max-width: 460px;
-  margin: 0 auto 30px;
-  text-wrap: balance;
-}
+.cta-copy { padding: 56px 0; }
+.cta h2 { font-size: clamp(30px, 1.2vw + 22px, 42px); letter-spacing: -0.03em; }
+.cta p { max-width: 32em; margin-top: 12px; font-size: 17px; color: #4a4036; }
 .cta-actions {
   display: flex;
-  gap: 16px;
-  justify-content: center;
   flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
 }
-.tail .btn { background: var(--paper); color: var(--ink); border-color: var(--paper); box-shadow: 3px 3px 0 var(--paper); }
-.tail .btn:hover { box-shadow: 4px 4px 0 var(--paper); }
-.tail .btn:active { box-shadow: 1px 1px 0 var(--paper); }
-.tail .btn-ghost { background: var(--ink); color: var(--paper); }
-
-.footer { border-top: 2px solid var(--ink-dim); padding: 44px 0 40px; }
-.footer .logo-mark { width: auto; height: 26px; }
-.footer .logo { color: var(--paper); }
-.footer .wordmark { color: var(--paper); }
-.footer-in { display: flex; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
-.footer-tag { margin-top: 14px; font-size: 12.5px; color: var(--ink-dim); max-width: 320px; line-height: 1.7; }
-.footer-links { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
-.footer-links a {
-  color: var(--paper);
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  text-decoration: none;
-  padding: 2px 3px;
-}
+/* the panel is yellow in both themes, so its buttons are pinned too */
+.cta .btn { background: var(--art-ink); color: #ffffff; }
+.cta .btn-ghost { background: #ffffff; box-shadow: none; color: var(--art-ink); }
 @media (hover: hover) {
-  .footer-links a:hover { background: var(--paper); color: var(--ink); }
-  .footer .logo:hover .wordmark { background: var(--paper); color: var(--ink); }
+  .cta .btn:hover { background: #3a322a; }
+  .cta .btn-ghost:hover { background: #fffaf0; box-shadow: none; }
 }
-.footer-fine {
-  margin-top: 36px;
-  padding-top: 18px;
-  border-top: 2px solid var(--ink-dim);
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  /* ink-dim, not ink-3: this text sits on the inverted tail, and ink-3 is
-     tuned for the page background, not the panel */
-  color: var(--ink-dim);
-}
-.footer-fine a { color: inherit; }
+.cta-buddy { width: 150px; height: 165px; margin-top: 40px; }
 
-/* ---- responsive --------------------------------------------------------------- */
-
-/* dark theme swaps the ink-pixel fade for the paper-pixel one */
-:root[data-theme="dark"] .hero::before,
-:root[data-theme="dark"] .dither-fade {
-  background-image: url("/assets/px/fade-inv.png");
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .hero::before,
-  :root:not([data-theme="light"]) .dither-fade {
-    background-image: url("/assets/px/fade-inv.png");
-  }
-}
+/* ---- responsive ---------------------------------------------------------------------- */
 
 @media (max-width: 920px) {
-  .nav-links { display: none; }
-  .nav-cta { margin-left: auto; }
-  .hgrid-3 { grid-template-columns: 1fr; }
-  .dev-grid { grid-template-columns: 1fr; gap: 36px; }
   body > section { padding: 64px 0; }
-  /* bottom padding tracks body > section so the hero's trailing space reads
-     as the same rhythm as every boundary below it; it was 72 against 64 */
-  .hero { padding: 56px 0 64px; }
-  .cta-band { padding: 72px 0 80px; }
-
-  /* no room for two columns: back to the centered poster stack, with the
-     proof list moved below the composer so it stops padding the preamble */
+  /* bottom padding tracks body > section, so the hero ends on the same
+     rhythm as every boundary below it */
+  .hero { padding: 40px 0 64px; }
   .hero-in {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: "copy" "composer" "proof";
     grid-template-rows: auto;
-    row-gap: 0;
-    justify-items: center;
   }
-  .hero-copy {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .hero-copy { padding-top: 0; }
+  .hero-in > .composer { max-width: 620px; margin-top: 20px; }
+  .modes { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .mode {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    column-gap: 10px;
+    padding: 14px;
+  }
+  .art { grid-row: 1 / span 3; height: auto; min-height: 160px; }
+  .art .ill { width: 150px; }
+  .mode h3 { margin-top: 12px; }
+  .mode-link { margin-bottom: 4px; }
+  .demo { grid-template-columns: minmax(0, 1fr); }
+  .demo-side { border-left: 0; border-top: 1.5px solid var(--line); }
+  .points { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 64px; }
+  .dev-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .faq-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .cta { padding: 0 40px; }
+}
+
+@media (max-width: 560px) {
+  body > section { padding: 56px 0; }
+  .hero { padding: 28px 0 56px; }
+  .hero h1 { font-size: clamp(34px, 10vw, 44px); }
+  .hero-sub { margin-top: 14px; font-size: 16px; }
+  .hero-in > .composer { margin-top: 16px; }
+  .hero-proof { margin-top: 28px; }
+  .section-head { margin-bottom: 32px; }
+  .section-head p { font-size: 16px; }
+  .mode { display: flex; padding: 12px 12px 20px; }
+  .art { height: 150px; min-height: 0; }
+  .art .ill { width: 150px; }
+  .mode h3 { margin-top: 18px; }
+  .demo-peek { padding-top: 46px; }
+  .demo-peek > .buddy { right: 28px; width: 68px; height: 75px; }
+  .demo-main, .demo-side { padding: 20px; }
+  .demo-link { font-size: 14px; }
+  .points { grid-template-columns: minmax(0, 1fr); gap: 32px; margin-top: 56px; }
+  .point {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    column-gap: 16px;
+  }
+  .point .tile { grid-row: 1 / span 2; }
+  .point h3 { margin-top: 2px; }
+  .terminal pre { padding: 16px 18px; font-size: 12px; }
+  .faq summary { padding: 14px 14px 14px 18px; font-size: 16px; }
+  .faq-body { padding: 0 18px 18px; }
+  .cta {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 0 22px;
     text-align: center;
   }
-  /* the column clamp is sized for 408px; stacked, the headline gets the
-     full wrap back and should scale with it again */
-  .hero h1 { margin-top: 32px; font-size: clamp(18px, 8px + 3.2vw, 30px); }
-  /* left-aligned rows, but the block itself centered under the composer */
-  .hero-proof { margin-top: 30px; text-align: left; }
-  .hero-in > .composer { margin-top: 38px; }
-}
-
-/* tablets: the six security cells pair up instead of stacking into a tower;
-   the three steps stay stacked, they read as a sequence anyway */
-@media (min-width: 561px) and (max-width: 920px) {
-  #security .hgrid-3 { grid-template-columns: 1fr 1fr; }
-}
-
-@media (max-width: 560px) {
-  .pill-more { display: none; }
-  .win-tag { display: none; }
-  .composer .row { grid-template-columns: 1fr; gap: 14px; margin: 14px 0; }
-  .anatomy-legend { grid-template-columns: 1fr; }
-  .linkbox { flex-direction: column; }
-  .nav-in { gap: 14px; }
-  body > section { padding: 56px 0; }
-  .hero { padding: 34px 0 56px; }
-  .hero h1 { margin-top: 22px; }
-  .hero-sub { margin-top: 18px; font-size: 14px; }
-  /* .hero-in > .composer (0,2,0) outranks a bare .composer here, so the
-     hero copy has to be addressed at the same weight to land at all */
-  .hero-in > .composer { margin-top: 26px; }
-  .hero-proof { margin-top: 26px; }
-  .composer { margin-top: 36px; }
-  .win-body { padding: 18px 16px; }
-  .hgrid > div { padding: 20px 18px; }
-  .anatomy-card { padding: 16px; }
-  .faq summary { padding: 14px 14px; font-size: 12.5px; }
-  .faq-body { padding: 14px 14px 18px; }
-  .cta-band { padding: 60px 0 68px; }
-  .cta-actions .btn { width: 100%; max-width: 320px; }
-  .terminal pre { font-size: 12px; padding: 14px 14px; }
-  .section-head { margin-bottom: 40px; }
-}
-
-/* the narrowest phones: drop the secondary nav button (GitHub stays in the
-   footer and the CTA) and trim the gutters so the primary action fits */
-@media (max-width: 480px) {
-  .wrap { padding: 0 18px; }
-  .nav-cta .btn-ghost { display: none; }
-}
-
-@media (max-width: 360px) {
-  .wordmark { font-size: 11px; }
-  .logo-mark { height: 21px; }
-  .nav-cta { gap: 8px; }
-  .nav-cta .btn-sm { padding: 6px 9px; }
-}
-
-/* ---- file drop -------------------------------------------------------------- */
-
-.dropzone {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 12px;
-  padding: 9px 12px;
-  border: 2px dashed var(--ink-3);
-  color: var(--ink-2);
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  flex-wrap: wrap;
-  cursor: pointer;
-}
-.dropzone svg { width: 16px; height: 16px; fill: var(--ink-2); flex: none; }
-/* the visible text stays inline-sized; the padding buys the 24px of height
-   WCAG 2.5.8 asks of a control, and the negative margin keeps the row from
-   growing to pay for it */
-.dropzone .linklike { padding: 6px 2px; margin: -6px -2px; }
-.dropzone.dz-hot { border-color: var(--ink); border-style: solid; background: var(--paper-2); color: var(--ink); }
-.dz-cap { margin-left: auto; color: var(--ink-3); font-weight: 700; font-size: 11px; }
-.linklike {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  color: var(--ink);
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 3px;
-  cursor: pointer;
-  text-transform: inherit;
-}
-
-
-@media (max-width: 560px) {
-  .dz-cap { margin-left: 26px; width: 100%; }
-}
-
-.how-grid { margin-top: 48px; }
-
-/* ---- feature modes ----------------------------------------------------------- */
-
-.mode-cell { display: flex; flex-direction: column; align-items: flex-start; }
-.mode-cell svg {
-  height: 30px;
-  width: auto;
-  fill: var(--ink);
-  margin-bottom: 16px;
-}
-.mode-cell h3 { font-size: 11px; line-height: 1.7; margin-bottom: 9px; }
-.mode-cell p { font-size: 13px; line-height: 1.7; color: var(--ink-2); flex: 1; }
-.mode-link {
-  /* each cell's only call to action, so it carries the 24px minimum target
-     size; width-fit keeps the hit area on the words rather than the row */
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  margin-top: 12px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* ---- dedicated send and drop pages ------------------------------------------- */
-
-.send-wrap { max-width: 648px; }
-.send-wrap .composer { margin-top: 32px; }
-
-/* /drop promotes the drop strip above the textarea */
-.dz-primary {
-  flex-direction: column;
-  gap: 8px;
-  justify-content: center;
-  text-align: center;
-  padding: 26px 16px;
-  margin: 0 0 14px;
-}
-.dz-primary .dz-cap { margin-left: 0; }
-
-/* compact footer variant for the dialog pages */
-.page-footer { padding: 32px 0 30px; }
-.page-footer .footer-fine { margin-top: 24px; }
-
-/* ---- API reference ------------------------------------------------------- */
-
-.api-wrap { max-width: 760px; }
-
-/* The dialog pages centre their body copy, which suits a single short
-   message. Reference material is scanned, not read, so everything below the
-   page title goes back to a left edge. */
-.api-wrap .view-main > :not(h1):not(.view-tag) { text-align: left; }
-
-.api-note {
-  border: 2px solid var(--ink);
-  border-left-width: 8px;
-  background: var(--paper-2);
-  padding: 16px 18px;
-  margin-top: 28px;
-}
-.api-note p { font-size: 13px; line-height: 1.75; color: var(--ink-2); }
-.api-note strong { color: var(--ink); }
-
-.api-h {
-  font-size: 12px;
-  line-height: 1.7;
-  margin: 44px 0 6px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid var(--ink);
-}
-.api-lede {
-  font-size: 13px;
-  line-height: 1.75;
-  color: var(--ink-2);
-  margin-top: 14px;
-}
-
-.api-list { margin-top: 8px; }
-.api-ep { padding: 22px 0; border-bottom: 2px dotted var(--ink-3); }
-.api-ep:last-child { border-bottom: 0; }
-/* Body paragraph defaults inside an endpoint. The `p` sits in :where() on
-   purpose: it contributes no specificity, so the single-class modifiers
-   below (.api-io, .api-flag) win on source order the way they read like
-   they should. Written as a plain `.api-ep > p` this rule scores (0,1,1)
-   and quietly beats every one of them, which is how .api-flag-burn ended
-   up painting --ink-2 text onto an --ink background. */
-.api-ep > :where(p) { font-size: 13px; line-height: 1.75; color: var(--ink-2); }
-.api-ep > :where(p + p) { margin-top: 8px; }
-
-.api-sig {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-.api-sig code {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink);
-  background: none;
-  border: 0;
-  padding: 0;
-  word-break: break-all;
-}
-.api-verb {
-  flex: none;
-  font-family: var(--font-px);
-  font-size: 8px;
-  line-height: 1;
-  letter-spacing: 0.04em;
-  color: var(--paper);
-  background: var(--ink);
-  border: 2px solid var(--ink);
-  padding: 6px 6px 5px;
-}
-
-.api-io {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  color: var(--ink-3);
-}
-.api-io code { background: none; border: 0; padding: 0; color: var(--ink-2); }
-
-.api-fields {
-  margin-top: 10px;
-  padding-left: 18px;
-  list-style: square;
-}
-.api-fields li {
-  font-size: 12.5px;
-  line-height: 1.75;
-  color: var(--ink-2);
-  margin-top: 5px;
-}
-
-.api-flag {
-  margin-top: 12px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: inline-block;
-  padding: 4px 8px 3px;
-  border: 2px solid var(--ink);
-}
-.api-flag-burn { background: var(--ink); color: var(--paper); }
-.api-flag-safe,
-.api-flag-limit { background: var(--paper); color: var(--ink); }
-.api-flag-safe { border-style: dashed; }
-.api-flag-limit { border-style: dotted; }
-
-.api-code { margin-top: 18px; }
-/* commands here wrap over several lines; a stretched button would tower
-   over its own label */
-.api-code .install-row { align-items: flex-start; }
-.api-code .install-row + .api-out { margin-bottom: 22px; }
-.api-code .install { white-space: pre-wrap; word-break: break-all; }
-.api-out {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  color: var(--ink-3);
-  padding: 8px 2px 0 14px;
-  word-break: break-all;
-}
-
-@media (max-width: 560px) {
-  .api-ep > :where(p),
-  .api-note p,
-  .api-lede { font-size: 12.5px; }
-  .api-code .install { font-size: 11.5px; }
+  .cta-copy { padding: 40px 0 8px; }
+  .cta p { margin-left: auto; margin-right: auto; }
+  .cta-actions { justify-content: center; }
+  .cta-actions .btn { width: 100%; }
+  .cta-buddy { justify-self: center; width: 110px; height: 121px; margin-top: 20px; }
 }

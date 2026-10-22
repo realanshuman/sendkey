@@ -1,5 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
-  <!-- favicon: the same keyhole punched through a full ink tile, no margin,
-       so the counter survives at 16px in a browser tab. -->
-  <path fill="#141412" d="M0 0h16v1h-16zM0 1h16v1h-16zM0 2h6v1h-6zM10 2h6v1h-6zM0 3h5v1h-5zM11 3h5v1h-5zM0 4h5v1h-5zM11 4h5v1h-5zM0 5h5v1h-5zM11 5h5v1h-5zM0 6h6v1h-6zM10 6h6v1h-6zM0 7h7v1h-7zM9 7h7v1h-7zM0 8h7v1h-7zM9 8h7v1h-7zM0 9h7v1h-7zM9 9h7v1h-7zM0 10h6v1h-6zM10 10h6v1h-6zM0 11h6v1h-6zM10 11h6v1h-6zM0 12h6v1h-6zM10 12h6v1h-6zM0 13h16v1h-16zM0 14h16v1h-16zM0 15h16v1h-16z"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 0 132 132"><path fill="#ff6a4d" d="M60 6a46 46 0 0 1 26 84l10 34a6 6 0 0 1-6 8H30a6 6 0 0 1-6-8l10-34A46 46 0 0 1 60 6z"/><circle fill="#ffffff" cx="43" cy="50" r="14.5"/><circle fill="#ffffff" cx="77" cy="50" r="14.5"/><circle fill="#221d17" cx="45" cy="52" r="7.5"/><circle fill="#221d17" cx="79" cy="52" r="7.5"/></svg>

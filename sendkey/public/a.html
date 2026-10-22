@@ -5,162 +5,204 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ask for a secret · SendKey</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#f2efe9">
+<meta name="theme-color" content="#fbf6ee">
 <link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
-<link rel="preload" href="/assets/fonts/press-start-2p-latin.woff2" as="font" type="font/woff2" crossorigin>
 <script src="/assets/theme.js"></script>
 <link rel="stylesheet" href="/assets/brand.css">
-<link rel="stylesheet" href="/assets/site.css">
 <link rel="stylesheet" href="/assets/view.css">
 </head>
 <body>
-<div class="view-wrap">
 
-  <header class="view-head">
+<nav class="nav">
+  <div class="wrap nav-in">
     <a class="logo" href="/" aria-label="SendKey home">
-      <svg class="logo-mark" viewBox="0 0 12 13" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h12v1h-12zM0 1h12v1h-12zM0 2h4v1h-4zM8 2h4v1h-4zM0 3h3v1h-3zM9 3h3v1h-3zM0 4h3v1h-3zM9 4h3v1h-3zM0 5h3v1h-3zM9 5h3v1h-3zM0 6h4v1h-4zM8 6h4v1h-4zM0 7h5v1h-5zM7 7h5v1h-5zM0 8h5v1h-5zM7 8h5v1h-5zM0 9h4v1h-4zM8 9h4v1h-4zM0 10h4v1h-4zM8 10h4v1h-4zM0 11h12v1h-12zM0 12h12v1h-12z"/></svg>
-      <span class="wordmark">sendkey</span>
+      <svg class="logo-buddy" viewBox="0 0 120 132" aria-hidden="true"><path class="b-body" d="M60 6a46 46 0 0 1 26 84l10 34a6 6 0 0 1-6 8H30a6 6 0 0 1-6-8l10-34A46 46 0 0 1 60 6z"/><circle class="b-white" cx="44" cy="50" r="13"/><circle class="b-white" cx="76" cy="50" r="13"/><circle class="b-pupil" cx="46" cy="52" r="6.5"/><circle class="b-pupil" cx="78" cy="52" r="6.5"/></svg>
+      <span class="wordmark">SendKey</span>
     </a>
-    <button id="themeBtn" class="btn btn-ghost btn-sm theme-btn" aria-label="Switch between light and dark mode" aria-pressed="false">
-      <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M1 1h14v14H1zM3 3h10v10H3z"/><path d="M3 3h5v10H3z"/></svg>
-    </button>
-  </header>
 
+    <div class="nav-links">
+      <a href="/send">Send</a>
+      <a href="/drop">Drop</a>
+      <a href="/ask">Ask</a>
+      <a href="/api">API</a>
+    </div>
+    <div class="nav-cta">
+      <button id="themeBtn" class="btn btn-ghost btn-sm btn-icon" aria-label="Switch between light and dark mode" aria-pressed="false">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path class="fill" d="M12 3.5a8.5 8.5 0 0 1 0 17z"/></svg>
+      </button>
+      <a class="btn btn-ghost btn-sm nav-gh" href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<div class="view-wrap">
   <main class="view-main">
-    <h1 id="headline">Ask for a secret</h1>
-    <p id="tagline" class="view-tag">Flip the direction. You request, they answer.</p>
-
-    <div class="win">
-      <div class="win-bar">
-        <span class="win-close" aria-hidden="true"></span>
-        <span class="win-title">Secret request</span>
-      </div>
-      <div class="win-body">
-
-        <!-- create mode: no id in the URL yet -->
-        <section id="create" class="hidden">
-          <p class="banner">
-            Your browser will generate a keypair. The public half rides the
-            link you share; the private half <strong>never leaves this
-            browser</strong>. Whatever gets sent back can only be opened
-            here.
-          </p>
-          <ul class="ask-list">
-            <li>Send the link to whoever holds the secret</li>
-            <li>They answer straight into an encrypted mailbox</li>
-            <li>You open it here. It burns on reading, as always.</li>
-          </ul>
-          <button id="askCreate" class="btn btn-lg">Create ask link</button>
-        </section>
-
-        <!-- owner mode: this browser holds the private key -->
-        <section id="owner" class="hidden">
-          <p class="msg-ok">Ask link ready. Only this browser can open the answer.</p>
-          <div class="linkbox">
-            <input id="askLink" readonly spellcheck="false" aria-label="Ask link">
-            <button id="askCopy" class="btn btn-sm">Copy</button>
+    <!-- the buddy peeks over the card and reacts to its state (buddy.js) -->
+    <div class="peek view-peek">
+      <svg class="buddy" data-buddy="ask" viewBox="0 0 120 132" aria-hidden="true" focusable="false">
+        <g class="b-spark"><path d="M8 16l2.6 6.4L17 25l-6.4 2.6L8 34l-2.6-6.4L-1 25l6.4-2.6z"/><path d="M111 6l1.9 4.6 4.6 1.9-4.6 1.9-1.9 4.6-1.9-4.6-4.6-1.9 4.6-1.9z"/></g>
+        <path class="b-body" d="M60 6a46 46 0 0 1 26 84l10 34a6 6 0 0 1-6 8H30a6 6 0 0 1-6-8l10-34A46 46 0 0 1 60 6z"/>
+        <ellipse class="b-cheek" cx="30" cy="68" rx="7" ry="4.5"/>
+        <ellipse class="b-cheek" cx="90" cy="68" rx="7" ry="4.5"/>
+        <g class="b-eyes">
+          <circle class="b-white" cx="44" cy="50" r="12.5"/>
+          <circle class="b-white" cx="76" cy="50" r="12.5"/>
+          <g class="b-look"><g class="b-follow"><circle class="b-pupil" cx="44" cy="50" r="6"/><circle class="b-pupil" cx="76" cy="50" r="6"/></g></g>
+        </g>
+        <g class="b-lines b-shut"><path d="M33 51q11 8 22 0"/><path d="M65 51q11 8 22 0"/></g>
+        <g class="b-lines b-joy"><path d="M34 55q10-13 20 0"/><path d="M66 55q10-13 20 0"/></g>
+        <g class="b-lines b-x"><path d="M38 44l12 12M50 44l-12 12"/><path d="M70 44l12 12M82 44l-12 12"/></g>
+        <path class="b-lines b-m b-m-smile" d="M53 71q7 6 14 0"/>
+        <path class="b-fill b-m b-m-grin" d="M51 69h18q-1 10-9 10t-9-10z"/>
+        <ellipse class="b-fill b-m b-m-o" cx="60" cy="72.5" rx="4.2" ry="5"/>
+        <path class="b-lines b-m b-m-sad" d="M53 76q7-6 14 0"/>
+        <path class="b-lines b-m b-m-wobble" d="M50 74q2.5-3 5 0t5 0t5 0t5 0"/>
+      </svg>
+      <div class="card view-card">
+        <div class="card-body">
+          <div class="view-head">
+            <h1 id="headline">Ask for a secret</h1>
+            <p id="tagline" class="view-tag">Flip the direction. You request, they answer.</p>
           </div>
-          <div class="fingerprint">
-            <span id="ownerIcon" class="identicon" role="img" aria-label="Key fingerprint pattern"></span>
-            <p class="note">This pattern is your keypair's fingerprint. The
-              responder sees the same one. Compare them out of band if the
-              stakes are high.</p>
-          </div>
-          <p id="askStatus" class="ask-status"><span class="dot" aria-hidden="true"></span><span id="askStatusText">Waiting for an answer…</span></p>
-          <button id="askReveal" class="btn btn-lg hidden">Open the answer</button>
-          <p id="askErr" class="msg-err hidden" role="alert"></p>
-        </section>
 
-        <!-- opened: the decrypted answer -->
-        <section id="opened" class="hidden">
-          <p class="msg-ok">Decrypted with this browser's key. The mailbox is burned.</p>
-          <pre id="askSecret" class="secret-out"></pre>
-          <button id="askSecretCopy" class="btn btn-ghost btn-sm">Copy</button>
-        </section>
+          <!-- create mode: no id in the URL yet -->
+          <section id="create" class="stack hidden">
+            <p class="banner">
+              Your browser will generate a keypair. The public half rides the
+              link you share; the private half <strong>never leaves this
+              browser</strong>. Whatever gets sent back can only be opened
+              here.
+            </p>
+            <ul class="ask-list">
+              <li><svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><span>Send the link to whoever holds the secret</span></li>
+              <li><svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><span>They answer straight into an encrypted mailbox</span></li>
+              <li><svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><span>You open it here. It burns on reading, as always.</span></li>
+            </ul>
+            <button id="askCreate" class="btn btn-lg">Create ask link</button>
+          </section>
 
-        <!-- responder mode: someone opened an ask link -->
-        <section id="respond" class="hidden">
-          <p class="banner">
-            <strong>Someone is asking you for a secret.</strong> Your answer
-            is encrypted to their key in this tab and can only be opened in
-            the browser that created this link.
-          </p>
-          <div class="fingerprint">
-            <span id="respIcon" class="identicon" role="img" aria-label="Key fingerprint pattern"></span>
-            <p class="note">The requester sees this same pattern. If they
-              read it to you and it differs, stop.</p>
-          </div>
-          <label class="lbl" for="ansSecret">Your answer</label>
-          <textarea id="ansSecret" rows="4" spellcheck="false" autocomplete="off"
-            placeholder="Paste the password or key they asked for"></textarea>
-          <div class="ans-row">
-            <label class="lbl" for="ansTtl">Expires after</label>
-            <div class="select">
-              <select id="ansTtl">
-                <option value="3600">1 hour</option>
-                <option value="86400" selected>1 day</option>
-                <option value="604800">7 days</option>
-              </select>
-              <svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 4h10v2H9v2H7v2H5V8H3V6H1z"/></svg>
+          <!-- owner mode: this browser holds the private key -->
+          <section id="owner" class="stack hidden">
+            <p class="msg-ok">Ask link ready. Only this browser can open the answer.</p>
+            <div class="linkbox">
+              <input id="askLink" readonly spellcheck="false" aria-label="Ask link">
+              <button id="askCopy" class="btn">Copy</button>
             </div>
-          </div>
-          <button id="ansGo" class="btn btn-lg">Encrypt and answer</button>
-          <p id="ansErr" class="msg-err hidden" role="alert"></p>
-        </section>
+            <div class="fingerprint">
+              <span id="ownerIcon" class="identicon" role="img" aria-label="Key fingerprint pattern"></span>
+              <p class="note">This pattern is your keypair's fingerprint. The
+                responder sees the same one. Compare them out of band if the
+                stakes are high.</p>
+            </div>
+            <p id="askStatus" class="status ask-status"><span class="dot" aria-hidden="true"></span><span id="askStatusText">Waiting for an answer…</span></p>
+            <button id="askReveal" class="btn btn-lg hidden">Open the answer</button>
+            <p id="askErr" class="msg-err hidden" role="alert"></p>
+          </section>
 
-        <!-- responder done -->
-        <section id="answered" class="hidden">
-          <p class="msg-ok">Answer sealed and delivered.</p>
-          <p class="banner">Only the requester's browser can open it. It
-            burns on first read, and your copy above is already gone.</p>
-        </section>
+          <!-- opened: the decrypted answer -->
+          <section id="opened" class="stack hidden">
+            <p class="msg-ok">Decrypted with this browser's key. The mailbox is burned.</p>
+            <pre id="askSecret" class="secret-out"></pre>
+            <button id="askSecretCopy" class="btn btn-ghost btn-sm">Copy</button>
+          </section>
 
-        <!-- broken or already answered -->
-        <section id="dead" class="hidden">
-          <p class="banner" id="deadMsg">This ask link is not usable.</p>
-          <p class="note">Ask links carry their key after the # and only
-            work whole. If you created this ask, open it in the browser you
-            made it in.</p>
-        </section>
+          <!-- responder mode: someone opened an ask link -->
+          <section id="respond" class="stack hidden">
+            <p class="banner">
+              <strong>Someone is asking you for a secret.</strong> Your answer
+              is encrypted to their key in this tab and can only be opened in
+              the browser that created this link.
+            </p>
+            <div class="fingerprint">
+              <span id="respIcon" class="identicon" role="img" aria-label="Key fingerprint pattern"></span>
+              <p class="note">The requester sees this same pattern. If they
+                read it to you and it differs, stop.</p>
+            </div>
+            <div>
+              <label class="lbl" for="ansSecret">Your answer</label>
+              <textarea id="ansSecret" rows="4" spellcheck="false" autocomplete="off"
+                placeholder="Paste the password or key they asked for"></textarea>
+            </div>
+            <div class="ans-row">
+              <label class="lbl" for="ansTtl">Expires after</label>
+              <div class="select">
+                <select id="ansTtl">
+                  <option value="3600">1 hour</option>
+                  <option value="86400" selected>1 day</option>
+                  <option value="604800">7 days</option>
+                </select>
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            </div>
+            <button id="ansGo" class="btn btn-lg">Encrypt and answer</button>
+            <p id="ansErr" class="msg-err hidden" role="alert"></p>
+          </section>
 
+          <!-- responder done -->
+          <section id="answered" class="stack hidden">
+            <p class="msg-ok">Answer sealed and delivered.</p>
+            <p class="banner">Only the requester's browser can open it. It
+              burns on first read, and your copy above is already gone.</p>
+          </section>
+
+          <!-- broken or already answered -->
+          <section id="dead" class="stack center hidden">
+            <p class="banner" id="deadMsg">This ask link is not usable.</p>
+            <p class="note">Ask links carry their key after the # and only
+              work whole. If you created this ask, open it in the browser you
+              made it in.</p>
+          </section>
+
+        </div>
       </div>
     </div>
 
     <p class="view-foot">
-      <a href="/send">Send a secret instead →</a>
+      <a href="/send">Send a secret instead <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
     </p>
   </main>
-
 </div>
 
-<div class="dither-fade" aria-hidden="true"></div>
-<div class="tail">
-  <footer class="footer page-footer">
-    <div class="wrap">
-      <div class="footer-in">
-        <div class="footer-brand">
-          <a class="logo" href="/" aria-label="SendKey home">
-            <svg class="logo-mark" viewBox="0 0 12 13" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h12v1h-12zM0 1h12v1h-12zM0 2h4v1h-4zM8 2h4v1h-4zM0 3h3v1h-3zM9 3h3v1h-3zM0 4h3v1h-3zM9 4h3v1h-3zM0 5h3v1h-3zM9 5h3v1h-3zM0 6h4v1h-4zM8 6h4v1h-4zM0 7h5v1h-5zM7 7h5v1h-5zM0 8h5v1h-5zM7 8h5v1h-5zM0 9h4v1h-4zM8 9h4v1h-4zM0 10h4v1h-4zM8 10h4v1h-4zM0 11h12v1h-12zM0 12h12v1h-12z"/></svg>
-            <span class="wordmark">sendkey</span>
-          </a>
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-in">
+      <div class="footer-brand">
+        <a class="logo" href="/" aria-label="SendKey home">
+          <svg class="logo-buddy" viewBox="0 0 120 132" aria-hidden="true"><path class="b-body" d="M60 6a46 46 0 0 1 26 84l10 34a6 6 0 0 1-6 8H30a6 6 0 0 1-6-8l10-34A46 46 0 0 1 60 6z"/><circle class="b-white" cx="44" cy="50" r="13"/><circle class="b-white" cx="76" cy="50" r="13"/><circle class="b-pupil" cx="46" cy="52" r="6.5"/><circle class="b-pupil" cx="78" cy="52" r="6.5"/></svg>
+          <span class="wordmark">SendKey</span>
+        </a>
+        <p class="footer-tag">One time links for passwords, keys and files.
+           Encrypted in your browser, gone after the first read.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <p class="footer-h">Product</p>
+          <a href="/send">Send a secret</a>
+          <a href="/drop">Send a file</a>
+          <a href="/ask">Ask for a secret</a>
         </div>
-        <div class="footer-links">
-          <a href="/">Home</a>
-          <a href="/send">Send</a>
-          <a href="/drop">Drop</a>
-          <a href="/ask">Ask</a>
+        <div class="footer-col">
+          <p class="footer-h">Developers</p>
           <a href="/api">API</a>
+          <a href="/#cli">Command line</a>
           <a href="/numbers">Numbers</a>
+        </div>
+        <div class="footer-col">
+          <p class="footer-h">Project</p>
+          <a href="/#how">How it works</a>
+          <a href="/#faq">FAQ</a>
           <a href="https://github.com/realanshuman/sendkey" rel="noopener">GitHub</a>
         </div>
       </div>
-      <div class="footer-fine">
-        <span>MIT licensed · No cookies · No analytics</span>
-        <span>Built by <a href="https://realanshuman.com" rel="noopener">ansh</a> · Built with Go</span>
-      </div>
     </div>
-  </footer>
-</div>
+    <div class="footer-fine">
+      <span>MIT licensed · No cookies · No analytics</span>
+      <span>Built by <a href="https://realanshuman.com" rel="noopener">ansh</a> · Built with Go</span>
+    </div>
+  </div>
+</footer>
+
 <script type="module" src="/assets/ask.js"></script>
+<script type="module" src="/assets/buddy.js"></script>
 </body>
 </html>
